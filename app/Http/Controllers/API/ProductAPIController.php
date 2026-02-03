@@ -10,6 +10,7 @@ use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
 use App\Imports\ProductImport;
 use App\Models\MainProduct;
+use App\Models\ManageStock;
 use App\Models\Product;
 use App\Models\PurchaseItem;
 use App\Models\SaleItem;
@@ -167,6 +168,9 @@ class ProductAPIController extends AppBaseController
         }
 
         VariationProduct::where('product_id', $id)->delete();
+
+        // Excluir todos os estoques relacionados ao produto
+        ManageStock::where('product_id', $id)->delete();
 
         $this->productRepository->delete($id);
 

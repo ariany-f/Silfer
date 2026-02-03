@@ -114,6 +114,7 @@
     "globally.detail.due": "A Pagar",
     "globally.status.validate.label": "Por favor, selecione o status",
     "globally.payment.status.validate.label": "Por favor, selecione o status do pagamento",
+    "globally.add-btn": "Adicionar",
     "customers.title": "Clientes",
     "customer.title": "Cliente",
     "customer.create.title": "Criar Cliente",
