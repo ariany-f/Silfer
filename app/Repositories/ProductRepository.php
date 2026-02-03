@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
+use App\Models\ManageStock;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
@@ -195,7 +196,30 @@ class ProductRepository extends BaseRepository
             $this->generateBarcode($input, $reference_code);
             $product['barcode_image_url'] = Storage::url('product_barcode/barcode-' . $reference_code . '.png');
 
-            // create purchase if purchase_quantity is provided
+            // Atualizar quantidades dos estoques existentes
+            if (isset($input['existing_stocks'])) {
+                $existingStocks = json_decode($input['existing_stocks'], true);
+                if (is_array($existingStocks)) {
+                    foreach ($existingStocks as $stockData) {
+                        $manageStock = ManageStock::find($stockData['id']);
+                        if ($manageStock && $manageStock->product_id == $product->id) {
+                            $manageStock->update(['quantity' => $stockData['quantity']]);
+                        }
+                    }
+                }
+            }
+
+            // Criar novos estoques com compras
+            if (isset($input['new_stock_items'])) {
+                $newStockItems = json_decode($input['new_stock_items'], true);
+                if (is_array($newStockItems)) {
+                    foreach ($newStockItems as $stockItem) {
+                        $this->createPurchaseForStock($product, $stockItem);
+                    }
+                }
+            }
+
+            // create purchase if purchase_quantity is provided (mantido para compatibilidade)
             if (isset($input['purchase_quantity'])) {
                 $purchaseStock = [
                     'warehouse_id' => $input['purchase_warehouse_id'],
@@ -285,6 +309,93 @@ class ProductRepository extends BaseRepository
             DB::rollBack();
             throw new UnprocessableEntityHttpException($e->getMessage());
         }
+    }
+
+    /**
+     * Cria uma compra e estoque para um item de estoque
+     * 
+     * @param Product $product
+     * @param array $stockItem
+     * @return void
+     */
+    private function createPurchaseForStock($product, $stockItem)
+    {
+        if (empty($stockItem['warehouse_id'])) {
+            throw new UnprocessableEntityHttpException('Please Select the warehouse.');
+        }
+        if (empty($stockItem['supplier_id'])) {
+            throw new UnprocessableEntityHttpException('Please Select the supplier.');
+        }
+        if ($stockItem['quantity'] <= 0) {
+            throw new UnprocessableEntityHttpException('Please Enter Atleast One stock Quantity.');
+        }
+        if (empty($stockItem['status'])) {
+            throw new UnprocessableEntityHttpException('Please Select the status.');
+        }
+
+        $purchaseStock = [
+            'warehouse_id' => $stockItem['warehouse_id'],
+            'supplier_id' => $stockItem['supplier_id'],
+            'quantity' => $stockItem['quantity'],
+            'status' => $stockItem['status'],
+            'date' => $stockItem['date'] ?? date('Y/m/d'),
+            'tax_rate' => 0,
+            'tax_amount' => 0,
+            'discount' => 0,
+            'shipping' => 0,
+            'payment_type' => null,
+        ];
+
+        $purchaseInputArray = Arr::only($purchaseStock, [
+            'supplier_id', 'warehouse_id', 'date', 'status', 'discount', 'tax_rate', 'tax_amount', 'shipping', 'payment_type',
+        ]);
+
+        /** @var Purchase $purchase */
+        $purchase = Purchase::create($purchaseInputArray);
+
+        $perItemTaxAmount = 0;
+        $purchaseStock['net_unit_cost'] = $product->product_cost;
+
+        if ($product->order_tax <= 100 && $product->order_tax >= 0) {
+            if ($product->tax_type == Purchase::EXCLUSIVE) {
+                $purchaseStock['tax_amount'] = (($purchaseStock['net_unit_cost'] * $product->order_tax) / 100) * $purchaseStock['quantity'];
+                $perItemTaxAmount = $purchaseStock['tax_amount'] / $purchaseStock['quantity'];
+            } elseif ($product->tax_type == Purchase::INCLUSIVE) {
+                $purchaseStock['tax_amount'] = ($purchaseStock['net_unit_cost'] * $product->order_tax) / (100 + $product->order_tax) * $purchaseStock['quantity'];
+                $perItemTaxAmount = $purchaseStock['tax_amount'] / $purchaseStock['quantity'];
+                $purchaseStock['net_unit_cost'] -= $perItemTaxAmount;
+            }
+        } else {
+            throw new UnprocessableEntityHttpException('Please enter tax value between 0 to 100 ');
+        }
+        $purchaseStock['sub_total'] = ($purchaseStock['net_unit_cost'] + $perItemTaxAmount) * $purchaseStock['quantity'];
+
+        $purchaseItemArr = [
+            'purchase_id' => $purchase->id,
+            'product_id' => $product->id,
+            'product_cost' => $product->product_cost,
+            'net_unit_cost' => $purchaseStock['net_unit_cost'],
+            'tax_type' => $product->tax_type,
+            'tax_value' => $product->order_tax,
+            'tax_amount' => $purchaseStock['tax_amount'],
+            'discount_type' => Purchase::FIXED,
+            'discount_value' => 0,
+            'discount_amount' => 0,
+            'purchase_unit' => $product->purchase_unit,
+            'quantity' => $purchaseStock['quantity'],
+            'sub_total' => $purchaseStock['sub_total'],
+        ];
+
+        $purchaseItem = new PurchaseItem($purchaseItemArr);
+        $purchase->purchaseItems()->save($purchaseItem);
+
+        $purchase->update([
+            'reference_code' => getSettingValue('purchase_code') . '_111' . $purchase->id,
+            'grand_total' => $purchaseStock['sub_total'],
+        ]);
+
+        // manage stock
+        manageStock($purchaseStock['warehouse_id'], $product->id, $purchaseStock['quantity']);
     }
 
     public function generateBarcode($input, $reference_code): bool

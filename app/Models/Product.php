@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\PurchaseItem;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -241,6 +242,8 @@ class Product extends BaseModel implements HasMedia, JsonResourceful
             'warehouse' => $this->warehouse($this->id) ?? '',
             'barcode_url' => Storage::url('product_barcode/barcode-PR_' . $this->id . '.png'),
             'in_stock' => $this->inStock($this->id),
+            'last_purchase' => $this->getLastPurchase(),
+            'all_stocks' => $this->getAllStocksWithPurchases(),
         ];
 
         if ($this->variationProduct) {
@@ -425,5 +428,79 @@ class Product extends BaseModel implements HasMedia, JsonResourceful
     public function variationType(): HasOneThrough
     {
         return $this->hasOneThrough(VariationType::class, VariationProduct::class, 'product_id', 'id', 'id', 'variation_type_id');
+    }
+
+    /**
+     * Retorna a última compra deste produto
+     * 
+     * @return array|null
+     */
+    public function getLastPurchase()
+    {
+        $lastPurchaseItem = PurchaseItem::where('product_id', $this->id)
+            ->with('purchase')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($lastPurchaseItem && $lastPurchaseItem->purchase) {
+            $purchase = $lastPurchaseItem->purchase;
+            return [
+                'warehouse_id' => $purchase->warehouse_id,
+                'supplier_id' => $purchase->supplier_id,
+                'date' => $purchase->date,
+                'status' => $purchase->status,
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * Retorna todos os estoques deste produto com informações de compras
+     * 
+     * @return array
+     */
+    public function getAllStocksWithPurchases()
+    {
+        $stocks = ManageStock::where('product_id', $this->id)
+            ->with('warehouse')
+            ->get();
+
+        $stocksData = [];
+        
+        foreach ($stocks as $stock) {
+            // Buscar a última compra para este produto neste warehouse
+            $lastPurchaseItem = PurchaseItem::where('product_id', $this->id)
+                ->whereHas('purchase', function($query) use ($stock) {
+                    $query->where('warehouse_id', $stock->warehouse_id);
+                })
+                ->with('purchase.supplier')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $stockData = [
+                'id' => $stock->id,
+                'warehouse_id' => $stock->warehouse_id,
+                'warehouse_name' => $stock->warehouse ? $stock->warehouse->name : '',
+                'quantity' => $stock->quantity,
+                'alert' => $stock->alert,
+            ];
+
+            if ($lastPurchaseItem && $lastPurchaseItem->purchase) {
+                $purchase = $lastPurchaseItem->purchase;
+                $stockData['last_purchase'] = [
+                    'supplier_id' => $purchase->supplier_id,
+                    'supplier_name' => $purchase->supplier ? $purchase->supplier->name : '',
+                    'date' => $purchase->date,
+                    'status' => $purchase->status,
+                ];
+            } else {
+                $stockData['last_purchase'] = null;
+            }
+
+            $stocksData[] = $stockData;
+        }
+
+        return $stocksData;
     }
 }

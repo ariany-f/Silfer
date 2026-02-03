@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { InputGroup, Modal } from "react-bootstrap-v5";
+import { InputGroup, Modal, Table, Button } from "react-bootstrap-v5";
 import { decimalValidate, generateBarCode, getFormattedMessage, getFormattedOptions, placeholderText } from "../../shared/sharedMethod";
 import { useDispatch, useSelector } from "react-redux";
 import { taxMethodOptions, purchaseStatusOptions } from "../../constants";
@@ -7,7 +7,7 @@ import Form from "react-bootstrap/Form";
 import ReactSelect from "../../shared/select/reactSelect";
 import { editProduct } from "../../store/action/productAction";
 import { useNavigate } from "react-router";
-import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
+import { faWandMagicSparkles, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchAllWarehouses } from "../../store/action/warehouseAction";
 import { fetchAllSuppliers } from "../../store/action/supplierAction";
@@ -36,6 +36,9 @@ const EditSubProductModal = (props) => {
         },
     });
     const [errors, setErrors] = useState({});
+    const [existingStocks, setExistingStocks] = useState([]);
+    const [newStockItems, setNewStockItems] = useState([]);
+    const [showAddStock, setShowAddStock] = useState(false);
     const taxTypeFilterOptions = getFormattedOptions(taxMethodOptions);
     const statusFilterOptions = getFormattedOptions(purchaseStatusOptions);
     const statusDefaultValue = statusFilterOptions.map((option) => {
@@ -53,6 +56,18 @@ const EditSubProductModal = (props) => {
             dispatch(fetchAllWarehouses());
             dispatch(fetchAllSuppliers());
             setProduct(productData);
+            
+            // Carregar todos os estoques existentes
+            if (productData.all_stocks && productData.all_stocks.length > 0) {
+                setExistingStocks(productData.all_stocks);
+            } else {
+                setExistingStocks([]);
+            }
+
+            // Resetar novos itens de estoque
+            setNewStockItems([]);
+            setShowAddStock(false);
+
             setFormInput((prev) => ({
                 ...prev,
                 product_price: productData.product_price,
@@ -72,6 +87,9 @@ const EditSubProductModal = (props) => {
             }));
         } else {
             setProduct({});
+            setExistingStocks([]);
+            setNewStockItems([]);
+            setShowAddStock(false);
             setFormInput({
                 product_price: "",
                 product_cost: "",
@@ -91,6 +109,35 @@ const EditSubProductModal = (props) => {
             setErrors({});
         }
     }, [show]);
+
+    // Atualizar labels quando warehouses e suppliers carregarem
+    useEffect(() => {
+        if (show && warehouses && warehouses.length > 0 && formInput.warehouse_id && typeof formInput.warehouse_id === 'object' && formInput.warehouse_id.value) {
+            const warehouse = warehouses.find(w => w.id === formInput.warehouse_id.value);
+            if (warehouse && (!formInput.warehouse_id.label || formInput.warehouse_id.label === "")) {
+                setFormInput((prev) => ({
+                    ...prev,
+                    warehouse_id: {
+                        value: prev.warehouse_id.value,
+                        label: warehouse.attributes?.name || warehouse.name || "",
+                    },
+                }));
+            }
+        }
+
+        if (show && suppliers && suppliers.length > 0 && formInput.supplier_id && typeof formInput.supplier_id === 'object' && formInput.supplier_id.value) {
+            const supplier = suppliers.find(s => s.id === formInput.supplier_id.value);
+            if (supplier && (!formInput.supplier_id.label || formInput.supplier_id.label === "")) {
+                setFormInput((prev) => ({
+                    ...prev,
+                    supplier_id: {
+                        value: prev.supplier_id.value,
+                        label: supplier.attributes?.name || supplier.name || "",
+                    },
+                }));
+            }
+        }
+    }, [warehouses, suppliers, show, formInput.warehouse_id, formInput.supplier_id]);
 
     const onProductDataChange = (e) => {
         setFormInput((prev) => ({
@@ -148,6 +195,47 @@ const EditSubProductModal = (props) => {
         setErrors({});
     };
 
+    const addNewStockItem = () => {
+        setNewStockItems((prev) => [
+            ...prev,
+            {
+                id: Date.now(), // ID temporário
+                warehouse_id: "",
+                supplier_id: "",
+                quantity: "",
+                purchase_date: new Date(),
+                status_id: {
+                    label: getFormattedMessage("status.filter.received.label"),
+                    value: 1,
+                },
+            },
+        ]);
+        setShowAddStock(true);
+    };
+
+    const removeNewStockItem = (id) => {
+        setNewStockItems((prev) => prev.filter((item) => item.id !== id));
+        if (newStockItems.length === 1) {
+            setShowAddStock(false);
+        }
+    };
+
+    const updateNewStockItem = (id, field, value) => {
+        setNewStockItems((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            )
+        );
+    };
+
+    const updateExistingStockQuantity = (stockId, quantity) => {
+        setExistingStocks((prev) =>
+            prev.map((stock) =>
+                stock.id === stockId ? { ...stock, quantity: quantity } : stock
+            )
+        );
+    };
+
     const handleValidation = () => {
         let validationErrors = {};
         let isValid = false;
@@ -159,14 +247,23 @@ const EditSubProductModal = (props) => {
             validationErrors['code'] = getFormattedMessage('product.input.code.validate.label');
         } else if (formInput['order_tax'] > 100) {
             validationErrors["order_tax"] = getFormattedMessage('globally.tax-length.validate.label');
-        } else if (formInput['add_stock'] && formInput['add_stock'] !== "" && !formInput['warehouse_id']) {
-            validationErrors["warehouse_id"] = getFormattedMessage('product.input.warehouse.validate.label');
-        } else if (formInput['add_stock'] && formInput['add_stock'] !== "" && !formInput['supplier_id']) {
-            validationErrors["supplier_id"] = getFormattedMessage('purchase.select.supplier.validate.label');
-        } else if (formInput['add_stock'] && formInput['add_stock'] !== "" && !formInput['status_id']) {
-            validationErrors["status_id"] = getFormattedMessage('globally.status.validate.label');
         } else {
-            isValid = true;
+            // Validar novos itens de estoque
+            newStockItems.forEach((item, index) => {
+                if (!item.warehouse_id || item.warehouse_id === "") {
+                    validationErrors[`new_stock_${item.id}_warehouse`] = getFormattedMessage('product.input.warehouse.validate.label');
+                }
+                if (!item.supplier_id || item.supplier_id === "") {
+                    validationErrors[`new_stock_${item.id}_supplier`] = getFormattedMessage('purchase.select.supplier.validate.label');
+                }
+                if (!item.quantity || item.quantity === "" || item.quantity <= 0) {
+                    validationErrors[`new_stock_${item.id}_quantity`] = getFormattedMessage('purchase.product.quantity.validate.label');
+                }
+            });
+            
+            if (Object.keys(validationErrors).length === 0) {
+                isValid = true;
+            }
         }
 
         setErrors(validationErrors);
@@ -209,14 +306,24 @@ const EditSubProductModal = (props) => {
             formData.append('tax_type', formInput.tax_type.value ? formInput.tax_type.value : 1);
         }
 
-        // Campos de estoque (opcional - só envia se preenchido)
-        if (formInput.add_stock && formInput.add_stock !== "") {
-            formData.append('purchase_warehouse_id', formInput.warehouse_id.value);
-            formData.append('purchase_supplier_id', formInput.supplier_id.value);
-            formData.append('purchase_quantity', formInput.add_stock);
-            formData.append('purchase_date', moment(formInput.purchase_date).locale('en').format("YYYY-MM-DD"));
-            formData.append('purchase_status', formInput.status_id.value);
+        // Enviar novos itens de estoque
+        if (newStockItems.length > 0) {
+            const stockItems = newStockItems.map((item) => ({
+                warehouse_id: typeof item.warehouse_id === 'object' ? item.warehouse_id.value : item.warehouse_id,
+                supplier_id: typeof item.supplier_id === 'object' ? item.supplier_id.value : item.supplier_id,
+                quantity: item.quantity,
+                date: moment(item.purchase_date).locale('en').format("YYYY-MM-DD"),
+                status: typeof item.status_id === 'object' ? item.status_id.value : item.status_id,
+            }));
+            formData.append('new_stock_items', JSON.stringify(stockItems));
         }
+
+        // Enviar estoques existentes atualizados (se houver mudanças de quantidade)
+        const updatedStocks = existingStocks.map((stock) => ({
+            id: stock.id,
+            quantity: stock.quantity,
+        }));
+        formData.append('existing_stocks', JSON.stringify(updatedStocks));
 
         return formData;
     };
@@ -449,108 +556,191 @@ const EditSubProductModal = (props) => {
                                         )}
                                     />
                                 </div>
-                                <div className="col-md-3 mb-3">
-                                    <label className="form-label">
-                                        {getFormattedMessage(
-                                            "product-quantity.add.title"
-                                        )}
-                                        :{" "}
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="add_stock"
-                                        className="form-control"
-                                        placeholder={placeholderText(
-                                            "product-quantity.add.title"
-                                        )}
-                                        onKeyPress={(event) =>
-                                            decimalValidate(event)
-                                        }
-                                        onChange={(e) =>
-                                            onProductDataChange(e)
-                                        }
-                                        value={
-                                            formInput.add_stock
-                                        }
-                                        min={0}
-                                    />
-                                    <span className="text-danger d-block fw-400 fs-small mt-2">
-                                        {errors["add_stock"]
-                                            ? errors["add_stock"]
-                                            : null}
-                                    </span>
+                            </div>
+                            
+                            {/* Tabela de Estoques Existentes */}
+                            <div className="row mt-4">
+                                <div className="col-12">
+                                    <div className="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 className="mb-0">
+                                            {getFormattedMessage("product.product-in-stock.label")}
+                                        </h5>
+                                        <Button
+                                            variant="primary"
+                                            size="sm"
+                                            onClick={addNewStockItem}
+                                        >
+                                            <FontAwesomeIcon icon={faPlus} className="me-1" />
+                                            {getFormattedMessage("globally.add-btn")}
+                                        </Button>
+                                    </div>
+                                    
+                                    {(existingStocks.length > 0 || newStockItems.length > 0) && (
+                                        <Table responsive striped bordered>
+                                            <thead>
+                                                <tr>
+                                                    <th>{getFormattedMessage("warehouse.title")}</th>
+                                                    <th>{getFormattedMessage("supplier.title")}</th>
+                                                    <th>{getFormattedMessage("product.product-in-stock.label")}</th>
+                                                    <th>{getFormattedMessage("react-data-table.date.column.label")}</th>
+                                                    <th>{getFormattedMessage("globally.detail.status")}</th>
+                                                    <th className="text-center">{getFormattedMessage("react-data-table.action.column.label")}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {/* Estoques Existentes */}
+                                                {existingStocks.map((stock) => (
+                                                    <tr key={stock.id}>
+                                                        <td>{stock.warehouse_name}</td>
+                                                        <td>
+                                                            {stock.last_purchase?.supplier_name || "-"}
+                                                        </td>
+                                                        <td>
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm"
+                                                                value={stock.quantity}
+                                                                min={0}
+                                                                onChange={(e) =>
+                                                                    updateExistingStockQuantity(
+                                                                        stock.id,
+                                                                        parseFloat(e.target.value) || 0
+                                                                    )
+                                                                }
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            {stock.last_purchase?.date
+                                                                ? moment(stock.last_purchase.date).format("DD/MM/YYYY")
+                                                                : "-"}
+                                                        </td>
+                                                        <td>
+                                                            {stock.last_purchase?.status
+                                                                ? statusFilterOptions.find(
+                                                                      (opt) => opt.id === stock.last_purchase.status
+                                                                  )?.name || "-"
+                                                                : "-"}
+                                                        </td>
+                                                        <td className="text-center">
+                                                            <span className="badge bg-light-info">
+                                                                Existente
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                                
+                                                {/* Novos Estoques */}
+                                                {newStockItems.map((item) => (
+                                                    <tr key={item.id}>
+                                                        <td>
+                                                            <div style={{ minWidth: '150px' }}>
+                                                                <ReactSelect
+                                                                    data={warehouses}
+                                                                    onChange={(obj) =>
+                                                                        updateNewStockItem(item.id, "warehouse_id", obj)
+                                                                    }
+                                                                    value={item.warehouse_id}
+                                                                    errors={errors[`new_stock_${item.id}_warehouse`]}
+                                                                    placeholder={placeholderText(
+                                                                        "product.input.warehouse.placeholder.label"
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div style={{ minWidth: '150px' }}>
+                                                                <ReactSelect
+                                                                    data={suppliers}
+                                                                    onChange={(obj) =>
+                                                                        updateNewStockItem(item.id, "supplier_id", obj)
+                                                                    }
+                                                                    value={item.supplier_id}
+                                                                    errors={errors[`new_stock_${item.id}_supplier`]}
+                                                                    placeholder={placeholderText(
+                                                                        "purchase.select.supplier.placeholder.label"
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm"
+                                                                value={item.quantity}
+                                                                min={1}
+                                                                onChange={(e) =>
+                                                                    updateNewStockItem(
+                                                                        item.id,
+                                                                        "quantity",
+                                                                        parseFloat(e.target.value) || ""
+                                                                    )
+                                                                }
+                                                            />
+                                                            <span className="text-danger d-block fw-400 fs-small mt-1">
+                                                                {errors[`new_stock_${item.id}_quantity`]
+                                                                    ? errors[`new_stock_${item.id}_quantity`]
+                                                                    : null}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div style={{ minWidth: '120px' }}>
+                                                                <ReactDatePicker
+                                                                    onChangeDate={(date) =>
+                                                                        updateNewStockItem(item.id, "purchase_date", date)
+                                                                    }
+                                                                    newStartDate={item.purchase_date}
+                                                                    readOnlyref={false}
+                                                                    disablePast={false}
+                                                                    disableFuture={false}
+                                                                    placeholder={placeholderText("react-data-table.date.column.label")}
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div style={{ minWidth: '120px' }}>
+                                                                <ReactSelect
+                                                                    multiLanguageOption={statusFilterOptions}
+                                                                    onChange={(obj) =>
+                                                                        updateNewStockItem(item.id, "status_id", obj)
+                                                                    }
+                                                                    value={item.status_id}
+                                                                    errors={errors[`new_stock_${item.id}_status`]}
+                                                                    defaultValue={statusDefaultValue[0]}
+                                                                    placeholder={getFormattedMessage(
+                                                                        "globally.detail.status"
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                        <td className="text-center">
+                                                            <Button
+                                                                variant="danger"
+                                                                size="sm"
+                                                                onClick={() => removeNewStockItem(item.id)}
+                                                            >
+                                                                <FontAwesomeIcon icon={faTrash} />
+                                                            </Button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </Table>
+                                    )}
+                                    
+                                    {existingStocks.length === 0 && newStockItems.length === 0 && (
+                                        <div className="text-center py-4 text-muted">
+                                            <p>{getFormattedMessage("react-data-table.no-record-found.label")}</p>
+                                            <Button
+                                                variant="primary"
+                                                size="sm"
+                                                onClick={addNewStockItem}
+                                            >
+                                                <FontAwesomeIcon icon={faPlus} className="me-1" />
+                                                {getFormattedMessage("product-quantity.add.title")}
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
-                                {formInput.add_stock && formInput.add_stock !== "" && (
-                                    <>
-                                        <div className="col-md-3 mb-3">
-                                            <ReactSelect
-                                                data={warehouses}
-                                                onChange={onWarehouseChange}
-                                                defaultValue={formInput.warehouse_id}
-                                                title={getFormattedMessage(
-                                                    "warehouse.title"
-                                                )}
-                                                errors={errors["warehouse_id"]}
-                                                placeholder={placeholderText(
-                                                    "product.input.warehouse.placeholder.label"
-                                                )}
-                                            />
-                                        </div>
-                                        <div className="col-md-3 mb-3">
-                                            <ReactSelect
-                                                data={suppliers}
-                                                onChange={onSupplierChange}
-                                                defaultValue={formInput.supplier_id}
-                                                title={getFormattedMessage(
-                                                    "supplier.title"
-                                                )}
-                                                errors={errors["supplier_id"]}
-                                                placeholder={placeholderText(
-                                                    "purchase.select.supplier.placeholder.label"
-                                                )}
-                                            />
-                                        </div>
-                                        <div className="col-md-3 mb-3">
-                                            <label className="form-label">
-                                                {getFormattedMessage(
-                                                    "react-data-table.date.column.label"
-                                                )}
-                                                :{" "}
-                                            </label>
-                                            <ReactDatePicker
-                                                onChangeDate={handleDateCallback}
-                                                newStartDate={formInput.purchase_date}
-                                                readOnlyref={false}
-                                                disablePast={false}
-                                                disableFuture={false}
-                                                placeholder={placeholderText("react-data-table.date.column.label")}
-                                            />
-                                            <span className="text-danger d-block fw-400 fs-small mt-2">
-                                                {errors["purchase_date"]
-                                                    ? errors["purchase_date"]
-                                                    : null}
-                                            </span>
-                                        </div>
-                                        <div className="col-md-3 mb-3">
-                                            <ReactSelect
-                                                multiLanguageOption={
-                                                    statusFilterOptions
-                                                }
-                                                onChange={onStatusChange}
-                                                name="status"
-                                                title={getFormattedMessage(
-                                                    "globally.detail.status"
-                                                )}
-                                                value={formInput.status_id}
-                                                errors={errors["status_id"]}
-                                                defaultValue={statusDefaultValue[0]}
-                                                placeholder={getFormattedMessage(
-                                                    "globally.detail.status"
-                                                )}
-                                            />
-                                        </div>
-                                    </>
-                                )}
                             </div>
                         </div>
                     </div>
