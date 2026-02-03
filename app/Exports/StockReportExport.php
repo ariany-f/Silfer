@@ -11,7 +11,15 @@ class StockReportExport implements FromView
     {
         $warehouseId = request()->get('warehouse_id');
 
-        $stocks = ManageStock::whereWarehouseId($warehouseId)->with('product', 'warehouse')->get();
+        $query = ManageStock::with(['product', 'warehouse'])
+            ->whereHas('product')
+            ->whereHas('warehouse');
+        
+        if (isset($warehouseId) && $warehouseId != 'null' && $warehouseId != '') {
+            $query->whereWarehouseId($warehouseId);
+        }
+
+        $stocks = $query->get();
 
         return view('excel.stock-report-excel', ['stocks' => $stocks]);
     }

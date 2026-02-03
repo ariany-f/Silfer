@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title> Sale return report pdf</title>
+    <title>Stock Report</title>
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon.ico') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Fonts -->
@@ -22,16 +22,24 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($stocks  as $stock)
+    @if(count($stocks) > 0)
+        @foreach($stocks as $stock)
+            @if($stock->warehouse && $stock->product)
+                <tr align="center">
+                    <td>{{ $stock->warehouse->name ?? '-' }}</td>
+                    <td>{{ $stock->product->code ?? '-' }}</td>
+                    <td>{{ $stock->product->name ?? '-' }}</td>
+                    <td>{{ $stock->product->product_cost ? round(floatval($stock->product->product_cost), 2) : '0.00' }}</td>
+                    <td>{{ $stock->product->product_price ? round(floatval($stock->product->product_price), 2) : '0.00' }}</td>
+                    <td>{{ $stock->quantity ?? '0' }}</td>
+                </tr>
+            @endif
+        @endforeach
+    @else
         <tr align="center">
-            <td>{{$stock->warehouse->name}}</td>
-            <td>{{$stock->product->code}}</td>
-            <td>{{$stock->product->name}}</td>
-            <td>{{ round(floatval($stock->product->product_cost), 2) }}</td>
-            <td>{{ round(floatval($stock->product->product_price), 2) }}</td>
-            <td>{{ $stock->quantity }}</td>
+            <td colspan="6">No stock data available</td>
         </tr>
-    @endforeach
+    @endif
     </tbody>
 </table>
 </body>

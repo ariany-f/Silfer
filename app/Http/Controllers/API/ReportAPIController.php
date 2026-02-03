@@ -212,14 +212,42 @@ class ReportAPIController extends AppBaseController
 
     public function stockReportExcel(Request $request): JsonResponse
     {
-        if (Storage::exists('excel/stock-report-excel.xlsx')) {
-            Storage::delete('excel/stock-report-excel.xlsx');
+        try {
+            $disk = 'public';
+            $filePath = 'excel/stock-report-excel.xlsx';
+            
+            // Garantir que a pasta excel existe
+            if (!Storage::disk($disk)->exists('excel')) {
+                Storage::disk($disk)->makeDirectory('excel');
+            }
+            
+            // Deletar arquivo existente se houver
+            if (Storage::disk($disk)->exists($filePath)) {
+                Storage::disk($disk)->delete($filePath);
+            }
+            
+            // Gerar o arquivo Excel
+            Excel::store(new StockReportExport, $filePath, $disk);
+
+            // Verificar se o arquivo foi gerado
+            if (!Storage::disk($disk)->exists($filePath)) {
+                \Log::error('Stock report Excel file was not created', [
+                    'file_path' => $filePath,
+                    'disk' => $disk,
+                ]);
+                return $this->sendError('Failed to generate Excel file', 500);
+            }
+
+            $data['stock_report_excel_url'] = Storage::disk($disk)->url($filePath);
+
+            return $this->sendResponse($data, 'Stock Report retrieved successfully');
+        } catch (\Exception $e) {
+            \Log::error('Error generating stock report Excel: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+            return $this->sendError('Error generating Excel file: ' . $e->getMessage(), 500);
         }
-        Excel::store(new StockReportExport, 'excel/stock-report-excel.xlsx');
-
-        $data['stock_report_excel_url'] = Storage::url('excel/stock-report-excel.xlsx');
-
-        return $this->sendResponse($data, 'Stock Report retrieved successfully');
     }
 
     public function getProductSaleReportExport(): JsonResponse

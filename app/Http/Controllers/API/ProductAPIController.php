@@ -128,53 +128,74 @@ class ProductAPIController extends AppBaseController
 
     public function destroy($id): JsonResponse
     {
+        try {
+            DB::beginTransaction();
 
-        $purchaseItemModels = [
-            PurchaseItem::class,
-        ];
-        $saleItemModels = [
-            SaleItem::class,
-        ];
-        $purchaseResult = canDelete($purchaseItemModels, 'product_id', $id);
-        $saleResult = canDelete($saleItemModels, 'product_id', $id);
-        if ($purchaseResult || $saleResult) {
-            // Log conciso do motivo do bloqueio
-            $blockedBy = [];
-            if ($purchaseResult) {
-                $purchaseCount = PurchaseItem::where('product_id', $id)->count();
-                $blockedBy[] = "compras:{$purchaseCount}";
+            $purchaseItemModels = [
+                PurchaseItem::class,
+            ];
+            $saleItemModels = [
+                SaleItem::class,
+            ];
+            $purchaseResult = canDelete($purchaseItemModels, 'product_id', $id);
+            $saleResult = canDelete($saleItemModels, 'product_id', $id);
+            if ($purchaseResult || $saleResult) {
+                // Log conciso do motivo do bloqueio
+                $blockedBy = [];
+                if ($purchaseResult) {
+                    $purchaseCount = PurchaseItem::where('product_id', $id)->count();
+                    $blockedBy[] = "compras:{$purchaseCount}";
+                }
+                if ($saleResult) {
+                    $saleCount = SaleItem::where('product_id', $id)->count();
+                    $blockedBy[] = "vendas:{$saleCount}";
+                }
+                Log::warning("Produto #{$id} não pode ser excluído", [
+                    'product_id' => $id,
+                    'bloqueado_por_detalhes' => implode(', ', $blockedBy)
+                ]);
+                
+                DB::rollBack();
+                return $this->sendError(__('messages.error.product_cant_deleted'));
             }
-            if ($saleResult) {
-                $saleCount = SaleItem::where('product_id', $id)->count();
-                $blockedBy[] = "vendas:{$saleCount}";
+
+            $product = $this->productRepository->find($id);
+            if (!$product) {
+                DB::rollBack();
+                return $this->sendError('Product not found');
             }
-            Log::warning("Produto #{$id} não pode ser excluído", [
+
+            $mainProduct = MainProduct::withCount('products')->find($product->main_product_id);
+            if ($mainProduct && $mainProduct->product_type == MainProduct::VARIATION_PRODUCT && $mainProduct->products_count <= 1) {
+                DB::rollBack();
+                return $this->sendError('You can not delete last variation product');
+            }
+
+            // Excluir todos os estoques relacionados ao produto ANTES de excluir o produto
+            ManageStock::where('product_id', $id)->delete();
+
+            // Excluir variação do produto
+            VariationProduct::where('product_id', $id)->delete();
+
+            // Excluir o produto
+            $this->productRepository->delete($id);
+
+            // Excluir arquivo de código de barras (fora da transação, pois é arquivo)
+            if (File::exists(Storage::path('product_barcode/barcode-PR_' . $id . '.png'))) {
+                File::delete(Storage::path('product_barcode/barcode-PR_' . $id . '.png'));
+            }
+
+            DB::commit();
+
+            return $this->sendSuccess('Product deleted successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Erro ao excluir produto #{$id}: " . $e->getMessage(), [
                 'product_id' => $id,
-                'bloqueado_por' => implode(', ', $blockedBy)
+                'error' => $e->getTraceAsString(),
             ]);
-            
-            return $this->sendError(__('messages.error.product_cant_deleted'));
+            return $this->sendError('Error deleting product: ' . $e->getMessage(), 500);
         }
-
-        if (File::exists(Storage::path('product_barcode/barcode-PR_' . $id . '.png'))) {
-            File::delete(Storage::path('product_barcode/barcode-PR_' . $id . '.png'));
-        }
-
-        $product = $this->productRepository->find($id);
-        $mainProduct = MainProduct::withCount('products')->find($product->main_product_id);
-
-        if ($mainProduct->product_type == MainProduct::VARIATION_PRODUCT && $mainProduct->products_count <= 1) {
-            return $this->sendError('You can not delete last variation product');
-        }
-
-        VariationProduct::where('product_id', $id)->delete();
-
-        // Excluir todos os estoques relacionados ao produto
-        ManageStock::where('product_id', $id)->delete();
-
-        $this->productRepository->delete($id);
-
-        return $this->sendSuccess('Product deleted successfully');
     }
 
     public function productImageDelete($mediaId): JsonResponse
