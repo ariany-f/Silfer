@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\ContactUs;
+use App\Models\Faq;
+use App\Models\Feature;
+use App\Models\Partner;
+use App\Models\Plan;
+use App\Models\Service;
+use App\Models\Step;
+use App\Models\Testimonial;
+use App\Models\WhyChooseUs;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+
+class HomeController extends AppBaseController
+{
+    public function index()
+    {
+        try {
+            $services = Service::all();
+            $partners = Partner::all();
+            $whyChooseUs = WhyChooseUs::all();
+            $testimonials = Testimonial::all();
+            $faqs = Faq::latest()->limit(5)->get();
+            $plans = Plan::whereNot('assign_while_register', 1)->get();
+            $features = Feature::all();
+            $steps = Step::all();
+        } catch (\Exception $e) {
+            // Se houver erro de banco de dados (tabelas não existem), usa arrays vazios
+            $services = collect([]);
+            $partners = collect([]);
+            $whyChooseUs = collect([]);
+            $testimonials = collect([]);
+            $faqs = collect([]);
+            $plans = collect([]);
+            $features = collect([]);
+            $steps = collect([]);
+        }
+
+        return view('web.home', compact('services', 'partners', 'whyChooseUs', 'testimonials', 'faqs', 'plans', 'features', 'steps'));
+    }
+
+    public function contactUs(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'subject' => 'required',
+            'message' => 'required',
+        ]);
+
+        try {
+            ContactUs::create($validated);
+            return $this->sendSuccess('Your inquiry has been submitted successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Unable to submit inquiry. Please try again later.', 500);
+        }
+    }
+
+    public function faqs()
+    {
+        try {
+            $faqs = Faq::all();
+        } catch (\Exception $e) {
+            $faqs = collect([]);
+        }
+        return view('web.faq', compact('faqs'));
+    }
+
+    public function termsAndConditions()
+    {
+        try {
+            $faqs = Faq::all();
+        } catch (\Exception $e) {
+            $faqs = collect([]);
+        }
+        return view('web.terms-conditions', compact('faqs'));
+    }
+
+    public function privacyPolicy()
+    {
+        try {
+            $faqs = Faq::all();
+        } catch (\Exception $e) {
+            $faqs = collect([]);
+        }
+        return view('web.privacy-policy', compact('faqs'));
+    }
+
+    public function returnPolicy()
+    {
+        try {
+            $faqs = Faq::all();
+        } catch (\Exception $e) {
+            $faqs = collect([]);
+        }
+        return view('web.return-policy', compact('faqs'));
+    }
+
+    public function changeLanguage(Request $request)
+    {
+        Session::put('locale', $request->input('languageCode'));
+
+        return $this->sendSuccess('Language changed successfully.');
+    }
+}
