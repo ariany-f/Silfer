@@ -6,6 +6,8 @@ const useResponsiveLimit = () => {
       return { limit: 3, lessThanLimit: 2 };
     } else if (width < 768) {
       return { limit: 5, lessThanLimit: 4 };
+    } else if (width < 1200) {
+      return { limit: 4, lessThanLimit: 3 };
     } else if (width < 1400) {
       return { limit: 4, lessThanLimit: 3 };
     } else if (width < 1600) {
