@@ -3,15 +3,13 @@ import { useState, useEffect } from "react";
 const useResponsiveLimit = () => {
   const getLimits = (width) => {
     if (width < 576) {
-      return { limit: 3, lessThanLimit: 2 };
+      return { limit: 2, lessThanLimit: 1 };
     } else if (width < 768) {
-      return { limit: 5, lessThanLimit: 4 };
-    } else if (width < 1200) {
-      return { limit: 4, lessThanLimit: 3 };
+      return { limit: 3, lessThanLimit: 2 };
     } else if (width < 1400) {
-      return { limit: 4, lessThanLimit: 3 };
+      return { limit: 2, lessThanLimit: 1 };
     } else if (width < 1600) {
-      return { limit: 5, lessThanLimit: 4 };
+      return { limit: 3, lessThanLimit: 2 };
     } else {
       return {
         limit: window.location.pathname.includes("/app/admin/front-cms")
