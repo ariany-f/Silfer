@@ -156,7 +156,15 @@ class ProductAPIController extends AppBaseController
                 ]);
                 
                 DB::rollBack();
-                return $this->sendError(__('messages.error.product_cant_deleted'));
+                
+                // Mensagem específica baseada no motivo do bloqueio
+                if ($purchaseResult && $saleResult) {
+                    return $this->sendError(__('messages.error.product_cant_deleted_has_purchases_and_sales'));
+                } elseif ($purchaseResult) {
+                    return $this->sendError(__('messages.error.product_cant_deleted_has_purchases'));
+                } else {
+                    return $this->sendError(__('messages.error.product_cant_deleted_has_sales'));
+                }
             }
 
             $product = $this->productRepository->find($id);

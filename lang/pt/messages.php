@@ -94,6 +94,9 @@ return [
 
     'error' => [
         'product_cant_deleted' => 'O produto não pode ser excluído',
+        'product_cant_deleted_has_purchases' => 'O produto não pode ser excluído porque possui compras associadas.',
+        'product_cant_deleted_has_sales' => 'O produto não pode ser excluído porque possui vendas associadas.',
+        'product_cant_deleted_has_purchases_and_sales' => 'O produto não pode ser excluído porque possui compras e vendas associadas.',
         'code_taken' => 'O código já foi utilizado.',
         'default_warehouse_cant_delete' => 'O armazém padrão não pode ser excluído.',
         'warehouse_cant_delete' => 'O armazém não pode ser excluído.',
