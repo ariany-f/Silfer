@@ -1583,7 +1583,7 @@ const ProductForm = (props) => {
                                         </label>
                                         <span className="required" />
                                         <input
-                                            type="number"
+                                            type="tel"
                                             name="add_stock"
                                             className="form-control"
                                             placeholder={placeholderText(
@@ -1866,7 +1866,7 @@ const ProductForm = (props) => {
                                             </label>
                                             <span className="required" />
                                             <input
-                                                type="number"
+                                                type="tel"
                                                 name="add_stock"
                                                 className="form-control"
                                                 placeholder={placeholderText(
