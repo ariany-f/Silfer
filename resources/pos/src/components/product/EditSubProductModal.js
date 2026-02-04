@@ -633,34 +633,36 @@ const EditSubProductModal = (props) => {
                                                 {newStockItems.map((item) => (
                                                     <tr key={item.id}>
                                                         <td>
-                                                            <div style={{ minWidth: '150px' }}>
-                                                                <ReactSelect
-                                                                    data={warehouses}
-                                                                    onChange={(obj) =>
-                                                                        updateNewStockItem(item.id, "warehouse_id", obj)
-                                                                    }
-                                                                    value={item.warehouse_id}
-                                                                    errors={errors[`new_stock_${item.id}_warehouse`]}
-                                                                    placeholder={placeholderText(
-                                                                        "product.input.warehouse.placeholder.label"
-                                                                    )}
-                                                                />
-                                                            </div>
+                                                            <ReactSelect
+                                                                data={warehouses}
+                                                                onChange={(obj) =>
+                                                                    updateNewStockItem(item.id, "warehouse_id", obj)
+                                                                }
+                                                                defaultValue={item.warehouse_id}
+                                                                title={getFormattedMessage(
+                                                                    "warehouse.title"
+                                                                )}
+                                                                errors={errors[`new_stock_${item.id}_warehouse`]}
+                                                                placeholder={placeholderText(
+                                                                    "product.input.warehouse.placeholder.label"
+                                                                )}
+                                                            />
                                                         </td>
                                                         <td>
-                                                            <div style={{ minWidth: '150px' }}>
-                                                                <ReactSelect
-                                                                    data={suppliers}
-                                                                    onChange={(obj) =>
-                                                                        updateNewStockItem(item.id, "supplier_id", obj)
-                                                                    }
-                                                                    value={item.supplier_id}
-                                                                    errors={errors[`new_stock_${item.id}_supplier`]}
-                                                                    placeholder={placeholderText(
-                                                                        "purchase.select.supplier.placeholder.label"
-                                                                    )}
-                                                                />
-                                                            </div>
+                                                            <ReactSelect
+                                                                data={suppliers}
+                                                                onChange={(obj) =>
+                                                                    updateNewStockItem(item.id, "supplier_id", obj)
+                                                                }
+                                                                defaultValue={item.supplier_id}
+                                                                title={getFormattedMessage(
+                                                                    "supplier.title"
+                                                                )}
+                                                                errors={errors[`new_stock_${item.id}_supplier`]}
+                                                                placeholder={placeholderText(
+                                                                    "purchase.select.supplier.placeholder.label"
+                                                                )}
+                                                            />
                                                         </td>
                                                         <td>
                                                             <input
@@ -683,34 +685,34 @@ const EditSubProductModal = (props) => {
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <div style={{ minWidth: '120px' }}>
-                                                                <ReactDatePicker
-                                                                    onChangeDate={(date) =>
-                                                                        updateNewStockItem(item.id, "purchase_date", date)
-                                                                    }
-                                                                    newStartDate={item.purchase_date}
-                                                                    readOnlyref={false}
-                                                                    disablePast={false}
-                                                                    disableFuture={false}
-                                                                    placeholder={placeholderText("react-data-table.date.column.label")}
-                                                                />
-                                                            </div>
+                                                            <ReactDatePicker
+                                                                onChangeDate={(date) =>
+                                                                    updateNewStockItem(item.id, "purchase_date", date)
+                                                                }
+                                                                newStartDate={item.purchase_date}
+                                                                readOnlyref={false}
+                                                                disablePast={false}
+                                                                disableFuture={false}
+                                                                placeholder={placeholderText("react-data-table.date.column.label")}
+                                                            />
                                                         </td>
                                                         <td>
-                                                            <div style={{ minWidth: '120px' }}>
-                                                                <ReactSelect
-                                                                    multiLanguageOption={statusFilterOptions}
-                                                                    onChange={(obj) =>
-                                                                        updateNewStockItem(item.id, "status_id", obj)
-                                                                    }
-                                                                    value={item.status_id}
-                                                                    errors={errors[`new_stock_${item.id}_status`]}
-                                                                    defaultValue={statusDefaultValue[0]}
-                                                                    placeholder={getFormattedMessage(
-                                                                        "globally.detail.status"
-                                                                    )}
-                                                                />
-                                                            </div>
+                                                            <ReactSelect
+                                                                multiLanguageOption={statusFilterOptions}
+                                                                onChange={(obj) =>
+                                                                    updateNewStockItem(item.id, "status_id", obj)
+                                                                }
+                                                                name="status"
+                                                                title={getFormattedMessage(
+                                                                    "globally.detail.status"
+                                                                )}
+                                                                value={item.status_id}
+                                                                errors={errors[`new_stock_${item.id}_status`]}
+                                                                defaultValue={statusDefaultValue[0]}
+                                                                placeholder={getFormattedMessage(
+                                                                    "globally.detail.status"
+                                                                )}
+                                                            />
                                                         </td>
                                                         <td className="text-center">
                                                             <Button

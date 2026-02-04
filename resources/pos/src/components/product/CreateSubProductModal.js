@@ -441,6 +441,7 @@ const CreateSubProductModal = (props) => {
                                         formInput.add_stock
                                     }
                                     min={1}
+                                    max={15}
                                 />
                                 <span className="text-danger d-block fw-400 fs-small mt-2">
                                     {errors["add_stock"]

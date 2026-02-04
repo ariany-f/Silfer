@@ -48,6 +48,35 @@ Route::middleware(['set_language'])->group(function () {
 });
 Route::post('change-language', [HomeController::class, 'changeLanguage'])->name('change-language');
 
+// Rota para servir arquivos Excel e outros arquivos de upload
+Route::get('/uploads/{path}', function ($path) {
+    $filePath = public_path('uploads/' . $path);
+    
+    if (!file_exists($filePath)) {
+        abort(404);
+    }
+    
+    $mimeType = mime_content_type($filePath);
+    if (!$mimeType) {
+        // Fallback para tipos comuns
+        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+        $mimeTypes = [
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'xls' => 'application/vnd.ms-excel',
+            'pdf' => 'application/pdf',
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+        ];
+        $mimeType = $mimeTypes[strtolower($extension)] ?? 'application/octet-stream';
+    }
+    
+    return response()->file($filePath, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"',
+    ]);
+})->where('path', '.*')->name('uploads.serve');
+
 Route::any('/stripe/payment-success', [StripePaymentController::class, 'paymentSuccess'])->name('stripe-success');
 Route::any('/stripe/failed/', [StripePaymentController::class, 'paymentFailed'])->name('stripe-failed');
 
