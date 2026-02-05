@@ -20,6 +20,7 @@ use App\Models\BaseUnit;
 use App\Traits\Multitenantable;
 use App\Models\Brand;
 use App\Models\Customer;
+use App\Models\CustomerPayment;
 use App\Models\Expense;
 use App\Models\ManageStock;
 use App\Models\POSRegister;
@@ -619,7 +620,7 @@ class ReportAPIController extends AppBaseController
     public function getCustomerReport(Request $request)
     {
         $perPage = getPageSize($request);
-        $customers = $this->customerRepository->withCount('sales')->with('sales.payments')->paginate($perPage);
+        $customers = $this->customerRepository->withCount('sales')->with(['sales.payments', 'customerPayments'])->paginate($perPage);
 
         foreach ($customers as $key => $customer) {
             $totalPaidAmount = 0;
@@ -631,6 +632,22 @@ class ReportAPIController extends AppBaseController
             $totalDueAmount = $grandTotalAmount - $totalPaidAmount;
             $customers[$key]['total_paid_amount'] = $totalPaidAmount;
             $customers[$key]['total_due_amount'] = $totalDueAmount;
+            
+            // Calcular total de pagamentos avulsos
+            $totalPaymentsAmount = $customer->customerPayments->sum('amount');
+            $customers[$key]['total_payments_amount'] = $totalPaymentsAmount;
+            
+            // Calcular total de pagamentos avulsos concluídos
+            $totalPaymentsConcludedAmount = $customer->customerPayments
+                ->where('status', CustomerPayment::STATUS_COMPLETED)
+                ->sum('amount');
+            $customers[$key]['total_payments_concluded_amount'] = $totalPaymentsConcludedAmount;
+            
+            // Subtrair apenas pagamentos avulsos concluídos do valor devido
+            // Se houver pagamentos concluídos, reduz o valor devido (pode ficar negativo)
+            $totalDueAmountAfterPayments = $totalDueAmount - $totalPaymentsConcludedAmount;
+            // Garantir que o valor seja negativo se os pagamentos concluídos forem maiores que o devido
+            $customers[$key]['total_due_amount_after_payments'] = $totalDueAmountAfterPayments;
         }
 
         return $this->sendResponse($customers, 'Customers all report retrieved successfully');

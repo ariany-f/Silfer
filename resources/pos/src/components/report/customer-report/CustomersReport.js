@@ -43,6 +43,9 @@ const SuppliersReport = (props) => {
             total_amount: report.total_grand_amount,
             total_paid_amount: report.total_paid_amount,
             total_due_amount: report.total_due_amount,
+            total_payments_amount: report.total_payments_amount || 0,
+            total_payments_concluded_amount: report.total_payments_concluded_amount || 0,
+            total_due_amount_after_payments: report.total_due_amount_after_payments || 0,
             id: report.id,
             currency: currencySymbol,
         }));
@@ -125,6 +128,39 @@ const SuppliersReport = (props) => {
                     row.total_due_amount
                 ),
             sortField: "total_due_amount",
+            sortable: false,
+        },
+        {
+            name: getFormattedMessage("customer.report.standalone.payments.label"),
+            selector: (row) =>
+                currencySymbolHandling(
+                    allConfigData,
+                    row.currency,
+                    row.total_payments_amount
+                ),
+            sortField: "total_payments_amount",
+            sortable: false,
+        },
+        {
+            name: getFormattedMessage("customer.report.concluded.payments.label"),
+            selector: (row) =>
+                currencySymbolHandling(
+                    allConfigData,
+                    row.currency,
+                    row.total_payments_concluded_amount
+                ),
+            sortField: "total_payments_concluded_amount",
+            sortable: false,
+        },
+        {
+            name: getFormattedMessage("customer.report.final.due.label"),
+            selector: (row) =>
+                currencySymbolHandling(
+                    allConfigData,
+                    row.currency,
+                    row.total_due_amount_after_payments
+                ),
+            sortField: "total_due_amount_after_payments",
             sortable: false,
         },
         {

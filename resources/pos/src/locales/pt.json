@@ -1006,5 +1006,8 @@
     "globally.input.notes.placeholder.label": "Digite as Notas",
     "globally.input.date.validate.label": "Por favor, digite a data",
     "globally.back": "Voltar",
-    "globally.pdf.download": "Baixar PDF"
+    "globally.pdf.download": "Baixar PDF",
+    "customer.report.standalone.payments.label": "Pagamentos Avulsos",
+    "customer.report.concluded.payments.label": "Pagamentos Avulsos Concluídos",
+    "customer.report.final.due.label": "A Pagar Final"
 }
