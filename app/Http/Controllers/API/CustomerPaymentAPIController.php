@@ -109,6 +109,8 @@ class CustomerPaymentAPIController extends AppBaseController
     public function pdfDownload(CustomerPayment $customerPayment): JsonResponse
     {
         ini_set('memory_limit', '-1');
+        // Refresh do modelo para garantir dados atualizados do banco
+        $customerPayment->refresh();
         $customerPayment = $customerPayment->load('customer');
 
         $data = [];
@@ -126,7 +128,9 @@ class CustomerPaymentAPIController extends AppBaseController
         $pdfContent = generatePDF($pdfViewPath, compact('customerPayment', 'companyLogo'));
         
         Storage::disk(config('app.media_disc'))->put('pdf/customer-payment-' . $customerPayment->id . '.pdf', $pdfContent);
-        $data['customer_payment_pdf_url'] = Storage::url('pdf/customer-payment-' . $customerPayment->id . '.pdf');
+        $pdfUrl = Storage::url('pdf/customer-payment-' . $customerPayment->id . '.pdf');
+        // Adiciona timestamp para evitar cache do navegador
+        $data['customer_payment_pdf_url'] = $pdfUrl . '?t=' . time();
 
         return $this->sendResponse($data, 'pdf retrieved Successfully');
     }
