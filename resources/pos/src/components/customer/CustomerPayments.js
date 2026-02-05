@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
+import { useIntl } from "react-intl";
 import MasterLayout from "../MasterLayout";
 import TabTitle from "../../shared/tab-title/TabTitle";
 import HeaderTitle from "../header/HeaderTitle";
@@ -17,6 +18,7 @@ import {
     deleteCustomerPayment,
     customerPaymentPdfAction,
 } from "../../store/action/customerPaymentAction";
+import { fetchCustomer } from "../../store/action/customerAction";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ActionButton from "../../shared/action-buttons/ActionButton";
@@ -32,9 +34,12 @@ const CustomerPayments = (props) => {
         deleteCustomerPayment,
         customerPaymentPdfAction,
         allConfigData,
+        customers,
+        fetchCustomer,
     } = props;
     const { customerId } = useParams();
     const navigate = useNavigate();
+    const intl = useIntl();
     const currencySymbol =
         frontSetting &&
         frontSetting.value &&
@@ -43,8 +48,16 @@ const CustomerPayments = (props) => {
     useEffect(() => {
         if (customerId) {
             fetchCustomerPaymentsByCustomer(customerId, {}, true);
+            fetchCustomer(customerId, false);
         }
-    }, [customerId, fetchCustomerPaymentsByCustomer]);
+    }, [customerId, fetchCustomerPaymentsByCustomer, fetchCustomer]);
+
+    // Extrair nome do cliente
+    let customerName = '';
+    if (customers && customers.length > 0) {
+        const customer = customers[0];
+        customerName = customer.attributes?.name || customer.name || '';
+    }
 
     const itemsValue =
         customerPayments && customerPayments.length > 0
@@ -167,7 +180,7 @@ const CustomerPayments = (props) => {
             <TopProgressBar />
             <TabTitle title={placeholderText("customer.payments.title")} />
             <HeaderTitle 
-                title={getFormattedMessage("customer.payments.title")} 
+                title={`${intl.formatMessage({ id: "customer.payments.title" })}${customerName ? ` - ${customerName}` : ''}`} 
                 to="/app/user/customers"
             />
             <div className="pt-md-7">
@@ -198,6 +211,7 @@ const mapStateToProps = (state) => {
         frontSetting,
         customerPayments,
         allConfigData,
+        customers,
     } = state;
     return {
         isLoading,
@@ -205,6 +219,7 @@ const mapStateToProps = (state) => {
         frontSetting,
         customerPayments,
         allConfigData,
+        customers,
     };
 };
 
@@ -212,4 +227,5 @@ export default connect(mapStateToProps, {
     fetchCustomerPaymentsByCustomer,
     deleteCustomerPayment,
     customerPaymentPdfAction,
+    fetchCustomer,
 })(CustomerPayments);
