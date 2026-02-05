@@ -205,6 +205,8 @@ class SaleAPIController extends AppBaseController
     public function pdfDownload(Sale $sale): JsonResponse
     {
         ini_set('memory_limit', '-1');
+        // Refresh do modelo para garantir dados atualizados do banco
+        $sale->refresh();
         $sale = $sale->load('customer', 'saleItems.product', 'payments');
         $data = [];
         if (Storage::exists('pdf/Sale-' . $sale->reference_code . '.pdf')) {
@@ -222,7 +224,9 @@ class SaleAPIController extends AppBaseController
         $pdfContent = generatePDF($pdfViewPath, compact('sale', 'companyLogo', 'taxes'));
         
         Storage::disk(config('app.media_disc'))->put('pdf/Sale-' . $sale->reference_code . '.pdf', $pdfContent);
-        $data['sale_pdf_url'] = Storage::url('pdf/Sale-' . $sale->reference_code . '.pdf');
+        $pdfUrl = Storage::url('pdf/Sale-' . $sale->reference_code . '.pdf');
+        // Adiciona timestamp para evitar cache do navegador
+        $data['sale_pdf_url'] = $pdfUrl . '?t=' . time();
 
         return $this->sendResponse($data, 'pdf retrieved Successfully');
     }

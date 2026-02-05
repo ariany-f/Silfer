@@ -141,6 +141,8 @@ class QuotationAPIController extends AppBaseController
     public function pdfDownload(Quotation $quotation): JsonResponse
     {
         ini_set('memory_limit', '-1');
+        // Refresh do modelo para garantir dados atualizados do banco
+        $quotation->refresh();
         $quotation = $quotation->load('customer', 'quotationItems.product');
         $data = [];
         if (Storage::exists('pdf/Quotation-' . $quotation->reference_code . '.pdf')) {
@@ -159,7 +161,9 @@ class QuotationAPIController extends AppBaseController
             'pdf/Quotation-' . $quotation->reference_code . '.pdf',
             $pdfContent
         );
-        $data['quotation_pdf_url'] = Storage::url('pdf/Quotation-' . $quotation->reference_code . '.pdf');
+        $pdfUrl = Storage::url('pdf/Quotation-' . $quotation->reference_code . '.pdf');
+        // Adiciona timestamp para evitar cache do navegador
+        $data['quotation_pdf_url'] = $pdfUrl . '?t=' . time();
 
         return $this->sendResponse($data, 'Quotation pdf retrieved Successfully');
     }
