@@ -114,7 +114,7 @@ const QuotationDetails = (props) => {
                                         {quotationDetails.company_info &&
                                             quotationDetails.company_info.store_name ? quotationDetails.company_info.store_name : 'N/A'}
                                     </div>
-                                    <div className="d-flex align-items-center pb-1">
+                                    {/* <div className="d-flex align-items-center pb-1">
                                         <FontAwesomeIcon
                                             icon={faEnvelope}
                                             className="text-primary me-2 fs-5"
@@ -137,7 +137,7 @@ const QuotationDetails = (props) => {
                                         />
                                         {quotationDetails.company_info &&
                                             quotationDetails.company_info.store_address ? quotationDetails.company_info.store_address : 'N/A'}
-                                    </div>
+                                    </div> */}
                                 </div>
                             </Col>
                             <Col md={4}>

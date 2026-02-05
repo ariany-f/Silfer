@@ -73,7 +73,7 @@
                     <img src="{{ $companyLogo }}" alt="Company Logo" width="80px" style="margin: 0px;padding: 0px;">
                 </td>
                 <td align="center" style="vertical-align: top;">
-                    <h2 style="color: dodgerblue; margin:0; padding:0; line-height:1.2;">
+                    <h2 style="color: darkred; margin:0; padding:0; line-height:1.2;">
                         {{ $quotation->reference_code }}
                     </h2>
                 </td>
@@ -84,7 +84,7 @@
                                 {{ __('messages.pdf.date') }}:
                             </td>
                             <td class="fw-light vi-light-text" style="padding: 0px;">
-                                {{ \Carbon\Carbon::parse($quotation->created_at)->format('Y-m-d') }}
+                                {{ \Carbon\Carbon::parse($quotation->created_at)->format('d/m/Y') }}
                             </td>
                         </tr>
                         <tr>
@@ -95,14 +95,14 @@
                                 {{ $quotation->reference_code }}
                             </td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td class="fw-bold vi-bold-text" style="font-weight: bold; padding:0px;">
                                 {{ __('messages.pdf.status') }}:
                             </td>
                             <td class="fw-light vi-light-text" style="padding: 0px;">
                                 {{ $quotation->status == \App\Models\Quotation::SENT ? __('messages.pdf.sent') : __('messages.pdf.pending') }}
                             </td>
-                        </tr>
+                        </tr> -->
                     </table>
                 </td>
             </tr>
@@ -160,10 +160,6 @@
                                             </p>
                                         @endforeach
                                     @endif
-                                    <b>{{ __('messages.pdf.address') }}:</b>
-                                    {{ getSettingValue('store_address') ?? "N/A" }}<br>
-                                    <b>{{ __('messages.pdf.phone') }}:</b> {{ getSettingValue('store_phone') ?? "N/A" }}<br>
-                                    <b>{{ __('messages.pdf.email') }}:</b> {{ getSettingValue('store_email') ?? "N/A" }}
                                 </td>
                             </tr>
                         </tbody>
