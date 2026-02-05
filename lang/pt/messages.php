@@ -48,6 +48,7 @@ return [
         'due_date' => 'Data de Vencimento',
         'completed' => 'Concluído',
         'pending' => 'Pendente',
+        'no_payments_available' => 'Nenhum pagamento disponível',
         'customer_pdf' => 'PDF do Cliente',
         'customer_sales_pdf' => 'PDF de Vendas do Cliente',
         'sale_list' => 'Lista de Vendas',

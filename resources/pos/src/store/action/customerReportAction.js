@@ -174,3 +174,19 @@ export const customerSalePaymentReportPDF = (id) => async (dispatch) => {
             );
         });
 };
+
+export const customerStandalonePaymentsReportPDF = (id) => async (dispatch) => {
+    apiConfig
+        .get(apiBaseURL.CUSTOMER_STANDALONE_PAYMENTS_PDF + "/" + id)
+        .then((response) => {
+            window.open(
+                response.data.data.customers_standalone_payments_pdf_url,
+                "_blank"
+            );
+        })
+        .catch(({ response }) => {
+            dispatch(
+                addToast({ text: response?.data?.message, type: toastType.ERROR })
+            );
+        });
+};

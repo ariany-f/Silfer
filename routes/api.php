@@ -392,6 +392,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'customer-payments-pdf-download/{customer}',
             [CustomerAPIController::class, 'customerPaymentsPdfDownload']
         );
+        Route::get(
+            'customer-standalone-payments-pdf-download/{customer}',
+            [CustomerAPIController::class, 'customerStandalonePaymentsPdfDownload']
+        );
 
         //Warehouse Products alert Quantity Report
         Route::get('product-stock-alerts/{warehouse_id?}', [ReportAPIController::class, 'stockAlerts']);

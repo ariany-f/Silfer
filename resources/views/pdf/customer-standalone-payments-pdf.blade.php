@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>{{ __('messages.pdf.customer_pdf') }}</title>
+    <title>{{ __('messages.pdf.customer_payments_pdf') }}</title>
     <style>
         body {
             font-family: 'Arial-unicode-ms';
@@ -32,7 +32,7 @@
             border-top: 1px solid #ccc;
             border-left: none;
             border-right: none;
-            padding: 8px;
+            padding: 10px 8px;
             vertical-align: middle;
         }
 
@@ -56,10 +56,6 @@
         .align-right {
             text-align: right;
         }
-
-        .border {
-            border: 0px solid black !important;
-        }
     </style>
 </head>
 
@@ -73,15 +69,17 @@
                     <h2 style="color: darkred; margin:0; padding:0; line-height:1.2;">
                         {{ __('messages.pdf.client') }} : {{ $customer->name }}
                     </h2>
+                    <h3 style="color: darkred; margin:10px 0 0 0; padding:0; line-height:1.2;">
+                        {{ __('messages.pdf.standalone_payments') }}
+                    </h3>
                 </td>
                 <td></td>
             </tr>
         </table>
 
-        <!-- From / To / Quote Info -->
+        <!-- Customer Info -->
         <table style="width:100%; margin-top:20px; border-collapse: collapse;">
             <tr>
-                <!-- Customer Info -->
                 <td style="width:48%; vertical-align: top;">
                     <table class="table">
                         <thead>
@@ -105,9 +103,8 @@
                     </table>
                 </td>
 
-                <td style="width:4%"></td> <!-- gap -->
+                <td style="width:4%"></td>
 
-                <!-- Company Info -->
                 <td style="width:48%; vertical-align: top;">
                     <table class="table">
                         <thead>
@@ -119,7 +116,7 @@
                             <tr>
                                 <td>
                                     <b>{{ getActiveStoreName() }}</b><br>
-                                   
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -127,92 +124,63 @@
             </tr>
         </table>
 
-
-        <!-- Products Table -->
-        <table class="table" style="width:100%; margin-top: 30px;">
+        <!-- Payments Table -->
+        <table class="table" style="width:100%; margin-top: 40px;">
             <thead>
                 <tr>
                     <th style="text-align: left">{{ __('messages.pdf.date') }}</th>
                     <th class="text-center">{{ __('messages.pdf.reference') }}</th>
-                    <th class="text-center">{{ __('messages.pdf.paid_amount') }}</th>
-                    <th class="text-center">{{ __('messages.pdf.due_amount') }}</th>
-                    <th class="number-align">{{ __('messages.pdf.payment_status') }}</th>
+                    <th class="text-center">{{ __('messages.pdf.amount') }}</th>
+                    <th class="text-center">{{ __('messages.pdf.status') }}</th>
+                    <th class="text-center">{{ __('messages.pdf.due_date') }}</th>
                 </tr>
             </thead>
             <tbody>
-                @if (count($customer->sales) > 0)
-                    @foreach ($customer->sales as $sale)
+                @if (count($customer->customerPayments) > 0)
+                    @foreach ($customer->customerPayments as $payment)
                         <tr>
-                            <td class="text-center">{{ $sale->date->format('d/m/Y') }}</td>
-                            <td class="text-center">{{ $sale->reference_code }}</td>
+                            <td class="text-center">{{ $payment->payment_date ? $payment->payment_date->format('d/m/Y') : 'N/A' }}</td>
+                            <td class="text-center">{{ $payment->reference_code }}</td>
                             <td class="icon-style text-center">
-                                {{ currencyAlignment(number_format((float) $sale->payments->sum('amount'), 2)) }}</td>
-                            <td class="icon-style text-center">
-                                {{ currencyAlignment(number_format((float) $sale->grand_total - $sale->payments->sum('amount'), 2)) }}
+                                {{ currencyAlignment(number_format((float) $payment->amount, 2)) }}
                             </td>
                             <td class="text-center">
-                                @if ($sale->payment_status == \App\Models\Sale::PAID)
-                                    {{ __('messages.pdf.paid') }}
-                                @elseif($sale->payment_status == \App\Models\Sale::UNPAID)
-                                    {{ __('messages.pdf.unpaid') }}
-                                @elseif($sale->payment_status == \App\Models\Sale::PARTIAL_PAID)
-                                    {{ __('messages.pdf.partial') }}
+                                @if ($payment->status == \App\Models\CustomerPayment::STATUS_COMPLETED)
+                                    {{ __('messages.pdf.completed') }}
+                                @else
+                                    {{ __('messages.pdf.pending') }}
                                 @endif
                             </td>
+                            <td class="text-center">{{ $payment->due_date ? $payment->due_date->format('d/m/Y') : 'N/A' }}</td>
                         </tr>
                     @endforeach
+                @else
+                    <tr>
+                        <td colspan="5" class="text-center">{{ __('messages.pdf.no_payments_available') }}</td>
+                    </tr>
                 @endif
             </tbody>
         </table>
 
         <!-- Summary -->
-        <table class="table" style="width: 50%;float:right; margin-top: 80px;">
-            <tbody>
-                <tr class="border">
-                    <td class="border" style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_sales') }}:</strong></td>
-                    <td class="number-align icon-style border" style="padding: 10px 8px;">
-                        {{ $salesData['totalSale'] ?? 0 }}</td>
-                </tr>
-                <tr class="border">
-                    <td class="border" style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_amount') }}:</strong></td>
-                    <td class="number-align icon-style border" style="padding: 10px 8px;">
-                        {{ currencyAlignment(number_format((float) $salesData['totalAmount'], 2)) }}</td>
-                </tr>
-                <tr class="border">
-                    <td class="border" style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_paid') }}:</strong></td>
-                    <td class="number-align icon-style border" style="padding: 10px 8px;">
-                        {{ currencyAlignment(number_format((float) $salesData['totalPaid'], 2)) }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_sale_due') }}:</strong></td>
-                    <td class="number-align icon-style" style="padding: 10px 8px;">
-                        {{ currencyAlignment(number_format((float) $salesData['totalSalesDue'], 2)) }}
-                    </td>
-                </tr>
-                @if (isset($salesData['totalPaymentsAmount']) && $salesData['totalPaymentsAmount'] > 0)
+        @if (count($customer->customerPayments) > 0)
+            <table class="table" style="width: 40%;float:right; margin-top: 20px;">
+                <tbody>
                     <tr class="border">
                         <td class="border" style="padding: 10px 8px;"><strong>{{ __('messages.pdf.standalone_payments') }}:</strong></td>
                         <td class="number-align icon-style border" style="padding: 10px 8px;">
-                            {{ currencyAlignment(number_format((float) ($salesData['totalPaymentsAmount'] ?? 0), 2)) }}
+                            {{ currencyAlignment(number_format((float) $customer->customerPayments->sum('amount'), 2)) }}
                         </td>
                     </tr>
                     <tr class="border">
                         <td class="border" style="padding: 10px 8px;"><strong>{{ __('messages.pdf.concluded_payments') }}:</strong></td>
                         <td class="number-align icon-style border" style="padding: 10px 8px;">
-                            {{ currencyAlignment(number_format((float) ($salesData['totalPaymentsConcludedAmount'] ?? 0), 2)) }}
+                            {{ currencyAlignment(number_format((float) $customer->customerPayments->where('status', \App\Models\CustomerPayment::STATUS_COMPLETED)->sum('amount'), 2)) }}
                         </td>
                     </tr>
-                @endif
-                @if (isset($salesData['totalDueAmountAfterPayments']))
-                    <tr>
-                        <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.final_due') }}:</strong></td>
-                        <td class="number-align icon-style" style="padding: 10px 8px;">
-                            {{ currencyAlignment(number_format((float) $salesData['totalDueAmountAfterPayments'], 2)) }}
-                        </td>
-                    </tr>
-                @endif
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        @endif
 
         <div style="clear: both;"></div>
     </div>

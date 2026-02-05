@@ -48,6 +48,7 @@ return [
         'due_date' => 'Due Date',
         'completed' => 'Completed',
         'pending' => 'Pending',
+        'no_payments_available' => 'No payments available',
         'customer_pdf' => 'Customer Pdf',
         'customer_sales_pdf' => 'Customer Sales Pdf',
         'sale_list' => 'Sale List',

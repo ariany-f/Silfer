@@ -9,6 +9,7 @@ use App\Http\Resources\CustomerCollection;
 use App\Http\Resources\CustomerResource;
 use App\Imports\CustomerImport;
 use App\Models\Customer;
+use App\Models\CustomerPayment;
 use App\Models\Sale;
 use App\Models\SalesPayment;
 use App\Repositories\CustomerRepository;
@@ -135,6 +136,8 @@ class CustomerAPIController extends AppBaseController
     public function pdfDownload(Customer $customer): JsonResponse
     {
         ini_set('memory_limit', '-1');
+        // Refresh do customer para garantir dados atualizados
+        $customer->refresh();
         $customer = $customer->load('sales.payments', 'customerPayments');
 
         $salesData = [];
@@ -146,10 +149,16 @@ class CustomerAPIController extends AppBaseController
         $salesData['totalPaid'] = 0;
 
         foreach ($customer->sales as $sale) {
+            // Refresh de cada sale para garantir dados atualizados
+            $sale->refresh();
+            $sale->load('payments');
             $salesData['totalPaid'] = $salesData['totalPaid'] + $sale->payments->sum('amount');
         }
 
         $salesData['totalSalesDue'] = $salesData['totalAmount'] - $salesData['totalPaid'];
+        
+        // Refresh dos pagamentos avulsos
+        $customer->load('customerPayments');
         
         // Calcular dados de pagamentos avulsos
         $salesData['totalPaymentsAmount'] = $customer->customerPayments->sum('amount');
@@ -287,6 +296,31 @@ class CustomerAPIController extends AppBaseController
         
         Storage::disk(config('app.media_disc'))->put('pdf/customer-payments-' . $id . '.pdf', $pdfContent);
         $data['customers_payments_pdf_url'] = Storage::url('pdf/customer-payments-' . $id . '.pdf');
+
+        return $this->sendResponse($data, 'pdf retrieved Successfully');
+    }
+
+    public function customerStandalonePaymentsPdfDownload(Customer $customer): JsonResponse
+    {
+        ini_set('memory_limit', '-1');
+        $customer = $customer->load('customerPayments');
+
+        $data = [];
+
+        if (Storage::exists('pdf/customer-standalone-payments-' . $customer->id . '.pdf')) {
+            Storage::delete('pdf/customer-standalone-payments-' . $customer->id . '.pdf');
+        }
+
+        $companyLogo = getStoreLogo();
+        $companyLogo = (string) Image::make($companyLogo)->encode('data-url');
+
+        $pdfViewPath = getLoginUserLanguage() == 'ar' ? 'pdf.ar.customer-standalone-payments-pdf' : 'pdf.customer-standalone-payments-pdf';
+        
+        // Use helper function for PDF generation with Arabic support
+        $pdfContent = generatePDF($pdfViewPath, compact('customer', 'companyLogo'));
+        
+        Storage::disk(config('app.media_disc'))->put('pdf/customer-standalone-payments-' . $customer->id . '.pdf', $pdfContent);
+        $data['customers_standalone_payments_pdf_url'] = Storage::url('pdf/customer-standalone-payments-' . $customer->id . '.pdf') . '?t=' . time();
 
         return $this->sendResponse($data, 'pdf retrieved Successfully');
     }

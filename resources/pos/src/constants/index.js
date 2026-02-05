@@ -93,6 +93,7 @@ export const apiBaseURL = {
     CUSTOMER_SALES_RETURNS_REPORT_PDF: "customer-returns-pdf-download",
     CUSTOMER_PAYMENT_REPORT: "customer-payments-report",
     CUSTOMER_PAYMENT_REPORT_PDF: "customer-payments-pdf-download",
+    CUSTOMER_STANDALONE_PAYMENTS_PDF: "customer-standalone-payments-pdf-download",
     CUSTOMER_PAYMENTS: "/customer-payments",
     CUSTOMER_PAYMENT_PDF: "customer-payment-pdf-download",
     MAIL_SETTINGS: "mail-settings",

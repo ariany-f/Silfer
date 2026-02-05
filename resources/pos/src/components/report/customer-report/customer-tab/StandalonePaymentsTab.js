@@ -9,6 +9,7 @@ import {
 } from "../../../../shared/sharedMethod";
 import { fetchCustomerPaymentsByCustomer } from "../../../../store/action/customerPaymentAction";
 import { customerPaymentPdfAction } from "../../../../store/action/customerPaymentAction";
+import { customerStandalonePaymentsReportPDF } from "../../../../store/action/customerReportAction";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -22,6 +23,7 @@ const StandalonePaymentsTab = (props) => {
         allConfigData,
         customerId,
         customerPaymentPdfAction,
+        customerStandalonePaymentsReportPDF,
     } = props;
 
     const currencySymbol =
@@ -45,6 +47,11 @@ const StandalonePaymentsTab = (props) => {
         if (item && item.id) {
             customerPaymentPdfAction(item.id);
         }
+    };
+
+    // onClick report pdf function
+    const onReportPdfClick = (id) => {
+        customerStandalonePaymentsReportPDF(id);
     };
 
     const itemsValue =
@@ -160,6 +167,7 @@ const StandalonePaymentsTab = (props) => {
             isLoading={isLoading}
             isReportPdf={customerPayments && customerPayments.length > 0 ? true : false}
             customerId={customerId}
+            onReportPdfClick={() => onReportPdfClick(customerId)}
         />
     );
 };
@@ -184,4 +192,5 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
     fetchCustomerPaymentsByCustomer,
     customerPaymentPdfAction,
+    customerStandalonePaymentsReportPDF,
 })(StandalonePaymentsTab);
