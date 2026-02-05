@@ -55,6 +55,7 @@
     "supplier.success.delete.message": "Fornecedor exclu\u00eddo com sucesso",
     "globally.input.name.label": "Nome",
     "globally.react-table.column.created-date.label": "Criado Em",
+    "globally.react-table.column.created-at.label": "Data de Criação",
     "globally.input.name.placeholder.label": "Digite o Nome",
     "globally.input.email.label": "E-mail",
     "globally.input.email.placeholder.label": "Digite o E-mail",
