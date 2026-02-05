@@ -118,6 +118,19 @@ const SuppliersReport = (props) => {
                 ),
             sortField: "total_paid_amount",
             sortable: false,
+            cell: (row) => {
+                const amount = parseFloat(row.total_paid_amount) || 0;
+                const colorClass = amount > 0 ? "text-success" : "";
+                return (
+                    <span className={colorClass}>
+                        {currencySymbolHandling(
+                            allConfigData,
+                            row.currency,
+                            row.total_paid_amount
+                        )}
+                    </span>
+                );
+            },
         },
         {
             name: getFormattedMessage("globally.detail.due"),
@@ -151,6 +164,19 @@ const SuppliersReport = (props) => {
                 ),
             sortField: "total_payments_concluded_amount",
             sortable: false,
+            cell: (row) => {
+                const amount = parseFloat(row.total_payments_concluded_amount) || 0;
+                const colorClass = amount > 0 ? "text-success" : "";
+                return (
+                    <span className={colorClass}>
+                        {currencySymbolHandling(
+                            allConfigData,
+                            row.currency,
+                            row.total_payments_concluded_amount
+                        )}
+                    </span>
+                );
+            },
         },
         {
             name: getFormattedMessage("customer.report.final.due.label"),
@@ -162,6 +188,24 @@ const SuppliersReport = (props) => {
                 ),
             sortField: "total_due_amount_after_payments",
             sortable: false,
+            cell: (row) => {
+                const amount = parseFloat(row.total_due_amount_after_payments) || 0;
+                let colorClass = "";
+                if (amount > 0) {
+                    colorClass = "text-danger"; // Vermelho se positivo
+                } else if (amount < 0) {
+                    colorClass = "text-success"; // Verde se negativo (saldo positivo)
+                }
+                return (
+                    <span className={colorClass}>
+                        {currencySymbolHandling(
+                            allConfigData,
+                            row.currency,
+                            row.total_due_amount_after_payments
+                        )}
+                    </span>
+                );
+            },
         },
         {
             name: getFormattedMessage("react-data-table.action.column.label"),
@@ -200,13 +244,15 @@ const SuppliersReport = (props) => {
             <TopProgressBar />
             <TabTitle title={placeholderText("customer.report.title")} />
             <div className="pt-md-7">
-                <ReactDataTable
-                    columns={columns}
-                    items={itemsValue}
-                    onChange={onChange}
-                    isLoading={isLoading}
-                    totalRows={totalRecord}
-                />
+                <div style={{ overflowX: 'auto' }}>
+                    <ReactDataTable
+                        columns={columns}
+                        items={itemsValue}
+                        onChange={onChange}
+                        isLoading={isLoading}
+                        totalRows={totalRecord}
+                    />
+                </div>
             </div>
         </MasterLayout>
     );
