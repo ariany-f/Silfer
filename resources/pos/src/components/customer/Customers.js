@@ -18,6 +18,8 @@ import TopProgressBar from "../../shared/components/loaders/TopProgressBar";
 import ImportCustomersModel from "./ImportCustomersModel";
 import CustomerDetails from "./CustomerDetails";
 import { Permissions } from "../../constants";
+import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Customers = (props) => {
     const { fetchCustomers, customers, totalRecord, isLoading, allConfigData, callAPIAfterImport, isCallFetchDataApi } =
@@ -112,15 +114,24 @@ const Customers = (props) => {
             allowOverflow: true,
             button: true,
             cell: (row) => (
-                <ActionButton
-                    item={row}
-                    goToEditProduct={goToEditProduct}
-                    isEditMode={getPermission(allConfigData?.permissions, Permissions.EDIT_CUSTOMERS)}
-                    onClickDeleteModel={onClickDeleteModel}
-                    isViewIcon={getPermission(allConfigData?.permissions, Permissions.VIEW_CUSTOMERS)}
-                    goToDetailScreen={() => onClickDetailsModel(row)}
-                    isDeleteMode={getPermission(allConfigData?.permissions, Permissions.DELETE_CUSTOMERS)}
-                />
+                <>
+                    <button
+                        className="btn btn-sm btn-info me-2"
+                        onClick={() => navigate(`/app/user/customers/${row.id}/payments`)}
+                        title={getFormattedMessage("customer.payments.title")}
+                    >
+                        <FontAwesomeIcon icon={faDollarSign} />
+                    </button>
+                    <ActionButton
+                        item={row}
+                        goToEditProduct={goToEditProduct}
+                        isEditMode={getPermission(allConfigData?.permissions, Permissions.EDIT_CUSTOMERS)}
+                        onClickDeleteModel={onClickDeleteModel}
+                        isViewIcon={getPermission(allConfigData?.permissions, Permissions.VIEW_CUSTOMERS)}
+                        goToDetailScreen={() => onClickDetailsModel(row)}
+                        isDeleteMode={getPermission(allConfigData?.permissions, Permissions.DELETE_CUSTOMERS)}
+                    />
+                </>
             ),
         },
     ];

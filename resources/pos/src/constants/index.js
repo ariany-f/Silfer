@@ -93,6 +93,8 @@ export const apiBaseURL = {
     CUSTOMER_SALES_RETURNS_REPORT_PDF: "customer-returns-pdf-download",
     CUSTOMER_PAYMENT_REPORT: "customer-payments-report",
     CUSTOMER_PAYMENT_REPORT_PDF: "customer-payments-pdf-download",
+    CUSTOMER_PAYMENTS: "/customer-payments",
+    CUSTOMER_PAYMENT_PDF: "customer-payment-pdf-download",
     MAIL_SETTINGS: "mail-settings",
     MAIL_SETTINGS_UPDATE: "mail-settings/update",
     TODAY_SALE_OVERALL_REPORT: "today-sales-overall-report",
@@ -422,6 +424,11 @@ export const customerActionType = {
     FETCH_ALL_CUSTOMER: "FETCH_ALL_CUSTOMER",
     FETCH_CUSTOMERS_REPORT: "FETCH_CUSTOMERS_REPORT",
     FETCH_CUSTOMERS_PAYMENT_REPORT: "FETCH_CUSTOMERS_PAYMENT_REPORT",
+    FETCH_CUSTOMER_PAYMENTS: "FETCH_CUSTOMER_PAYMENTS",
+    FETCH_CUSTOMER_PAYMENT: "FETCH_CUSTOMER_PAYMENT",
+    ADD_CUSTOMER_PAYMENT: "ADD_CUSTOMER_PAYMENT",
+    EDIT_CUSTOMER_PAYMENT: "EDIT_CUSTOMER_PAYMENT",
+    DELETE_CUSTOMER_PAYMENT: "DELETE_CUSTOMER_PAYMENT",
 };
 
 export const todaySalePurchaseCountActionType = {

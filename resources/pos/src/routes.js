@@ -12,6 +12,8 @@ import EditSupplier from "./components/supplier/EditSupplier";
 import Customers from "./components/customer/Customers";
 import CreateCustomer from "./components/customer/CreateCustomer";
 import EditCustomer from "./components/customer/EditCustomer";
+import CustomerPayments from "./components/customer/CustomerPayments";
+import CustomerPaymentForm from "./components/customer/CustomerPaymentForm";
 import User from "./components/users/User";
 import CreateUser from "./components/users/CreateUser";
 import EditUser from "./components/users/EditUser";
@@ -212,6 +214,21 @@ export const route = [
     {
         path: "customers/edit/:id",
         ele: <EditCustomer />,
+        permission: Permissions.EDIT_CUSTOMERS,
+    },
+    {
+        path: "customers/:customerId/payments",
+        ele: <CustomerPayments />,
+        permission: Permissions.MANAGE_CUSTOMERS,
+    },
+    {
+        path: "customers/:customerId/payments/create",
+        ele: <CustomerPaymentForm />,
+        permission: Permissions.CREATE_CUSTOMERS,
+    },
+    {
+        path: "customers/:customerId/payments/edit/:id",
+        ele: <CustomerPaymentForm />,
         permission: Permissions.EDIT_CUSTOMERS,
     },
     {

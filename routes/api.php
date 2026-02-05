@@ -20,6 +20,7 @@ use App\Http\Controllers\API\ProductAPIController;
 use App\Http\Controllers\API\SettingAPIController;
 use App\Http\Controllers\API\BaseUnitAPIController;
 use App\Http\Controllers\API\CustomerAPIController;
+use App\Http\Controllers\API\CustomerPaymentAPIController;
 use App\Http\Controllers\API\PurchaseAPIController;
 use App\Http\Controllers\API\SupplierAPIController;
 use App\Http\Controllers\API\TransferAPIController;
@@ -176,6 +177,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::resource('customers', CustomerAPIController::class);
         });
         Route::get('customers', [CustomerAPIController::class, 'index']);
+
+        // customer payments route
+        Route::middleware('permission:manage_customers')->group(function () {
+            Route::resource('customer-payments', CustomerPaymentAPIController::class);
+            Route::get('customers/{customerId}/payments', [CustomerPaymentAPIController::class, 'getByCustomer']);
+            Route::get('customer-payments/{customerPayment}/pdf', [CustomerPaymentAPIController::class, 'pdfDownload'])->name('customer-payment-pdf-download');
+        });
+        Route::get('customer-payments', [CustomerPaymentAPIController::class, 'index']);
 
 
         //Users route

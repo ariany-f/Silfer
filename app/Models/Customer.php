@@ -126,4 +126,9 @@ class Customer extends BaseModel
     {
         return $this->hasMany(SaleReturn::class, 'customer_id', 'id');
     }
+
+    public function customerPayments(): HasMany
+    {
+        return $this->hasMany(CustomerPayment::class, 'customer_id', 'id');
+    }
 }

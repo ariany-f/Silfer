@@ -11,6 +11,7 @@ import warehouseReducer from "./warehouseReducrs";
 import unitsReducers from "./unitsReducres";
 import supplierReducer from "./supplierReducer";
 import customerReducer from "./customerReducer";
+import customerPaymentReducer, { singleCustomerPaymentReducer } from "./customerPaymentReducer";
 import userReducers from "./userReducers";
 import expenseCategoryReducer from "./expenseCategoryReducer";
 import expenseReducer from "./expenseReducer";
@@ -134,6 +135,8 @@ export default combineReducers({
     suppliers: supplierReducer,
     users: userReducers,
     customers: customerReducer,
+    customerPayments: customerPaymentReducer,
+    singleCustomerPayment: singleCustomerPaymentReducer,
     expenseCategories: expenseCategoryReducer,
     expenses: expenseReducer,
     products: productReducers,
