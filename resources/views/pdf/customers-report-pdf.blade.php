@@ -166,26 +166,26 @@
         </table>
 
         <!-- Summary -->
-        <table class="table" style="width: 50%;float:right; margin-top: 80px;">
+        <table class="table" style="width: 40%;float:right;">
             <tbody>
                 <tr class="border">
-                    <td class="border" style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_sales') }}:</strong></td>
-                    <td class="number-align icon-style border" style="padding: 10px 8px;">
+                    <td class="border"><strong>{{ __('messages.pdf.total_sales') }}:</strong></td>
+                    <td class="number-align icon-style border">
                         {{ $salesData['totalSale'] ?? 0 }}</td>
                 </tr>
                 <tr class="border">
-                    <td class="border" style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_amount') }}:</strong></td>
-                    <td class="number-align icon-style border" style="padding: 10px 8px;">
+                    <td class="border"><strong>{{ __('messages.pdf.total_amount') }}:</strong></td>
+                    <td class="number-align icon-style border">
                         {{ currencyAlignment(number_format((float) $salesData['totalAmount'], 2)) }}</td>
                 </tr>
                 <tr class="border">
-                    <td class="border" style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_paid') }}:</strong></td>
-                    <td class="number-align icon-style border" style="padding: 10px 8px;">
+                    <td class="border"><strong>{{ __('messages.pdf.total_paid') }}:</strong></td>
+                    <td class="number-align icon-style border">
                         {{ currencyAlignment(number_format((float) $salesData['totalPaid'], 2)) }}</td>
                 </tr>
                 <tr>
-                    <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_sale_due') }}:</strong></td>
-                    <td class="number-align icon-style" style="padding: 10px 8px;">
+                    <td><strong>{{ __('messages.pdf.total_sale_due') }}:</strong></td>
+                    <td class="number-align icon-style">
                         {{ currencyAlignment(number_format((float) $salesData['totalSalesDue'], 2)) }}
                     </td>
                 </tr>
