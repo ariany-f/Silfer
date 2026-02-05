@@ -66,7 +66,7 @@
             <tr>
                 <td></td>
                 <td align="center" style="vertical-align: top;">
-                    <h2 style="color: dodgerblue; margin:0; padding:0; line-height:1.2;">
+                    <h2 style="color: darkred; margin:0; padding:0; line-height:1.2;">
                         {{ __('messages.pdf.payment_list') }}
                     </h2>
                 </td>

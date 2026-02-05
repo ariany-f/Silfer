@@ -69,7 +69,7 @@
                     <img src="{{ $companyLogo }}" alt="Company Logo" width="80px">
                 </td>
                 <td align="center" style="vertical-align: top;">
-                    <h2 style="color: dodgerblue; margin:0; padding:0; line-height:1.2;">
+                    <h2 style="color: darkred; margin:0; padding:0; line-height:1.2;">
                         {{ $purchaseReturn->reference_code }}
                     </h2>
                 </td>
@@ -77,7 +77,7 @@
                     <table style="width: 100%; border-spacing: 0; border-collapse: collapse;">
                         <tr>
                             <td><b>{{ __('messages.pdf.date') }}:</b></td>
-                            <td>{{ \Carbon\Carbon::parse($purchaseReturn->created_at)->format('Y-m-d') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($purchaseReturn->created_at)->format('d/m/Y') }}</td>
                         </tr>
                         <tr>
                             <td><b>{{ __('messages.pdf.number') }}:</b></td>
@@ -144,11 +144,7 @@
                             <tr>
                                 <td>
                                     <b>{{ getActiveStoreName() }}</b><br>
-                                    <b>{{ __('messages.pdf.address') }}:</b>
-                                    {{ getSettingValue('store_address') ?? "N/A" }}<br>
-                                    <b>{{ __('messages.pdf.phone') }}:</b> {{ getSettingValue('store_phone') ?? "N/A" }}<br>
-                                    <b>{{ __('messages.pdf.email') }}:</b> {{ getSettingValue('store_email') ?? "N/A" }}
-                                </td>
+                                   
                             </tr>
                         </tbody>
                     </table>
@@ -231,7 +227,7 @@
         <!-- Notes -->
         @if ($purchaseReturn->notes)
             <div
-                style="clear: both; margin-top: 30px; padding: 10px; border-left: 3px solid dodgerblue; background: #f8f8f8;">
+                style="clear: both; margin-top: 30px; padding: 10px; border-left: 3px solid darkred; background: #f8f8f8;">
                 <b>{{ __('messages.pdf.notes') }}:</b><br>
                 {{ $purchaseReturn->notes }}
             </div>

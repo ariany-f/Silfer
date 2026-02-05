@@ -62,7 +62,7 @@
 
             <!-- Title -->
             <td width="40%" style="text-align:center; vertical-align:middle;">
-                <h2 style="color: dodgerblue; margin:0; padding:0; font-size:20px;">
+                <h2 style="color: darkred; margin:0; padding:0; font-size:20px;">
                     {{ $supplier->name }} : {{ __('messages.pdf.client') }}
                 </h2>
             </td>
@@ -70,7 +70,7 @@
             <!-- Date -->
             <td width="30%" style="text-align:right;">
                 <b>{{ __('messages.pdf.date') }}</b> :
-                {{ \Carbon\Carbon::now()->format('Y-m-d') }}
+                {{ \Carbon\Carbon::now()->format('d/m/Y') }}
             </td>
         </tr>
     </table>
@@ -115,11 +115,6 @@
                         <tr>
                             <td>
                                 <b>{{ getActiveStoreName() }}</b><br>
-                                <b>{{ __('messages.pdf.address') }} :</b>
-                                {{ getSettingValue('store_address') ?? 'N/A' }}<br>
-                                <b>{{ __('messages.pdf.phone') }} :</b>
-                                {{ getSettingValue('store_phone') ?? 'N/A' }}<br>
-                                <b>{{ __('messages.pdf.email') }} :</b> {{ getSettingValue('store_email') ?? 'N/A' }}
                             </td>
                         </tr>
                     </tbody>
@@ -142,7 +137,7 @@
             @if (count($supplier->purchases) > 0)
                 @foreach ($supplier->purchases as $purchase)
                     <tr>
-                        <td class="text-center">{{ $purchase->date->format('Y-m-d') }}</td>
+                        <td class="text-center">{{ $purchase->date->format('d/m/Y') }}</td>
                         <td class="text-center">{{ $purchase->reference_code }}</td>
                         <td class="text-center icon-style">
                             {{ currencyAlignment(number_format((float) $purchase->grand_total, 2)) }}

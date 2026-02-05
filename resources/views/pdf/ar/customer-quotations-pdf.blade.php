@@ -59,7 +59,7 @@
 
             <!-- Title -->
             <td width="40%" style="text-align:center; vertical-align:middle;">
-                <h2 style="color: dodgerblue; margin:0; padding:0; font-size:20px;">
+                <h2 style="color: darkred; margin:0; padding:0; font-size:20px;">
                     {{ __('messages.pdf.quotation_list') }}
                 </h2>
             </td>
@@ -67,7 +67,7 @@
             <!-- Date -->
             <td width="30%" style="text-align:right;">
                 <b>{{ __('messages.pdf.date') }}</b> :
-                {{ \Carbon\Carbon::now()->format('Y-m-d') }}
+                {{ \Carbon\Carbon::now()->format('d/m/Y') }}
             </td>
         </tr>
     </table>
@@ -87,7 +87,7 @@
             @if (isset($customer->quotations))
                 @foreach ($customer->quotations as $quotation)
                     <tr>
-                        <td class="text-center">{{ $quotation->date->format('Y-m-d') }}</td>
+                        <td class="text-center">{{ $quotation->date->format('d/m/Y') }}</td>
                         <td class="text-center">{{ $customer->name }}</td>
                         <td class="text-center">{{ $quotation->reference_code }}</td>
                         <td class="text-center icon-style">

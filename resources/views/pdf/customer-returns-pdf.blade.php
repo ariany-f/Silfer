@@ -66,7 +66,7 @@
             <tr>
                 <td></td>
                 <td align="center" style="vertical-align: top;">
-                    <h2 style="color: dodgerblue; margin:0; padding:0; line-height:1.2;">
+                    <h2 style="color: darkred; margin:0; padding:0; line-height:1.2;">
                         {{ __('messages.pdf.return_list') }}
                     </h2>
                 </td>
@@ -90,7 +90,7 @@
                 @if (isset($customer->salesReturns))
                     @foreach ($customer->salesReturns as $salesReturn)
                         <tr>
-                            <td width="20%">{{ $salesReturn->date->format('Y-m-d') }}</td>
+                            <td width="20%">{{ $salesReturn->date->format('d/m/Y') }}</td>
                             <td class="text-center">{{ $customer->name }}</td>
                             <td class="text-center">{{ $salesReturn->reference_code }}</td>
                             <td class="icon-style text-center" align="right">

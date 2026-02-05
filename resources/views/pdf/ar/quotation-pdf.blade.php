@@ -225,7 +225,7 @@
     @if ($quotation->note)
         <div
             style="text-align: right; clear: both; margin-top: 30px; padding: 10px 20px;
-                   border-right: 3px solid dodgerblue; background: #f8f8f8;">
+                   border-right: 3px solid darkred; background: #f8f8f8;">
             <b>{{ __('messages.pdf.notes') }}:</b><br>
             {{ $quotation->note }}
         </div>

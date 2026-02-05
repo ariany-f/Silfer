@@ -66,7 +66,7 @@
             <tr>
                 <td></td>
                 <td align="center" style="vertical-align: top;">
-                    <h2 style="color: dodgerblue; margin:0; padding:0; line-height:1.2;">
+                    <h2 style="color: darkred; margin:0; padding:0; line-height:1.2;">
                         {{ __('messages.pdf.client') }} : {{ $supplier->name }}
                     </h2>
                 </td>
@@ -115,12 +115,6 @@
                             <tr>
                                 <td>
                                     <b>{{ getActiveStoreName() }}</b><br>
-                                    <b>{{ __('messages.pdf.address') }}:</b>
-                                    {{ getSettingValue('store_address') ?? 'N/A' }}<br>
-                                    <b>{{ __('messages.pdf.phone') }}:</b>
-                                    {{ getSettingValue('store_phone') ?? 'N/A' }}<br>
-                                    <b>{{ __('messages.pdf.email') }}:</b>
-                                    {{ getSettingValue('store_email') ?? 'N/A' }}
                                 </td>
                             </tr>
                         </tbody>
@@ -144,7 +138,7 @@
                 @if (count($supplier->purchases) > 0)
                     @foreach ($supplier->purchases as $purchase)
                         <tr>
-                            <td class="text-center">{{ $purchase->date->format('Y-m-d') }}</td>
+                            <td class="text-center">{{ $purchase->date->format('d/m/Y') }}</td>
                             <td class="text-center">{{ $purchase->reference_code }}</td>
                             <td class="icon-style text-center">
                                 {{ currencyAlignment(number_format((float) $purchase->grand_total, 2)) }}</td>

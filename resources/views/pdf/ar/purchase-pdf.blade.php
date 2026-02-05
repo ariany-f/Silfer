@@ -81,7 +81,7 @@
 
             <!-- Reference Code Center -->
             <td width="40%" style="text-align: center; vertical-align: middle;">
-                <h2 style="color: dodgerblue; margin:0; padding:0; font-size: 20px;">
+                <h2 style="color: darkred; margin:0; padding:0; font-size: 20px;">
                     {{ $purchase->reference_code }}
                 </h2>
             </td>
@@ -91,7 +91,7 @@
                 <table style="width:100%; border-collapse: collapse;">
                     <tr>
                         <td><b>{{ __('messages.pdf.date') }}</b> :
-                            {{ \Carbon\Carbon::parse($purchase->created_at)->format('Y-m-d') }}
+                            {{ \Carbon\Carbon::parse($purchase->created_at)->format('d/m/Y') }}
                         </td>
                     </tr>
                     <tr>
@@ -152,11 +152,7 @@
                         <tr>
                             <td>
                                 <b>{{ getActiveStoreName() }}</b><br>
-                                <b>{{ __('messages.pdf.address') }}</b> :
-                                {{ getSettingValue('store_address') ?? 'N/A' }} <br>
-                                <b>{{ __('messages.pdf.phone') }}</b> : {{ getSettingValue('store_phone') ?? 'N/A' }}
-                                <br>
-                                <b>{{ __('messages.pdf.email') }}</b> : {{ getSettingValue('store_email') ?? 'N/A' }}
+                                
                             </td>
                         </tr>
                     </tbody>
@@ -266,7 +262,7 @@
     @if ($purchase->notes)
         <div
             style="text-align: right; clear: both; margin-top: 30px; padding: 10px 20px;
-                   border-right: 3px solid dodgerblue; background: #f8f8f8;">
+                   border-right: 3px solid darkred; background: #f8f8f8;">
             <b>{{ __('messages.pdf.notes') }}:</b><br>
             {{ $purchase->notes }}
         </div>

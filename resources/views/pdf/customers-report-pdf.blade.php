@@ -70,7 +70,7 @@
             <tr>
                 <td></td>
                 <td align="center" style="vertical-align: top;">
-                    <h2 style="color: dodgerblue; margin:0; padding:0; line-height:1.2;">
+                    <h2 style="color: darkred; margin:0; padding:0; line-height:1.2;">
                         {{ __('messages.pdf.client') }} : {{ $customer->name }}
                     </h2>
                 </td>
@@ -119,11 +119,7 @@
                             <tr>
                                 <td>
                                     <b>{{ getActiveStoreName() }}</b><br>
-                                    <b>{{ __('messages.pdf.address') }}:</b>
-                                    {{ getSettingValue('store_address') ?? "N/A" }}<br>
-                                    <b>{{ __('messages.pdf.phone') }}:</b> {{ getSettingValue('store_phone') ?? "N/A" }}<br>
-                                    <b>{{ __('messages.pdf.email') }}:</b> {{ getSettingValue('store_email') ?? "N/A" }}
-                                </td>
+                                   
                             </tr>
                         </tbody>
                     </table>
@@ -147,7 +143,7 @@
                 @if (count($customer->sales) > 0)
                     @foreach ($customer->sales as $sale)
                         <tr>
-                            <td class="text-center">{{ $sale->date->format('Y-m-d') }}</td>
+                            <td class="text-center">{{ $sale->date->format('d/m/Y') }}</td>
                             <td class="text-center">{{ $sale->reference_code }}</td>
                             <td class="icon-style text-center">
                                 {{ currencyAlignment(number_format((float) $sale->payments->sum('amount'), 2)) }}</td>

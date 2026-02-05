@@ -63,7 +63,7 @@
 
             <!-- Title -->
             <td width="40%" style="text-align:center; vertical-align:middle;">
-                <h2 style="color: dodgerblue; margin:0; padding:0; font-size:20px;">
+                <h2 style="color: darkred; margin:0; padding:0; font-size:20px;">
                     {{ $customer->name }} : {{ __('messages.pdf.client') }}
                 </h2>
             </td>
@@ -71,7 +71,7 @@
             <!-- Date -->
             <td width="30%" style="text-align:right;">
                 <b>{{ __('messages.pdf.date') }}</b> :
-                {{ \Carbon\Carbon::now()->format('Y-m-d') }}
+                {{ \Carbon\Carbon::now()->format('d/m/Y') }}
             </td>
         </tr>
     </table>
@@ -144,7 +144,7 @@
             @if (count($customer->sales) > 0)
                 @foreach ($customer->sales as $sale)
                     <tr>
-                        <td class="text-center">{{ $sale->date->format('Y-m-d') }}</td>
+                        <td class="text-center">{{ $sale->date->format('d/m/Y') }}</td>
                         <td class="text-center">{{ $sale->reference_code }}</td>
                         <td class="text-center icon-style">
                             {{ currencyAlignment(number_format((float) $sale->payments->sum('amount'), 2)) }}
