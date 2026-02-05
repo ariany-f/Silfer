@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import { useIntl } from "react-intl";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import MasterLayout from "../MasterLayout";
@@ -24,6 +25,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Customers = (props) => {
     const { fetchCustomers, customers, totalRecord, isLoading, allConfigData, callAPIAfterImport, isCallFetchDataApi } =
         props;
+    const intl = useIntl();
     const [deleteModel, setDeleteModel] = useState(false);
     const [isDelete, setIsDelete] = useState(null);
     const [isDetails, setIsDetails] = useState(null);
@@ -118,7 +120,7 @@ const Customers = (props) => {
                     <button
                         className="btn btn-sm btn-info me-2"
                         onClick={() => navigate(`/app/user/customers/${row.id}/payments`)}
-                        title={getFormattedMessage("customer.payments.title")}
+                        title={intl.formatMessage({ id: "customer.payments.title" })}
                     >
                         <FontAwesomeIcon icon={faDollarSign} />
                     </button>
