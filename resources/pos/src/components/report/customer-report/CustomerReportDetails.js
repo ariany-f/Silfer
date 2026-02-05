@@ -9,7 +9,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import TopProgressBar from "../../../shared/components/loaders/TopProgressBar";
 import Widget from "../../../shared/Widget/Widget";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowLeft, faArrowRight, faCartPlus} from "@fortawesome/free-solid-svg-icons";
+import {faArrowLeft, faArrowRight, faCartPlus, faDollarSign, faCheckCircle, faFileInvoiceDollar} from "@fortawesome/free-solid-svg-icons";
 import SalesTab from './customer-tab/SalesTab';
 import QuotationsTeb from './customer-tab/QuotationsTeb';
 import SaleReturnTabs from './customer-tab/SaleReturnTabs';
@@ -33,6 +33,7 @@ const CustomerReportDetails = (props) => {
             <TopProgressBar/>
             <HeaderTitle title={getFormattedMessage('customer.report.details.title')} to='/app/user/report/customers'/>
             <TabTitle title={placeholderText('customer.report.details.title')}/>
+            {/* Primeira linha de cards */}
             <Row className='g-4 justify-content-center'>
                 <Widget title={getFormattedMessage('sale.title')}
                         className='bg-success' iconClass='bg-green-300'
@@ -53,6 +54,24 @@ const CustomerReportDetails = (props) => {
                         icon={<FontAwesomeIcon icon={faArrowRight} className='fs-1-xl text-white'/>}
                         currency={currencySymbol}
                         value={customerReportWidgetData?.totalSalesDue ? parseFloat(customerReportWidgetData?.totalSalesDue).toFixed(2) : '0.00'}/>
+            </Row>
+            {/* Segunda linha de cards - Pagamentos Avulsos */}
+            <Row className='g-4 justify-content-center mt-3'>
+                <Widget title={getFormattedMessage('customer.report.standalone.payments.label')}
+                        className='bg-primary' iconClass='bg-primary-300' allConfigData={allConfigData}
+                        icon={<FontAwesomeIcon icon={faDollarSign} className='fs-1-xl text-white'/>}
+                        currency={currencySymbol}
+                        value={customerReportWidgetData?.totalPaymentsAmount ? parseFloat(customerReportWidgetData?.totalPaymentsAmount).toFixed(2) : '0.00'}/>
+                <Widget title={getFormattedMessage('customer.report.concluded.payments.label')}
+                        className='bg-success' iconClass='bg-green-300' allConfigData={allConfigData}
+                        icon={<FontAwesomeIcon icon={faCheckCircle} className='fs-1-xl text-white'/>}
+                        currency={currencySymbol}
+                        value={customerReportWidgetData?.totalPaymentsConcludedAmount ? parseFloat(customerReportWidgetData?.totalPaymentsConcludedAmount).toFixed(2) : '0.00'}/>
+                <Widget title={getFormattedMessage('customer.report.final.due.label')}
+                        className='bg-danger' iconClass='bg-red-300' allConfigData={allConfigData}
+                        icon={<FontAwesomeIcon icon={faFileInvoiceDollar} className='fs-1-xl text-white'/>}
+                        currency={currencySymbol}
+                        value={customerReportWidgetData?.totalDueAmountAfterPayments ? parseFloat(customerReportWidgetData?.totalDueAmountAfterPayments).toFixed(2) : '0.00'}/>
             </Row>
             <Tabs defaultActiveKey='sale' id='uncontrolled-tab-example' onSelect={(k) => setKey(k)}
                   className='mt-7 mb-5'>

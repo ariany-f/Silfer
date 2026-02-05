@@ -675,20 +675,34 @@ class ReportAPIController extends AppBaseController
 
     public function getCustomerInfo(Customer $customer)
     {
+        // Refresh do customer para garantir dados atualizados
+        $customer->refresh();
+        $customer->load('sales.payments', 'customerPayments');
+    
         $salesData = [];
-
+    
         $salesData['totalSale'] = $customer->sales->count();
-
+    
         $salesData['totalAmount'] = $customer->sales->sum('grand_total');
-
+    
         $salesData['totalPaid'] = 0;
-
+    
         foreach ($customer->sales as $sale) {
+            $sale->refresh();
+            $sale->load('payments');
             $salesData['totalPaid'] = $salesData['totalPaid'] + $sale->payments->sum('amount');
         }
-
+    
         $salesData['totalSalesDue'] = $salesData['totalAmount'] - $salesData['totalPaid'];
-
+    
+        // Calcular dados de pagamentos avulsos
+        $customer->load('customerPayments');
+        $salesData['totalPaymentsAmount'] = $customer->customerPayments->sum('amount');
+        $salesData['totalPaymentsConcludedAmount'] = $customer->customerPayments
+            ->where('status', CustomerPayment::STATUS_COMPLETED)
+            ->sum('amount');
+        $salesData['totalDueAmountAfterPayments'] = $salesData['totalSalesDue'] - $salesData['totalPaymentsConcludedAmount'];
+    
         return $this->sendResponse($salesData, 'Customer info retrieved successfully');
     }
 }
