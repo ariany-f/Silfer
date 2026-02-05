@@ -218,7 +218,7 @@ const SuppliersReport = (props) => {
                 justifyContent: "start",
             },
             cell: (row) => 
-                row.total_sale > 0 ? (
+                (row.total_sale > 0 || (row.total_payments_concluded_amount && row.total_payments_concluded_amount > 0)) ? (
                     <>
                         <button
                             className="btn btn-sm btn-primary me-3"

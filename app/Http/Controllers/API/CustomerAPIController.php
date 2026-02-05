@@ -135,7 +135,7 @@ class CustomerAPIController extends AppBaseController
     public function pdfDownload(Customer $customer): JsonResponse
     {
         ini_set('memory_limit', '-1');
-        $customer = $customer->load('sales.payments');
+        $customer = $customer->load('sales.payments', 'customerPayments');
 
         $salesData = [];
 
@@ -150,6 +150,13 @@ class CustomerAPIController extends AppBaseController
         }
 
         $salesData['totalSalesDue'] = $salesData['totalAmount'] - $salesData['totalPaid'];
+        
+        // Calcular dados de pagamentos avulsos
+        $salesData['totalPaymentsAmount'] = $customer->customerPayments->sum('amount');
+        $salesData['totalPaymentsConcludedAmount'] = $customer->customerPayments
+            ->where('status', \App\Models\CustomerPayment::STATUS_COMPLETED)
+            ->sum('amount');
+        $salesData['totalDueAmountAfterPayments'] = $salesData['totalSalesDue'] - $salesData['totalPaymentsConcludedAmount'];
 
         $data = [];
 

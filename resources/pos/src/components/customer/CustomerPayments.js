@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { useIntl } from "react-intl";
+import { Modal } from "react-bootstrap-v5";
 import MasterLayout from "../MasterLayout";
 import TabTitle from "../../shared/tab-title/TabTitle";
 import HeaderTitle from "../header/HeaderTitle";
@@ -19,7 +20,7 @@ import {
     customerPaymentPdfAction,
 } from "../../store/action/customerPaymentAction";
 import { fetchCustomer } from "../../store/action/customerAction";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { faFilePdf, faStickyNote } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ActionButton from "../../shared/action-buttons/ActionButton";
 import moment from "moment";
@@ -40,6 +41,8 @@ const CustomerPayments = (props) => {
     const { customerId } = useParams();
     const navigate = useNavigate();
     const intl = useIntl();
+    const [showNotesModal, setShowNotesModal] = useState(false);
+    const [selectedPaymentNotes, setSelectedPaymentNotes] = useState('');
     const currencySymbol =
         frontSetting &&
         frontSetting.value &&
@@ -96,6 +99,16 @@ const CustomerPayments = (props) => {
         if (item && item.id) {
             deleteCustomerPayment(item.id);
         }
+    };
+
+    const onViewNotesClick = (item) => {
+        setSelectedPaymentNotes(item.notes || '');
+        setShowNotesModal(true);
+    };
+
+    const handleCloseNotesModal = () => {
+        setShowNotesModal(false);
+        setSelectedPaymentNotes('');
     };
 
     const columns = [
@@ -159,10 +172,19 @@ const CustomerPayments = (props) => {
                     <button
                         className="btn btn-sm btn-primary me-2"
                         onClick={() => onPdfClick(row)}
-                        title={getFormattedMessage("globally.pdf.download")}
+                        title={intl.formatMessage({ id: "globally.pdf.download" })}
                     >
                         <FontAwesomeIcon icon={faFilePdf} />
                     </button>
+                    {row.notes && (
+                        <button
+                            className="btn btn-sm btn-info me-2"
+                            onClick={() => onViewNotesClick(row)}
+                            title={intl.formatMessage({ id: "globally.input.notes.label" })}
+                        >
+                            <FontAwesomeIcon icon={faStickyNote} />
+                        </button>
+                    )}
                     <ActionButton
                         item={row}
                         goToEditProduct={goToEditPayment}
@@ -200,6 +222,18 @@ const CustomerPayments = (props) => {
                     }
                 />
             </div>
+            <Modal show={showNotesModal} onHide={handleCloseNotesModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{getFormattedMessage("globally.input.notes.label")}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="mb-3">
+                        <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                            {selectedPaymentNotes || getFormattedMessage("globally.no.notes.available")}
+                        </p>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </MasterLayout>
     );
 };

@@ -194,8 +194,64 @@
                     {{ currencyAlignment(number_format((float) $salesData['totalSalesDue'], 2)) }}
                 </td>
             </tr>
+            @if (isset($salesData['totalPaymentsAmount']) && $salesData['totalPaymentsAmount'] > 0)
+                <tr>
+                    <td><strong>{{ __('messages.pdf.standalone_payments') }} :</strong></td>
+                    <td class="number-align icon-style">
+                        {{ currencyAlignment(number_format((float) ($salesData['totalPaymentsAmount'] ?? 0), 2)) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>{{ __('messages.pdf.concluded_payments') }} :</strong></td>
+                    <td class="number-align icon-style">
+                        {{ currencyAlignment(number_format((float) ($salesData['totalPaymentsConcludedAmount'] ?? 0), 2)) }}
+                    </td>
+                </tr>
+            @endif
+            @if (isset($salesData['totalDueAmountAfterPayments']))
+                <tr>
+                    <td><strong>{{ __('messages.pdf.final_due') }} :</strong></td>
+                    <td class="number-align icon-style">
+                        {{ currencyAlignment(number_format((float) $salesData['totalDueAmountAfterPayments'], 2)) }}
+                    </td>
+                </tr>
+            @endif
         </tbody>
     </table>
+    
+    @if (count($customer->customerPayments) > 0)
+        <!-- Standalone Payments Table -->
+        <table class="table" style="width:100%; margin-top: 40px;">
+            <thead>
+                <tr>
+                    <th style="text-align: left">{{ __('messages.pdf.date') }}</th>
+                    <th class="text-center">{{ __('messages.pdf.reference') }}</th>
+                    <th class="text-center">{{ __('messages.pdf.amount') }}</th>
+                    <th class="text-center">{{ __('messages.pdf.status') }}</th>
+                    <th class="text-center">{{ __('messages.pdf.due_date') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($customer->customerPayments as $payment)
+                    <tr>
+                        <td class="text-center">{{ $payment->payment_date ? $payment->payment_date->format('d/m/Y') : 'N/A' }}</td>
+                        <td class="text-center">{{ $payment->reference_code }}</td>
+                        <td class="icon-style text-center">
+                            {{ currencyAlignment(number_format((float) $payment->amount, 2)) }}
+                        </td>
+                        <td class="text-center">
+                            @if ($payment->status == \App\Models\CustomerPayment::STATUS_COMPLETED)
+                                {{ __('messages.pdf.completed') }}
+                            @else
+                                {{ __('messages.pdf.pending') }}
+                            @endif
+                        </td>
+                        <td class="text-center">{{ $payment->due_date ? $payment->due_date->format('d/m/Y') : 'N/A' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
     <div style="clear: both;"></div>
 </body>

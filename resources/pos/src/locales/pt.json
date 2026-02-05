@@ -1007,6 +1007,7 @@
     "globally.input.date.validate.label": "Por favor, digite a data",
     "globally.back": "Voltar",
     "globally.pdf.download": "Baixar PDF",
+    "globally.no.notes.available": "Nenhuma nota disponível",
     "customer.report.standalone.payments.label": "Pagamentos Avulsos",
     "customer.report.concluded.payments.label": "Pagamentos Avulsos Concluídos",
     "customer.report.final.due.label": "A Pagar Final"

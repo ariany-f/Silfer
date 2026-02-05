@@ -14,6 +14,7 @@ import SalesTab from './customer-tab/SalesTab';
 import QuotationsTeb from './customer-tab/QuotationsTeb';
 import SaleReturnTabs from './customer-tab/SaleReturnTabs';
 import SalePayment from './customer-tab/SalePayment';
+import StandalonePaymentsTab from './customer-tab/StandalonePaymentsTab';
 import { fetchCustomerReportWidget } from '../../../store/action/customerReportWidgetAction';
 
 const CustomerReportDetails = (props) => {
@@ -77,6 +78,12 @@ const CustomerReportDetails = (props) => {
                      tabClassName='position-relative mb-3 me-7'>
                     <div className='w-100 mx-auto'>
                         {key === 'Sale-payment' && <SalePayment allConfigData={allConfigData} customerId={id}/>}
+                    </div>
+                </Tab>
+                <Tab eventKey='Standalone-payments' title={getFormattedMessage("customer.payments.title")}
+                     tabClassName='position-relative mb-3 me-7'>
+                    <div className='w-100 mx-auto'>
+                        {key === 'Standalone-payments' && <StandalonePaymentsTab allConfigData={allConfigData} customerId={id}/>}
                     </div>
                 </Tab>
             </Tabs>
