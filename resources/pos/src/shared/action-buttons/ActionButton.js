@@ -60,7 +60,7 @@ const ActionButton = (props) => {
             {isViewIcon ? (
                 <button
                     title={placeholderText("globally.view.tooltip.label")}
-                    className="btn text-success px-2 fs-3 ps-0 border-0"
+                    className="btn text-info px-2 fs-3 ps-0 border-0"
                     onClick={(e) => {
                         e.stopPropagation();
                         goToDetailScreen(item.id);
@@ -72,7 +72,7 @@ const ActionButton = (props) => {
             {isEditMode === false ? null : (
                 <button
                     title={placeholderText("globally.edit-btn")}
-                    className="btn text-primary fs-3 border-0 px-xxl-2 px-1"
+                    className="btn text-secondary fs-3 border-0 px-xxl-2 px-1"
                     onClick={(e) => {
                         e.stopPropagation();
                         goToEditProduct(item);
