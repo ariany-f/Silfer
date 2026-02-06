@@ -128,7 +128,7 @@
   padding: 12px !important;
 }
 .top-nav .grp-select button {
-  background-color: #6571FF !important;
+  background-color: darkred !important;
   border-color: #FFFFFF !important;
   color: #FFFFFF !important;
   height: 45px;
@@ -175,7 +175,7 @@
 }
 .left-content .main-table table tbody tr .remove-button button:hover, .left-content .main-table table tbody tr .remove-button button:active, .left-content .main-table table tbody tr .remove-button button:focus {
   background: none !important;
-  color: #6571FF;
+  color: darkred;
   border: none !important;
 }
 .left-content .main-table .table > :not(caption) > * > * {
@@ -193,7 +193,7 @@
 .left-content .main-table .counter button {
   width: 30px;
   height: 30px;
-  color: #6571ff;
+  color: darkred;
   background-color: #e0e3ff;
   border-color: #e0e3ff;
   min-width: 30px;
@@ -215,7 +215,7 @@
   width: 20px;
 }
 .left-content .total-price__tax-filed {
-  border-bottom-color: #6571FF;
+  border-bottom-color: darkred;
   width: 50px;
   padding: 0;
   background-color: transparent;
@@ -248,14 +248,14 @@
   padding: 5% 14%;
   color: white;
   font-size: 15px;
-  background: #6571FF;
+  background: darkred;
   text-align: center;
   border-radius: 30px;
   box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .right-content .header-btn-grp .nav-item {
-  background-color: #6571FF;
+  background-color: darkred;
   border-radius: 0.938rem;
   height: 60px;
   width: 60px;
@@ -302,8 +302,8 @@
   font-size: 13px;
 }
 .right-content .button-list .custom-btn-size.item-active.btn.btn-primary:focus:not(.btn-active), .right-content .button-list .custom-btn-size.item-active.btn.btn-primary:hover:not(.btn-active), .right-content .button-list .custom-btn-size:hover, .right-content .button-list .custom-btn-size:active {
-  background-color: #6571FF !important;
-  border-color: #6571FF !important;
+  background-color: darkred !important;
+  border-color: darkred !important;
   color: #FFFFFF !important;
 }
 .right-content .button-list .custom-btn-size:focus:not(.btn-active) {
@@ -312,8 +312,8 @@
   color: #060917;
 }
 .right-content .button-list__item-active {
-  background-color: #6571FF !important;
-  border-color: #6571FF !important;
+  background-color: darkred !important;
+  border-color: darkred !important;
 }
 .right-content .button-list .swiper-container {
   margin-left: unset;
@@ -442,7 +442,7 @@
   left: 0;
 }
 .right-content .product-list-block .product-active {
-  outline: #6571FF solid 1px !important;
+  outline: darkred solid 1px !important;
 }
 .right-content .product-list-block .custom-card-body {
   color: #3f4254;
@@ -532,7 +532,7 @@
   color: #6c757d !important;
 }
 .search-bar .wrapper div:nth-child(2) .selected {
-  background-color: #6571FF !important;
+  background-color: darkred !important;
 }
 .search-bar .wrapper div:nth-child(2) .selected:first-child {
   border-top-left-radius: 0.938rem !important;
@@ -631,7 +631,7 @@
 
 .delete-button button:hover, .delete-button button:active, .delete-button button:focus {
   background: none !important;
-  color: #6571FF;
+  color: darkred;
   border: none !important;
 }
 
@@ -660,7 +660,7 @@
   border-radius: 0.938rem;
 }
 .pos-calculator-popup .last {
-  background-color: #6571FF !important;
+  background-color: darkred !important;
 }
 @media (max-width: 991px) {
   .pos-calculator-popup {
@@ -820,14 +820,14 @@
 .calculator .sides .equal {
   flex-grow: 2;
   color: #FFFFFF;
-  background: #6571FF;
+  background: darkred;
 }
 .calculator .sides button {
   background: #eff3f6;
   color: #000000;
 }
 .calculator .sides button {
-  background: #6571FF;
+  background: darkred;
   color: #FFFFFF;
 }
 .calculator .sides .equal {

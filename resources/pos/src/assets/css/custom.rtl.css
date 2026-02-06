@@ -852,7 +852,7 @@
 }
 .datepicker .react-datepicker__day--selected {
   background: #E0E3FF !important;
-  color: #6571FF !important;
+  color: darkred !important;
 }
 .datepicker .react-datepicker__day--today {
   font-weight: 400 !important;
@@ -873,7 +873,7 @@
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: #6571FF !important;
+  background-color: darkred !important;
   color: #FFFFFF !important;
 }
 
@@ -983,7 +983,7 @@
   opacity: 1;
 }
 .rdt_Table .rdt_TableHead .rdt_TableHeadRow .rdt_TableCol:hover {
-  color: #6571FF !important;
+  color: darkred !important;
 }
 .rdt_Table .rdt_TableHead .rdt_TableHeadRow .rdt_TableCol span.__rdt_custom_sort_icon__ i {
   font-size: 10px;
@@ -1104,7 +1104,7 @@ div .rdt_Pagination div:nth-child(4) button svg {
   height: 23px !important;
 }
 div .rdt_Pagination div:nth-child(4) button:hover, div .rdt_Pagination div:nth-child(4) button:focus {
-  fill: #6571FF !important;
+  fill: darkred !important;
   background-color: #E9ECEF !important;
   border-color: #E9ECEF !important;
 }
@@ -1135,7 +1135,7 @@ div .rdt_Pagination div:first-of-type svg {
   fill: #FFFFFF;
 }
 #pagination-first-page:focus {
-  border: 1px solid #6571FF;
+  border: 1px solid darkred;
 }
 
 .Custom-product-img {
@@ -1322,7 +1322,7 @@ div .rdt_Pagination div:first-of-type svg {
 .css-26l3qy-menu .css-9gakcf-option,
 .css-1nmdiq5-menu .css-tr4s17-option,
 .css-1nmdiq5-menu .css-d7l1ni-option {
-  background-color: #6571ff !important;
+  background-color: darkred !important;
   cursor: pointer !important;
 }
 
@@ -1539,7 +1539,7 @@ div .rdt_Pagination div:first-of-type svg {
   color: #6C757D !important;
 }
 .custom-search .wrapper div:nth-child(2) .selected {
-  background-color: #6571FF !important;
+  background-color: darkred !important;
 }
 .custom-search .wrapper div:nth-child(2) .selected:first-child {
   border-top-right-radius: 0.475rem !important;
@@ -2344,7 +2344,7 @@ div .rdt_Pagination div:first-of-type svg {
 
 .user_avatar {
   align-items: center;
-  background: #6571FF;
+  background: darkred;
   color: #FFFFFF;
   border-radius: 50%;
   display: flex;
@@ -2358,7 +2358,7 @@ div .rdt_Pagination div:first-of-type svg {
 
 .custom-user-avatar {
   align-items: center;
-  background: #6571FF;
+  background: darkred;
   color: #FFFFFF;
   border-radius: 50%;
   display: flex;
@@ -2386,7 +2386,7 @@ div .rdt_Pagination div:first-of-type svg {
 }
 
 .custom-loading {
-  color: #6571FF;
+  color: darkred;
   height: 673px;
   display: flex;
   justify-content: center;
@@ -2394,7 +2394,7 @@ div .rdt_Pagination div:first-of-type svg {
 }
 
 .custom-loading-detail {
-  color: #6571FF;
+  color: darkred;
   height: 565px;
   display: flex;
   justify-content: center;
@@ -2531,7 +2531,7 @@ div .rdt_Pagination div:first-of-type svg {
 }
 
 .sms_api .sms-api-main {
-  background-color: #6571FF;
+  background-color: darkred;
   color: #FFFFFF !important;
   padding: 2.5rem 2.5rem;
 }
@@ -2689,7 +2689,7 @@ div .rdt_Pagination div:first-of-type svg {
 }
 .setting-tab .nav-item .nav-link:hover, .setting-tab .nav-item .nav-link.active {
   color: #212529;
-  border-right: 5px solid #6571ff !important;
+  border-right: 5px solid darkred !important;
   background: #e0e3ff !important;
 }
 
@@ -2947,7 +2947,7 @@ div .rdt_Pagination div:first-of-type svg {
 }
 .dropdown-menu .dropdown-item:active {
   background-color: #F8F9FA;
-  color: #6571FF;
+  color: darkred;
 }
 
 .separator {
@@ -2973,15 +2973,15 @@ div .rdt_Pagination div:first-of-type svg {
 }
 
 .language-btn:hover {
-  background-color: #6571FF !important;
+  background-color: darkred !important;
   color: #FFFFFF !important;
 }
 .language-btn:focus {
   border-color: #FFFFFF !important;
 }
 .language-btn.language-btn-active {
-  background-color: #6571FF !important;
-  border-color: #6571FF !important;
+  background-color: darkred !important;
+  border-color: darkred !important;
 }
 .language-btn.language-btn-active span {
   color: #FFFFFF !important;
@@ -2995,21 +2995,21 @@ div .rdt_Pagination div:first-of-type svg {
 }
 
 .pos-button {
-  border: 1px solid #6571FF;
+  border: 1px solid darkred;
   color: whitesmoke;
   padding: 10px 20px;
   border-radius: 50%;
   text-decoration: none;
   transition-duration: 0.4s;
   cursor: pointer;
-  background-color: #6571FF;
+  background-color: darkred;
   transition: all 0.6s ease-in-out;
   box-shadow: 0 0 17px 1px rgba(173, 181, 189, 0.05), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
 }
 
 .pos-button-highlight:hover {
   background-color: transparent;
-  color: #6571FF;
+  color: darkred;
 }
 
 @keyframes swing {
@@ -3596,14 +3596,14 @@ div .rdt_Pagination div:first-of-type svg {
 }
 .pro-sidebar .pro-menu .pro-menu-item .pro-inner-item:hover {
   background-color: #E0E3FF;
-  border-right: 0.313rem solid #6571FF !important;
+  border-right: 0.313rem solid darkred !important;
 }
 .pro-sidebar .pro-menu .pro-menu-item .pro-inner-item:hover svg, .pro-sidebar .pro-menu .pro-menu-item .pro-inner-item:hover .pro-item-content a {
   color: #212529;
 }
 .pro-sidebar .pro-menu .pro-menu-item.active .pro-inner-item {
   background-color: #E0E3FF;
-  border-right: 0.313rem solid #6571FF !important;
+  border-right: 0.313rem solid darkred !important;
 }
 .pro-sidebar .pro-menu .pro-menu-item.active .pro-inner-item svg, .pro-sidebar .pro-menu .pro-menu-item.active .pro-inner-item .pro-item-content a {
   color: #212529;
@@ -3638,10 +3638,10 @@ div .rdt_Pagination div:first-of-type svg {
   padding-right: 10px !important;
 }
 .pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu.pro-active-sub > div > .pro-item-content {
-  color: #6571FF !important;
+  color: darkred !important;
 }
 .pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu.pro-active-sub > div.pro-inner-item {
-  border-right: 0.313rem solid #6571FF !important;
+  border-right: 0.313rem solid darkred !important;
 }
 .pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu.pro-active-sub-search > div {
   background-color: #E0E3FF;
@@ -3702,13 +3702,13 @@ div .rdt_Pagination div:first-of-type svg {
 }
 
 .header-active {
-  border-bottom: 2px solid #6571FF;
+  border-bottom: 2px solid darkred;
   color: #060917 !important;
 }
 
 .header-tabs:hover, .header-tabs:focus {
   color: #060917 !important;
-  border-bottom: 2px solid #6571FF;
+  border-bottom: 2px solid darkred;
 }
 
 .word-break-all {
@@ -4068,7 +4068,7 @@ div .rdt_Pagination div:first-of-type svg {
   border-radius: 4px;
 }
 .previewItem .remove-btn {
-  background-color: #6571FF !important;
+  background-color: darkred !important;
   width: 25px;
   height: 25px;
   position: absolute;
