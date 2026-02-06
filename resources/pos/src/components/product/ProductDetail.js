@@ -320,7 +320,7 @@ const ProductDetail = (props) => {
                                     <td className="py-4">
                                         <div className="text-center">
                                             <button title={placeholderText('globally.view.tooltip.label')}
-                                                className='btn text-success px-2 fs-3 ps-0 border-0'
+                                                className='btn text-info px-2 fs-3 ps-0 border-0'
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     openWareHouseDetailModal(data)
@@ -328,8 +328,8 @@ const ProductDetail = (props) => {
                                                 <FontAwesomeIcon icon={faEye} />
                                             </button>
                                             {getPermission(allConfigData?.permissions, Permissions.EDIT_PRODUCTS) && 
-                                                <button title={placeholderText('globally.view.tooltip.label')}
-                                                className='btn text-primary px-2 fs-3 ps-0 border-0'
+                                                <button title={placeholderText('globally.edit-btn')}
+                                                className='btn text-secondary px-2 fs-3 ps-0 border-0'
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     openEditSubProductModal(data)
