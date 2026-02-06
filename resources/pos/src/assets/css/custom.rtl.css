@@ -2715,17 +2715,17 @@ div .rdt_Pagination div:first-of-type svg {
 }
 
 .btn-purple {
-  border-color: #8635fd !important;
-  background-color: #8635fd !important;
+  border-color: #ba0101 !important;
+  background-color: #ba0101 !important;
   color: white !important;
 }
 .btn-purple:hover {
-  border-color: #8635fd !important;
+  border-color: #ba0101 !important;
   background-color: #7a28f3 !important;
 }
 
 .text-purple {
-  color: #8635fd !important;
+  color: #ba0101 !important;
 }
 
 .languague-dropdown .dropdown-menu {
