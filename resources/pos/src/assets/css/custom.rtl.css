@@ -851,7 +851,7 @@
   border-width: 1px 0 0 1px !important;
 }
 .datepicker .react-datepicker__day--selected {
-  background: #E0E3FF !important;
+  background: #ffe0e096 !important;
   color: darkred !important;
 }
 .datepicker .react-datepicker__day--today {
@@ -1331,7 +1331,7 @@ div .rdt_Pagination div:first-of-type svg {
 .css-1nmdiq5-menu .css-d7l1ni-option,
 .css-1nmdiq5-menu .css-d7l1ni-option:not(:active) {
   color: #000000 !important;
-  background-color: #e0e3ff !important;
+  background-color: #ffe0e096 !important;
 }
 
 .css-4ljt47-MenuList {
@@ -2690,7 +2690,7 @@ div .rdt_Pagination div:first-of-type svg {
 .setting-tab .nav-item .nav-link:hover, .setting-tab .nav-item .nav-link.active {
   color: #212529;
   border-right: 5px solid darkred !important;
-  background: #e0e3ff !important;
+  background: #ffe0e096 !important;
 }
 
 .pricing-card {
@@ -3595,14 +3595,14 @@ div .rdt_Pagination div:first-of-type svg {
   font-size: 0.875rem;
 }
 .pro-sidebar .pro-menu .pro-menu-item .pro-inner-item:hover {
-  background-color: #E0E3FF;
+  background-color: #ffe0e096;
   border-right: 0.313rem solid darkred !important;
 }
 .pro-sidebar .pro-menu .pro-menu-item .pro-inner-item:hover svg, .pro-sidebar .pro-menu .pro-menu-item .pro-inner-item:hover .pro-item-content a {
   color: #212529;
 }
 .pro-sidebar .pro-menu .pro-menu-item.active .pro-inner-item {
-  background-color: #E0E3FF;
+  background-color: #ffe0e096;
   border-right: 0.313rem solid darkred !important;
 }
 .pro-sidebar .pro-menu .pro-menu-item.active .pro-inner-item svg, .pro-sidebar .pro-menu .pro-menu-item.active .pro-inner-item .pro-item-content a {
@@ -3644,7 +3644,7 @@ div .rdt_Pagination div:first-of-type svg {
   border-right: 0.313rem solid darkred !important;
 }
 .pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu.pro-active-sub-search > div {
-  background-color: #E0E3FF;
+  background-color: #ffe0e096;
 }
 
 .pro-sidebar.collapsed .pro-menu > ul > .pro-menu-item.pro-sub-menu:hover .react-slidedown.pro-inner-list-item {

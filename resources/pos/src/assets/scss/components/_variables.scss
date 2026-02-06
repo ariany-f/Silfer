@@ -41,14 +41,14 @@ $theme-colors: (
 
 $min-contrast-ratio: 3;
 
-$cyan-100:  if(isDarkMode(), #262832, #E0E3FF) !default;
+$cyan-100:  if(isDarkMode(), #262832, #ffe0e096) !default;
 $cyan-200:  if(isDarkMode(), #282D66, #C1C6FF) !default;
 $cyan-300:  if(isDarkMode(), #3D4499, #ffa3a3) !default;
 $cyan-400:  if(isDarkMode(), rgb(130, 14, 14), darkred) !default;
 $cyan-600:  if(isDarkMode(), #848DFF, rgb(130, 14, 14)) !default;
 $cyan-700:  if(isDarkMode(), #A3AAFF, #3D4499) !default;
 $cyan-800:  if(isDarkMode(), #C1C6FF, #282D66) !default;
-$cyan-900:  if(isDarkMode(), #E0E3FF, #141733) !default;
+$cyan-900:  if(isDarkMode(), #ffe0e096, #141733) !default;
 
 $gray-100:  if(isDarkMode(), #1D1F28, #F8F9FA) !default;
 $gray-200:  if(isDarkMode(), #262832, #E9ECEF) !default;

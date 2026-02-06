@@ -2527,7 +2527,7 @@ progress {
 }
 
 .table-primary {
-  --bs-table-bg: #e0e3ff;
+  --bs-table-bg: #ffe0e096;
   --bs-table-striped-bg: #d5d8f3;
   --bs-table-striped-color: #060917;
   --bs-table-active-bg: #cacde8;
@@ -5777,7 +5777,7 @@ textarea.form-control-lg {
 
 .list-group-item-primary {
   color: #3d4499;
-  background-color: #e0e3ff;
+  background-color: #ffe0e096;
 }
 .list-group-item-primary.list-group-item-action:hover, .list-group-item-primary.list-group-item-action:focus {
   color: #3d4499;
@@ -15395,7 +15395,7 @@ textarea.form-control-lg {
 }
 
 .text-cyan-100 {
-  color: #E0E3FF !important;
+  color: #ffe0e096 !important;
 }
 
 .text-cyan-200 {
@@ -15685,7 +15685,7 @@ textarea.form-control-lg {
 }
 
 .bg-cyan-100 {
-  background-color: #E0E3FF !important;
+  background-color: #ffe0e096 !important;
 }
 
 .bg-cyan-200 {
@@ -16588,7 +16588,7 @@ tbody tr:last-child td {
 
 .bg-light-primary {
   color: darkred;
-  background-color: #E0E3FF;
+  background-color: #ffe0e096;
 }
 
 .bg-light-secondary {
@@ -16883,12 +16883,12 @@ ul {
   white-space: nowrap;
 }
 .aside-menu-container__aside-menu .nav-item .nav-link:hover {
-  background: #E0E3FF;
+  background: #ffe0e096;
   border-right-color: darkred;
   color: #212529;
 }
 .aside-menu-container__aside-menu .nav-item.active > .nav-link {
-  background: #E0E3FF;
+  background: #ffe0e096;
   border-right-color: darkred;
   color: #212529;
 }
