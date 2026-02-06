@@ -72,7 +72,7 @@ const SuppliersReport = (props) => {
             name: getFormattedMessage("customer.title"),
             sortField: "name",
             sortable: true,
-            width: "200px",
+            width: "400px",
             cell: (row) => {
                 return (
                     <span className="badge bg-light-danger">
