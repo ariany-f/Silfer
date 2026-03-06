@@ -232,8 +232,16 @@ class MainProductAPIController extends AppBaseController
     {
         $input = $request->all();
 
+        // Validar se product_ids existe e é um array não vazio
         if (!isset($input['product_ids']) || !is_array($input['product_ids']) || empty($input['product_ids'])) {
             return $this->sendError('Product IDs are required');
+        }
+
+        // Validar que todos os IDs são inteiros válidos
+        foreach ($input['product_ids'] as $id) {
+            if (!is_numeric($id) || (int)$id <= 0) {
+                return $this->sendError('Invalid product ID: ' . $id);
+            }
         }
 
         try {

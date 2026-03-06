@@ -19,6 +19,11 @@ export default {
                 }
                 if (isFormData) {
                     config.headers['Content-Type'] = 'multipart/form-data';
+                } else {
+                    // Garantir que requisições JSON tenham o Content-Type correto
+                    if (!config.headers['Content-Type'] && config.data && typeof config.data === 'object' && !(config.data instanceof FormData)) {
+                        config.headers['Content-Type'] = 'application/json';
+                    }
                 }
                 return config;
             },
