@@ -1,4 +1,5 @@
 import apiConfig from "../../config/apiConfigWthFormData";
+import apiConfigJSON from "../../config/apiConfig"; // Para requisições JSON (bulk operations)
 import { apiBaseURL, productActionType, toastType } from "../../constants";
 import { addToast } from "./toastAction";
 import {
@@ -355,7 +356,7 @@ export const generateBarcode = async (data) => {
 
 export const updateMultipleProducts = (productIds, updateData, onSuccess) => async (dispatch) => {
     dispatch(setSavingButton(true));
-    apiConfig
+    apiConfigJSON
         .post(apiBaseURL.MAIN_PRODUCTS + "/bulk-update", {
             product_ids: productIds,
             ...updateData
@@ -392,7 +393,7 @@ export const duplicateMultipleProducts = (productIds, onSuccess) => async (dispa
         })
     );
     
-    apiConfig
+    apiConfigJSON
         .post(apiBaseURL.MAIN_PRODUCTS + "/bulk-duplicate", {
             product_ids: productIds
         })
