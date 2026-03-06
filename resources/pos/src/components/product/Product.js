@@ -131,10 +131,20 @@ const Product = (props) => {
 
     const handleDuplicateProducts = () => {
         if (selectedProducts.length > 0) {
-            const messageTemplate = intl.formatMessage(
-                { id: "product.duplicate.confirm.message" },
-                { count: selectedProducts.length }
-            );
+            let messageTemplate;
+            try {
+                messageTemplate = intl.formatMessage(
+                    { id: "product.duplicate.confirm.message", defaultMessage: "Tem certeza que deseja duplicar {count} produto(s)? Os novos produtos terão códigos diferentes." },
+                    { count: selectedProducts.length }
+                );
+            } catch (e) {
+                messageTemplate = `Tem certeza que deseja duplicar ${selectedProducts.length} produto(s)? Os novos produtos terão códigos diferentes.`;
+            }
+            
+            // Garantir que é uma string
+            if (typeof messageTemplate !== 'string') {
+                messageTemplate = `Tem certeza que deseja duplicar ${selectedProducts.length} produto(s)? Os novos produtos terão códigos diferentes.`;
+            }
             
             if (window.confirm(messageTemplate)) {
                 duplicateMultipleProducts(selectedProducts, () => {
