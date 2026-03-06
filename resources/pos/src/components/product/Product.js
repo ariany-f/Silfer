@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 import { Button, Image } from "react-bootstrap-v5";
+import { useIntl } from "react-intl";
 import MasterLayout from "../MasterLayout";
 import { fetchAllMainProducts } from "../../store/action/productAction";
 import ReactDataTable from "../../shared/table/ReactDataTable";
@@ -57,6 +58,7 @@ const Product = (props) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [showEditMultipleModal, setShowEditMultipleModal] = useState(false);
     const navigate = useNavigate();
+    const intl = useIntl();
 
     const [importProduct, setimportProduct] = useState(false);
     const handleClose = () => {
@@ -129,10 +131,12 @@ const Product = (props) => {
 
     const handleDuplicateProducts = () => {
         if (selectedProducts.length > 0) {
-            const confirmMessage = getFormattedMessage("product.duplicate.confirm.message")
-                .replace("{count}", selectedProducts.length);
+            const messageTemplate = intl.formatMessage(
+                { id: "product.duplicate.confirm.message" },
+                { count: selectedProducts.length }
+            );
             
-            if (window.confirm(confirmMessage)) {
+            if (window.confirm(messageTemplate)) {
                 duplicateMultipleProducts(selectedProducts, () => {
                     setIsMultipleEditMode(false);
                     setSelectedProducts([]);
