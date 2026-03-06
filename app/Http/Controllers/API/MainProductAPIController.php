@@ -230,11 +230,38 @@ class MainProductAPIController extends AppBaseController
 
     public function bulkDuplicate(Request $request): JsonResponse
     {
-        $input = $request->all();
+        try {
+            // Obter dados da requisição - tentar JSON primeiro, depois all()
+            $input = [];
+            
+            if ($request->isJson() && $request->json()) {
+                $input = $request->json()->all();
+            } else {
+                $input = $request->all();
+            }
+            
+            // Se ainda estiver vazio, tentar ler o conteúdo bruto
+            if (empty($input)) {
+                $rawContent = $request->getContent();
+                if (!empty($rawContent)) {
+                    $decoded = json_decode($rawContent, true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $input = $decoded;
+                    }
+                }
+            }
 
-        // Validar se product_ids existe e é um array não vazio
-        if (!isset($input['product_ids']) || !is_array($input['product_ids']) || empty($input['product_ids'])) {
-            return $this->sendError('Product IDs are required');
+            // Validar se product_ids existe e é um array não vazio
+            if (!isset($input['product_ids']) || !is_array($input['product_ids']) || empty($input['product_ids'])) {
+                return $this->sendError('Product IDs are required. Received: ' . json_encode($input));
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Se houver uma ValidationException, retornar erro específico
+            $errors = $e->errors();
+            $firstError = collect($errors)->first();
+            return $this->sendError($firstError[0] ?? 'Validation failed');
+        } catch (\Exception $e) {
+            return $this->sendError('Error processing request: ' . $e->getMessage());
         }
 
         // Validar que todos os IDs são inteiros válidos
