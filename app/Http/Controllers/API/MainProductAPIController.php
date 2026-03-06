@@ -9,6 +9,7 @@ use App\Http\Resources\MainProductCollection;
 use App\Http\Resources\MainProductResource;
 use App\Models\MainProduct;
 use App\Models\Product;
+use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Models\SaleItem;
 use App\Models\VariationProduct;
@@ -184,6 +185,8 @@ class MainProductAPIController extends AppBaseController
         
         if (isset($input['sale_unit'])) {
             $updateData['sale_unit'] = $input['sale_unit'];
+            // Se mudar a unidade de venda, também muda a unidade de compra para a mesma
+            $updateData['purchase_unit'] = $input['sale_unit'];
         }
         
         if (isset($input['brand_id'])) {
@@ -454,6 +457,40 @@ class MainProductAPIController extends AppBaseController
                             'variation_type_id' => $product->variationProduct->variation_type_id,
                             'main_product_id' => $newMainProduct->id,
                         ]);
+                    }
+                    
+                    // Copiar PurchaseItems relacionados ao produto original
+                    // Usar selectRaw para pegar valores diretos do banco, evitando accessors
+                    $purchaseItems = DB::table('purchase_items')
+                        ->where('product_id', $product->id)
+                        ->get();
+                    
+                    foreach ($purchaseItems as $purchaseItem) {
+                        // Buscar o warehouse_id da compra
+                        $purchase = Purchase::find($purchaseItem->purchase_id);
+                        $warehouseId = $purchase ? $purchase->warehouse_id : null;
+                        
+                        // Usar valores diretos do banco sem passar pelos accessors do modelo
+                        PurchaseItem::create([
+                            'purchase_id' => $purchaseItem->purchase_id,
+                            'product_id' => $newProduct->id,
+                            'product_cost' => $purchaseItem->product_cost,
+                            'net_unit_cost' => $purchaseItem->net_unit_cost,
+                            'tax_type' => $purchaseItem->tax_type,
+                            'tax_value' => $purchaseItem->tax_value,
+                            'tax_amount' => $purchaseItem->tax_amount,
+                            'discount_type' => $purchaseItem->discount_type,
+                            'discount_value' => $purchaseItem->discount_value,
+                            'discount_amount' => $purchaseItem->discount_amount,
+                            'purchase_unit' => $purchaseItem->purchase_unit, // Valor direto do banco
+                            'quantity' => $purchaseItem->quantity,
+                            'sub_total' => $purchaseItem->sub_total,
+                        ]);
+                        
+                        // Adicionar quantidade ao estoque do novo produto
+                        if ($warehouseId) {
+                            manageStock($warehouseId, $newProduct->id, $purchaseItem->quantity);
+                        }
                     }
                 }
             }
