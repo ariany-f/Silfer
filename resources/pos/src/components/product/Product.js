@@ -22,6 +22,11 @@ import ImportProductModel from "./ImportProductModel";
 import { productExcelAction } from "../../store/action/productExcelAction";
 import { Permissions } from "../../constants";
 import { useNavigate } from "react-router";
+import EditMultipleProduct from "./EditMultipleProduct";
+import { fetchAllBrands } from "../../store/action/brandsAction";
+import { fetchAllProductCategories } from "../../store/action/productCategoryAction";
+import { fetchUnits } from "../../store/action/unitsAction";
+import { duplicateMultipleProducts } from "../../store/action/productAction";
 
 const Product = (props) => {
     const {
@@ -34,13 +39,23 @@ const Product = (props) => {
         productUnitId,
         allConfigData,
         callAPIAfterImport,
-        isCallFetchDataApi
+        isCallFetchDataApi,
+        fetchAllBrands,
+        fetchAllProductCategories,
+        fetchUnits,
+        brands,
+        productCategories,
+        units,
+        duplicateMultipleProducts
     } = props;
 
     const [deleteModel, setDeleteModel] = useState(false);
     const [isDelete, setIsDelete] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [lightBoxImage, setLightBoxImage] = useState([]);
+    const [isMultipleEditMode, setIsMultipleEditMode] = useState(false);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [showEditMultipleModal, setShowEditMultipleModal] = useState(false);
     const navigate = useNavigate();
 
     const [importProduct, setimportProduct] = useState(false);
@@ -76,6 +91,64 @@ const Product = (props) => {
     const goToProductDetailPage = (ProductId) => {
         navigate("/app/user/products/detail/" + ProductId);
     };
+
+    const handleToggleMultipleEdit = () => {
+        setIsMultipleEditMode(!isMultipleEditMode);
+        if (isMultipleEditMode) {
+            setSelectedProducts([]);
+        }
+    };
+
+    const handleProductSelect = (productId) => {
+        setSelectedProducts(prev => {
+            if (prev.includes(productId)) {
+                return prev.filter(id => id !== productId);
+            } else {
+                return [...prev, productId];
+            }
+        });
+    };
+
+    const handleSelectAll = () => {
+        if (selectedProducts.length === itemsValue.length) {
+            setSelectedProducts([]);
+        } else {
+            setSelectedProducts(itemsValue.map(item => item.id));
+        }
+    };
+
+    const handleOpenEditModal = () => {
+        if (selectedProducts.length > 0) {
+            setShowEditMultipleModal(true);
+        }
+    };
+
+    const handleCloseEditModal = () => {
+        setShowEditMultipleModal(false);
+    };
+
+    const handleDuplicateProducts = () => {
+        if (selectedProducts.length > 0) {
+            const confirmMessage = getFormattedMessage("product.duplicate.confirm.message")
+                .replace("{count}", selectedProducts.length);
+            
+            if (window.confirm(confirmMessage)) {
+                duplicateMultipleProducts(selectedProducts, () => {
+                    setIsMultipleEditMode(false);
+                    setSelectedProducts([]);
+                    fetchAllMainProducts({}, true);
+                });
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (isMultipleEditMode) {
+            fetchAllBrands();
+            fetchAllProductCategories();
+            fetchUnits();
+        }
+    }, [isMultipleEditMode]);
 
     const currencySymbol =
         frontSetting &&
@@ -131,10 +204,28 @@ const Product = (props) => {
 
     const columns = [
         {
-            name: getFormattedMessage("product.title"),
+            name: isMultipleEditMode ? (
+                <input
+                    type="checkbox"
+                    checked={selectedProducts.length === itemsValue.length && itemsValue.length > 0}
+                    onChange={handleSelectAll}
+                    onClick={(e) => e.stopPropagation()}
+                />
+            ) : getFormattedMessage("product.title"),
             sortField: "name",
             sortable: false,
+            width: isMultipleEditMode ? "80px" : "auto",
             cell: (row) => {
+                if (isMultipleEditMode) {
+                    return (
+                        <input
+                            type="checkbox"
+                            checked={selectedProducts.includes(row.id)}
+                            onChange={() => handleProductSelect(row.id)}
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    );
+                }
                 const imageUrl = row.images
                     ? row.images.imageUrls && row.images.imageUrls[0]
                     : null;
@@ -262,6 +353,46 @@ const Product = (props) => {
         <MasterLayout>
             <TopProgressBar />
             <TabTitle title={placeholderText("products.title")} />
+            <div className="d-flex justify-content-end mb-3">
+                {!isMultipleEditMode ? (
+                    getPermission(allConfigData?.permissions, Permissions.EDIT_PRODUCTS) && (
+                        <Button
+                            variant="primary"
+                            onClick={handleToggleMultipleEdit}
+                            className="me-2"
+                        >
+                            {getFormattedMessage("product.edit.multiple.title")}
+                        </Button>
+                    )
+                ) : (
+                    <>
+                        <Button
+                            variant="secondary"
+                            onClick={handleToggleMultipleEdit}
+                            className="me-2"
+                        >
+                            {getFormattedMessage("product.cancel.selection.title")}
+                        </Button>
+                        {selectedProducts.length > 0 && (
+                            <>
+                                <Button
+                                    variant="primary"
+                                    onClick={handleOpenEditModal}
+                                    className="me-2"
+                                >
+                                    {getFormattedMessage("product.edit.selected.title")} ({selectedProducts.length})
+                                </Button>
+                                <Button
+                                    variant="success"
+                                    onClick={handleDuplicateProducts}
+                                >
+                                    {getFormattedMessage("product.duplicate.selected.title")} ({selectedProducts.length})
+                                </Button>
+                            </>
+                        )}
+                    </>
+                )}
+            </div>
             <ReactDataTable
                 columns={columns}
                 items={itemsValue}
@@ -310,6 +441,16 @@ const Product = (props) => {
                     show={importProduct}
                 />
             )}
+            {showEditMultipleModal && (
+                <EditMultipleProduct
+                    show={showEditMultipleModal}
+                    handleClose={handleCloseEditModal}
+                    selectedProductIds={selectedProducts}
+                    brands={brands}
+                    productCategories={productCategories}
+                    units={units}
+                />
+            )}
         </MasterLayout>
     );
 };
@@ -323,7 +464,10 @@ const mapStateToProps = (state) => {
         productUnitId,
         allConfigData,
         callAPIAfterImport,
-        isCallFetchDataApi
+        isCallFetchDataApi,
+        brands,
+        productCategories,
+        units
     } = state;
     return {
         products,
@@ -333,11 +477,18 @@ const mapStateToProps = (state) => {
         productUnitId,
         allConfigData,
         callAPIAfterImport,
-        isCallFetchDataApi
+        isCallFetchDataApi,
+        brands: brands || [],
+        productCategories: productCategories || [],
+        units: units || []
     };
 };
 
 export default connect(mapStateToProps, {
     fetchAllMainProducts,
     productExcelAction,
+    fetchAllBrands,
+    fetchAllProductCategories,
+    fetchUnits,
+    duplicateMultipleProducts,
 })(Product);

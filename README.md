@@ -63,3 +63,10 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 # e-pos-saas
+
+## 📚 Documentação
+
+- [Guia de Build do Frontend](./FRONTEND_BUILD_GUIDE.md) - Como compilar e fazer build do sistema frontend
+- [Guia de Arquivos para Deploy](./DEPLOY_FILES_GUIDE.md) - Quais arquivos atualizar no servidor remoto após o build
+- [Guia de Criação de Super Admin](./CREATE_SUPERADMIN_GUIDE.md) - Como criar um usuário super admin
+- [Locais de Logging](./LOGGING_LOCATIONS.md) - Documentação sobre sistema de logs

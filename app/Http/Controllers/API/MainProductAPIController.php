@@ -172,6 +172,196 @@ class MainProductAPIController extends AppBaseController
         return new MainProductResource($product);
     }
 
+    public function bulkUpdate(Request $request): JsonResponse
+    {
+        $input = $request->all();
+
+        if (!isset($input['product_ids']) || !is_array($input['product_ids']) || empty($input['product_ids'])) {
+            return $this->sendError('Product IDs are required');
+        }
+
+        $updateData = [];
+        
+        if (isset($input['sale_unit'])) {
+            $updateData['sale_unit'] = $input['sale_unit'];
+        }
+        
+        if (isset($input['brand_id'])) {
+            $updateData['brand_id'] = $input['brand_id'];
+        }
+        
+        if (isset($input['product_category_id'])) {
+            $updateData['product_category_id'] = $input['product_category_id'];
+        }
+
+        if (empty($updateData)) {
+            return $this->sendError('At least one field must be provided for update');
+        }
+
+        try {
+            DB::beginTransaction();
+            
+            $productRepo = app(ProductRepository::class);
+            
+            foreach ($input['product_ids'] as $mainProductId) {
+                $mainProduct = MainProduct::find($mainProductId);
+                
+                if (!$mainProduct) {
+                    continue;
+                }
+
+                // Atualizar produtos relacionados ao main_product
+                $products = Product::where('main_product_id', $mainProductId)->get();
+                
+                foreach ($products as $product) {
+                    $productUpdateData = $updateData;
+                    $productRepo->update($productUpdateData, $product->id);
+                }
+            }
+            
+            DB::commit();
+            
+            return $this->sendSuccess('Products updated successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError($e->getMessage());
+        }
+    }
+
+    public function bulkDuplicate(Request $request): JsonResponse
+    {
+        $input = $request->all();
+
+        if (!isset($input['product_ids']) || !is_array($input['product_ids']) || empty($input['product_ids'])) {
+            return $this->sendError('Product IDs are required');
+        }
+
+        try {
+            DB::beginTransaction();
+            
+            $productRepo = app(ProductRepository::class);
+            
+            // Buscar o maior código numérico existente para gerar sequência
+            $lastCodeNumber = 0;
+            
+            // Buscar em Products - pegar todos e filtrar localmente
+            $products = Product::whereNotNull('code')->get();
+            
+            foreach ($products as $product) {
+                // Extrair número do código (ex: PRD000123 -> 123, ou apenas números)
+                if (preg_match('/(\d+)$/', $product->code, $matches)) {
+                    $codeNum = (int) $matches[1];
+                    if ($codeNum > $lastCodeNumber) {
+                        $lastCodeNumber = $codeNum;
+                    }
+                }
+            }
+            
+            // Buscar em MainProducts também
+            $mainProducts = MainProduct::whereNotNull('code')->get();
+            
+            foreach ($mainProducts as $mainProduct) {
+                if (preg_match('/(\d+)$/', $mainProduct->code, $matches)) {
+                    $codeNum = (int) $matches[1];
+                    if ($codeNum > $lastCodeNumber) {
+                        $lastCodeNumber = $codeNum;
+                    }
+                }
+            }
+            
+            $currentCodeNumber = $lastCodeNumber;
+            
+            foreach ($input['product_ids'] as $mainProductId) {
+                $mainProduct = MainProduct::with('products')->find($mainProductId);
+                
+                if (!$mainProduct) {
+                    continue;
+                }
+
+                // Gerar novo código sequencial
+                $currentCodeNumber++;
+                $newCode = 'PRD' . str_pad($currentCodeNumber, 6, '0', STR_PAD_LEFT);
+                
+                // Verificar se o código já existe, se sim, incrementar
+                while (Product::where('code', $newCode)->exists() || MainProduct::where('code', $newCode)->exists()) {
+                    $currentCodeNumber++;
+                    $newCode = 'PRD' . str_pad($currentCodeNumber, 6, '0', STR_PAD_LEFT);
+                }
+
+                // Criar novo MainProduct
+                $newMainProduct = MainProduct::create([
+                    'name' => $mainProduct->name . ' (Cópia)',
+                    'code' => $newCode,
+                    'product_unit' => $mainProduct->product_unit,
+                    'product_type' => $mainProduct->product_type,
+                ]);
+
+                // Copiar imagens do MainProduct
+                if ($mainProduct->hasMedia(MainProduct::PATH)) {
+                    $mediaItems = $mainProduct->getMedia(MainProduct::PATH);
+                    foreach ($mediaItems as $mediaItem) {
+                        $newMainProduct->addMediaFromUrl($mediaItem->getUrl())
+                            ->toMediaCollection(MainProduct::PATH, config('app.media_disc'));
+                    }
+                }
+
+                // Duplicar produtos relacionados
+                $products = Product::where('main_product_id', $mainProductId)->get();
+                
+                foreach ($products as $product) {
+                    // Gerar código único para cada produto
+                    $currentCodeNumber++;
+                    $productCode = 'PRD' . str_pad($currentCodeNumber, 6, '0', STR_PAD_LEFT);
+                    
+                    while (Product::where('code', $productCode)->exists()) {
+                        $currentCodeNumber++;
+                        $productCode = 'PRD' . str_pad($currentCodeNumber, 6, '0', STR_PAD_LEFT);
+                    }
+
+                    $productData = [
+                        'name' => $product->name,
+                        'code' => $productCode,
+                        'product_code' => $productCode,
+                        'main_product_id' => $newMainProduct->id,
+                        'product_category_id' => $product->product_category_id,
+                        'brand_id' => $product->brand_id,
+                        'product_cost' => $product->product_cost,
+                        'product_price' => $product->product_price,
+                        'product_unit' => $product->product_unit,
+                        'sale_unit' => $product->sale_unit,
+                        'purchase_unit' => $product->purchase_unit,
+                        'stock_alert' => $product->stock_alert,
+                        'quantity_limit' => $product->quantity_limit,
+                        'order_tax' => $product->order_tax,
+                        'tax_type' => $product->tax_type,
+                        'notes' => $product->notes,
+                        'barcode_symbol' => $product->barcode_symbol,
+                        'expiry_date' => $product->expiry_date,
+                    ];
+
+                    $newProduct = $productRepo->storeProduct($productData);
+
+                    // Copiar variações se houver
+                    if ($product->variationProduct) {
+                        VariationProduct::create([
+                            'product_id' => $newProduct->id,
+                            'variation_id' => $product->variationProduct->variation_id,
+                            'variation_type_id' => $product->variationProduct->variation_type_id,
+                            'main_product_id' => $newMainProduct->id,
+                        ]);
+                    }
+                }
+            }
+            
+            DB::commit();
+            
+            return $this->sendSuccess('Products duplicated successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError($e->getMessage());
+        }
+    }
+
     public function destroy($id): JsonResponse
     {
         try {
@@ -180,17 +370,16 @@ class MainProductAPIController extends AppBaseController
 
             foreach ($products as $product) {
 
-                $purchaseItemModels = [
-                    PurchaseItem::class,
-                ];
                 $saleItemModels = [
                     SaleItem::class,
                 ];
 
-                $purchaseResult = canDelete($purchaseItemModels, 'product_id', $product->id);
+                // Excluir PurchaseItem relacionados ao produto
+                PurchaseItem::where('product_id', $product->id)->delete();
+
                 $saleResult = canDelete($saleItemModels, 'product_id', $product->id);
 
-                if ($purchaseResult || $saleResult) {
+                if ($saleResult) {
                     return $this->sendError(__('messages.error.product_cant_deleted'));
                 }
 

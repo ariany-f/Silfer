@@ -352,3 +352,70 @@ export const generateBarcode = async (data) => {
     );
     return response?.data?.data;
 };
+
+export const updateMultipleProducts = (productIds, updateData, onSuccess) => async (dispatch) => {
+    dispatch(setSavingButton(true));
+    apiConfig
+        .post(apiBaseURL.MAIN_PRODUCTS + "/bulk-update", {
+            product_ids: productIds,
+            ...updateData
+        })
+        .then((response) => {
+            dispatch(
+                addToast({
+                    text: getFormattedMessage(
+                        "product.success.bulk.edit.message"
+                    ),
+                })
+            );
+            dispatch(setSavingButton(false));
+            if (onSuccess) {
+                onSuccess();
+            }
+        })
+        .catch(({ response }) => {
+            dispatch(setSavingButton(false));
+            dispatch(
+                addToast({
+                    text: response?.data?.message || getFormattedMessage("product.error.bulk.edit.message"),
+                    type: toastType.ERROR,
+                })
+            );
+        });
+};
+
+export const duplicateMultipleProducts = (productIds, onSuccess) => async (dispatch) => {
+    dispatch(setSavingButton(true));
+    dispatch(
+        addToast({
+            text: getFormattedMessage("product.duplicate.processing.message"),
+        })
+    );
+    
+    apiConfig
+        .post(apiBaseURL.MAIN_PRODUCTS + "/bulk-duplicate", {
+            product_ids: productIds
+        })
+        .then((response) => {
+            dispatch(
+                addToast({
+                    text: getFormattedMessage(
+                        "product.success.bulk.duplicate.message"
+                    ),
+                })
+            );
+            dispatch(setSavingButton(false));
+            if (onSuccess) {
+                onSuccess();
+            }
+        })
+        .catch(({ response }) => {
+            dispatch(setSavingButton(false));
+            dispatch(
+                addToast({
+                    text: response?.data?.message || getFormattedMessage("product.error.bulk.duplicate.message"),
+                    type: toastType.ERROR,
+                })
+            );
+        });
+};

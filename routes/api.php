@@ -148,6 +148,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'main-products/{product}',
             [MainProductAPIController::class, 'update']
         );
+        Route::post(
+            'main-products/bulk-update',
+            [MainProductAPIController::class, 'bulkUpdate']
+        );
+        Route::post(
+            'main-products/bulk-duplicate',
+            [MainProductAPIController::class, 'bulkDuplicate']
+        );
         Route::delete(
             'products-image-delete/{mediaId}',
             [ProductAPIController::class, 'productImageDelete']
