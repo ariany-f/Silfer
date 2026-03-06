@@ -391,8 +391,22 @@ class MainProductAPIController extends AppBaseController
                 if ($mainProduct->hasMedia(MainProduct::PATH)) {
                     $mediaItems = $mainProduct->getMedia(MainProduct::PATH);
                     foreach ($mediaItems as $mediaItem) {
-                        $newMainProduct->addMediaFromUrl($mediaItem->getUrl())
-                            ->toMediaCollection(MainProduct::PATH, config('app.media_disc'));
+                        try {
+                            // Copiar o arquivo diretamente do disco em vez de baixar da URL
+                            $mediaItem->copy($newMainProduct, MainProduct::PATH);
+                        } catch (\Exception $e) {
+                            // Se falhar, tentar copiar o arquivo manualmente
+                            try {
+                                $sourcePath = $mediaItem->getPath();
+                                if (file_exists($sourcePath)) {
+                                    $newMainProduct->addMedia($sourcePath)
+                                        ->toMediaCollection(MainProduct::PATH, config('app.media_disc'));
+                                }
+                            } catch (\Exception $e2) {
+                                // Ignorar erro de cópia de imagem e continuar
+                                \Log::warning('Failed to copy image for product ' . $newMainProduct->id . ': ' . $e2->getMessage());
+                            }
+                        }
                     }
                 }
 
