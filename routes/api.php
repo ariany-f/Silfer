@@ -139,6 +139,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // products route
 
         Route::resource('products', ProductAPIController::class);
+        // Rotas específicas ANTES do resource para evitar conflitos
+        Route::post(
+            'main-products/bulk-update',
+            [MainProductAPIController::class, 'bulkUpdate']
+        )->name('main-products.bulk-update');
+        Route::post(
+            'main-products/bulk-duplicate',
+            [MainProductAPIController::class, 'bulkDuplicate']
+        )->name('main-products.bulk-duplicate');
         Route::resource('main-products', MainProductAPIController::class);
         Route::post(
             'products/{product}',
@@ -147,14 +156,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post(
             'main-products/{product}',
             [MainProductAPIController::class, 'update']
-        );
-        Route::post(
-            'main-products/bulk-update',
-            [MainProductAPIController::class, 'bulkUpdate']
-        );
-        Route::post(
-            'main-products/bulk-duplicate',
-            [MainProductAPIController::class, 'bulkDuplicate']
         );
         Route::delete(
             'products-image-delete/{mediaId}',

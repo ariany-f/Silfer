@@ -393,10 +393,15 @@ export const duplicateMultipleProducts = (productIds, onSuccess) => async (dispa
         })
     );
     
+    // Garantir que productIds é um array
+    const payload = {
+            product_ids: Array.isArray(productIds) ? productIds : [productIds]
+        };
+    
+    console.log('bulkDuplicate payload:', payload);
+    
     apiConfigJSON
-        .post(apiBaseURL.MAIN_PRODUCTS + "/bulk-duplicate", {
-            product_ids: productIds
-        })
+        .post(apiBaseURL.MAIN_PRODUCTS + "/bulk-duplicate", payload)
         .then((response) => {
             dispatch(
                 addToast({

@@ -230,37 +230,93 @@ class MainProductAPIController extends AppBaseController
 
     public function bulkDuplicate(Request $request): JsonResponse
     {
+        // Debug: retornar os dados recebidos diretamente na resposta para ver o que está chegando
+        $debugInfo = [
+            'content_type' => $request->header('Content-Type'),
+            'method' => $request->method(),
+            'all_data' => $request->all(),
+            'json_data' => $request->json() ? $request->json()->all() : null,
+            'raw_content' => $request->getContent(),
+            'is_json' => $request->isJson(),
+        ];
+        
+        // Tentar escrever em múltiplos lugares
+        try {
+            \Log::info('=== bulkDuplicate CALLED ===', $debugInfo);
+        } catch (\Exception $e) {
+            // Ignorar erro de log
+        }
+        
+        try {
+            $logFile = storage_path('logs/bulk-debug.txt');
+            file_put_contents($logFile, date('Y-m-d H:i:s') . " - bulkDuplicate called\n" . print_r($debugInfo, true) . "\n\n", FILE_APPEND | LOCK_EX);
+        } catch (\Exception $e) {
+            // Ignorar erro de arquivo
+        }
+        \Log::info('Content-Type: ' . $request->header('Content-Type'));
+        \Log::info('Method: ' . $request->method());
+        \Log::info('URL: ' . $request->fullUrl());
+        \Log::info('Raw Content: ' . $request->getContent());
+        
         try {
             // Obter dados da requisição - tentar JSON primeiro, depois all()
             $input = [];
             
+            \Log::info('isJson(): ' . ($request->isJson() ? 'true' : 'false'));
+            
             if ($request->isJson() && $request->json()) {
                 $input = $request->json()->all();
+                \Log::info('Got from json(): ' . json_encode($input));
             } else {
                 $input = $request->all();
+                \Log::info('Got from all(): ' . json_encode($input));
             }
             
             // Se ainda estiver vazio, tentar ler o conteúdo bruto
             if (empty($input)) {
                 $rawContent = $request->getContent();
+                \Log::info('Input empty, raw content: ' . $rawContent);
                 if (!empty($rawContent)) {
                     $decoded = json_decode($rawContent, true);
                     if (json_last_error() === JSON_ERROR_NONE) {
                         $input = $decoded;
+                        \Log::info('Decoded from raw: ' . json_encode($input));
+                    } else {
+                        \Log::error('JSON decode error: ' . json_last_error_msg());
                     }
                 }
             }
 
+            \Log::info('Final input: ' . json_encode($input));
+
             // Validar se product_ids existe e é um array não vazio
             if (!isset($input['product_ids']) || !is_array($input['product_ids']) || empty($input['product_ids'])) {
-                return $this->sendError('Product IDs are required. Received: ' . json_encode($input));
+                // Retornar erro com debug completo para ver o que está chegando
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product IDs are required',
+                    'debug' => [
+                        'input' => $input,
+                        'content_type' => $request->header('Content-Type'),
+                        'is_json' => $request->isJson(),
+                        'all_data' => $request->all(),
+                        'json_data' => $request->json() ? $request->json()->all() : null,
+                        'raw_content' => $request->getContent(),
+                    ]
+                ], 422);
             }
+            
+            \Log::info('Validation passed, product_ids: ' . json_encode($input['product_ids']));
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Se houver uma ValidationException, retornar erro específico
+            \Log::error('ValidationException caught: ' . $e->getMessage());
+            \Log::error('Validation errors: ' . json_encode($e->errors()));
             $errors = $e->errors();
             $firstError = collect($errors)->first();
             return $this->sendError($firstError[0] ?? 'Validation failed');
         } catch (\Exception $e) {
+            \Log::error('Exception in bulkDuplicate: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
             return $this->sendError('Error processing request: ' . $e->getMessage());
         }
 

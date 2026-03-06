@@ -55,6 +55,17 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof ValidationException) {
+            // Log detalhado da ValidationException
+            \Log::error('=== ValidationException CAUGHT ===');
+            \Log::error('URL: ' . $request->fullUrl());
+            \Log::error('Method: ' . $request->method());
+            \Log::error('Content-Type: ' . $request->header('Content-Type'));
+            \Log::error('Request Data: ' . json_encode($request->all()));
+            \Log::error('JSON Data: ' . json_encode($request->json() ? $request->json()->all() : []));
+            \Log::error('Raw Content: ' . $request->getContent());
+            \Log::error('Validation Errors: ' . json_encode($exception->errors()));
+            \Log::error('Stack Trace: ' . $exception->getTraceAsString());
+            
             $firstError = collect($exception->errors())->first();
 
             return response()->json(new JSONApiError([
