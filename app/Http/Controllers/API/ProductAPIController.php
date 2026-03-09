@@ -253,4 +253,52 @@ class ProductAPIController extends AppBaseController
         $barcode =  $this->productRepository->generateBarcodeBase64($request->code);
         return $this->sendResponse($barcode, 'Barcode generated successfully.');
     }
+
+    public function bulkUpdate(Request $request): JsonResponse
+    {
+        $input = $request->all();
+
+        if (!isset($input['product_ids']) || !is_array($input['product_ids']) || empty($input['product_ids'])) {
+            return $this->sendError('Product IDs are required');
+        }
+
+        $updateData = [];
+        
+        if (isset($input['product_cost'])) {
+            $updateData['product_cost'] = $input['product_cost'];
+        }
+        
+        if (isset($input['product_price'])) {
+            $updateData['product_price'] = $input['product_price'];
+        }
+        
+        if (isset($input['stock_alert'])) {
+            $updateData['stock_alert'] = $input['stock_alert'];
+        }
+
+        if (empty($updateData)) {
+            return $this->sendError('At least one field must be provided for update');
+        }
+
+        try {
+            DB::beginTransaction();
+            
+            foreach ($input['product_ids'] as $productId) {
+                $product = Product::find($productId);
+                
+                if (!$product) {
+                    continue;
+                }
+
+                $this->productRepository->update($updateData, $product->id);
+            }
+            
+            DB::commit();
+            
+            return $this->sendSuccess('Products updated successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError($e->getMessage());
+        }
+    }
 }

@@ -425,3 +425,34 @@ export const duplicateMultipleProducts = (productIds, onSuccess) => async (dispa
             );
         });
 };
+
+export const updateMultipleVariations = (variationIds, updateData, onSuccess) => async (dispatch) => {
+    dispatch(setSavingButton(true));
+    apiConfigJSON
+        .post(apiBaseURL.PRODUCTS + "/bulk-update", {
+            product_ids: variationIds,
+            ...updateData
+        })
+        .then((response) => {
+            dispatch(
+                addToast({
+                    text: getFormattedMessage(
+                        "product.success.bulk.edit.variation.message"
+                    ),
+                })
+            );
+            dispatch(setSavingButton(false));
+            if (onSuccess) {
+                onSuccess();
+            }
+        })
+        .catch(({ response }) => {
+            dispatch(setSavingButton(false));
+            dispatch(
+                addToast({
+                    text: response?.data?.message || getFormattedMessage("product.error.bulk.edit.variation.message"),
+                    type: toastType.ERROR,
+                })
+            );
+        });
+};

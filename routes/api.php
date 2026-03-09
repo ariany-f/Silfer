@@ -141,6 +141,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::resource('products', ProductAPIController::class);
         // Rotas específicas ANTES do resource para evitar conflitos
         Route::post(
+            'products/bulk-update',
+            [ProductAPIController::class, 'bulkUpdate']
+        )->name('products.bulk-update');
+        Route::post(
             'main-products/bulk-update',
             [MainProductAPIController::class, 'bulkUpdate']
         )->name('main-products.bulk-update');
