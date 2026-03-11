@@ -11,6 +11,7 @@ use App\Exports\PurchaseReportExport;
 use App\Exports\PurchaseReturnWarehouseReportExport;
 use App\Exports\PurchasesWarehouseReportExport;
 use App\Exports\SaleReportExport;
+use App\Exports\SalesItemsReportExport;
 use App\Exports\SaleReturnWarehouseReportExport;
 use App\Exports\SalesWarehouseReportExport;
 use App\Exports\StockReportExport;
@@ -147,6 +148,18 @@ class ReportAPIController extends AppBaseController
         $data['total_sale_excel_url'] = Storage::url('excel/total-sales-report-excel.xlsx');
 
         return $this->sendResponse($data, 'Sale Report retrieved successfully');
+    }
+
+    public function getSalesItemsReportExcel(Request $request): JsonResponse
+    {
+        if (Storage::exists('excel/sales-items-report-excel.xlsx')) {
+            Storage::delete('excel/sales-items-report-excel.xlsx');
+        }
+        Excel::store(new SalesItemsReportExport, 'excel/sales-items-report-excel.xlsx');
+
+        $data['sales_items_excel_url'] = Storage::url('excel/sales-items-report-excel.xlsx');
+
+        return $this->sendResponse($data, 'Sales items report retrieved successfully');
     }
 
     public function getPurchaseReportExcel(Request $request): JsonResponse

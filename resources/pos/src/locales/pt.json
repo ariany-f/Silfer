@@ -416,6 +416,7 @@
     "status.filter.ordered.label": "Pedido",
     "payment-status.filter.unpaid.label": "N\u00e3o Pago",
     "excel.btn.label": "EXCEL",
+    "sale.report.excel_items": "EXCEL Itens",
     "cash.label": "Dinheiro",
     "no-option.label": "Sem op\u00e7\u00f5es",
     "select.payment-type.label": "Tipo de Pagamento",

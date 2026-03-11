@@ -354,6 +354,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'total-sale-report-excel',
             [ReportAPIController::class, 'getSalesReportExcel']
         )->name('report-getSalesReportExcel');
+        Route::get(
+            'sales-items-report-excel',
+            [ReportAPIController::class, 'getSalesItemsReportExcel']
+        )->name('report-getSalesItemsReportExcel');
 
         // purchase report
         Route::get(

@@ -397,6 +397,7 @@
     "status.filter.ordered.label": "Ordered",
     "payment-status.filter.unpaid.label": "Unpaid",
     "excel.btn.label": "EXCEL",
+    "sale.report.excel_items": "Excel Items",
     "cash.label": "Cash",
     "no-option.label": "No options",
     "select.payment-type.label": "Payment Type",

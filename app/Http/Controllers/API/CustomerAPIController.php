@@ -160,12 +160,18 @@ class CustomerAPIController extends AppBaseController
         // Refresh dos pagamentos avulsos
         $customer->load('customerPayments');
         
-        // Calcular dados de pagamentos avulsos
+        // Calcular dados de pagamentos avulsos (mesma lógica do datatable)
         $salesData['totalPaymentsAmount'] = $customer->customerPayments->sum('amount');
         $salesData['totalPaymentsConcludedAmount'] = $customer->customerPayments
             ->where('status', \App\Models\CustomerPayment::STATUS_COMPLETED)
             ->sum('amount');
-        $salesData['totalDueAmountAfterPayments'] = $salesData['totalSalesDue'] - $salesData['totalPaymentsConcludedAmount'];
+        $salesData['totalPaymentsPendingAmount'] = $customer->customerPayments
+            ->where('status', \App\Models\CustomerPayment::STATUS_PENDING)
+            ->sum('amount');
+        // A pagar final = devido das vendas + pendentes avulsos - concluídos avulsos
+        $salesData['totalDueAmountAfterPayments'] = $salesData['totalSalesDue']
+            + ($salesData['totalPaymentsPendingAmount'] ?? 0)
+            - ($salesData['totalPaymentsConcludedAmount'] ?? 0);
 
         $data = [];
 

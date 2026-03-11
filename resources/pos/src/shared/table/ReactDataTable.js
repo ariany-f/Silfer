@@ -42,6 +42,7 @@ const ReactDataTable = (props) => {
         isReportPdf,
         isEXCEL,
         onExcelClick,
+        onExcelItemsClick,
         isShowSearch,
         isPaymentType,
         subHeader = true,
@@ -240,16 +241,26 @@ const ReactDataTable = (props) => {
                         ""
                     )}
                     {isEXCEL ? (
-                        <div className="text-end mb-2 ">
+                        <div className="text-end mb-2 d-flex gap-2 justify-content-end flex-wrap">
                             <Button
                                 type="button"
                                 variant="primary"
                                 onClick={() => onExcelClick()}
-                                className="me-3 btn-light-primary"
+                                className="btn-light-primary"
                             >
                                 {" "}
                                 {getFormattedMessage("excel.btn.label")}
                             </Button>
+                            {onExcelItemsClick ? (
+                                <Button
+                                    type="button"
+                                    variant="outline-primary"
+                                    onClick={() => onExcelItemsClick()}
+                                    className="btn-light-primary"
+                                >
+                                    {getFormattedMessage("sale.report.excel_items")}
+                                </Button>
+                            ) : null}
                         </div>
                     ) : (
                         ""

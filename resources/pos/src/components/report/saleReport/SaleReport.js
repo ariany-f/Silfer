@@ -11,6 +11,7 @@ import {
 import ReactDataTable from "../../../shared/table/ReactDataTable";
 import { fetchSales } from "../../../store/action/salesAction";
 import { totalSaleReportExcel } from "../../../store/action/totalSaleReportExcel";
+import { salesItemsReportExcel } from "../../../store/action/salesItemsReportExcel";
 import TopProgressBar from "../../../shared/components/loaders/TopProgressBar";
 import moment from "moment";
 
@@ -23,9 +24,11 @@ const SaleReport = (props) => {
         frontSetting,
         dates,
         totalSaleReportExcel,
+        salesItemsReportExcel,
         allConfigData,
     } = props;
     const [isWarehouseValue, setIsWarehouseValue] = useState(false);
+    const [isItemsExcelValue, setIsItemsExcelValue] = useState(false);
     const currencySymbol =
         frontSetting &&
         frontSetting.value &&
@@ -36,6 +39,12 @@ const SaleReport = (props) => {
             totalSaleReportExcel(dates, setIsWarehouseValue);
         }
     }, [isWarehouseValue]);
+
+    useEffect(() => {
+        if (isItemsExcelValue === true) {
+            salesItemsReportExcel(dates, setIsItemsExcelValue);
+        }
+    }, [isItemsExcelValue]);
 
     const itemsValue =
         currencySymbol &&
@@ -213,6 +222,7 @@ const SaleReport = (props) => {
                 isStatus
                 isPaymentStatus
                 onExcelClick={onExcelClick}
+                onExcelItemsClick={() => setIsItemsExcelValue(true)}
             />
         </MasterLayout>
     );
@@ -239,4 +249,5 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
     fetchSales,
     totalSaleReportExcel,
+    salesItemsReportExcel,
 })(SaleReport);
