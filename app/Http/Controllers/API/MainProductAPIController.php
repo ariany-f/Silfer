@@ -414,16 +414,39 @@ class MainProductAPIController extends AppBaseController
                 }
 
                 // Duplicar produtos relacionados
-                $products = Product::where('main_product_id', $mainProductId)->get();
-                
+                $products = Product::with('variationProduct.variation', 'variationProduct.variationType')
+                    ->where('main_product_id', $mainProductId)
+                    ->get();
+
+                // SKU do produto principal (ex: PRD000006 -> 06) para o padrão das variações
+                $mainShortCode = str_pad(preg_replace('/\D/', '', $newCode), 2, '0', STR_PAD_LEFT);
+                $variationIndex = 1;
+
                 foreach ($products as $product) {
-                    // Gerar código único para cada produto
-                    $currentCodeNumber++;
-                    $productCode = 'PRD' . str_pad($currentCodeNumber, 6, '0', STR_PAD_LEFT);
-                    
-                    while (Product::where('code', $productCode)->exists()) {
+                    $productCode = null;
+
+                    // Produto com variação: SKU no padrão VARIAÇÃO - MILIMETRAGEM SKUPRINCIPAL.INDICE (ex: VERMELHO - 16.0MM 06.1)
+                    if ($product->variationProduct) {
+                        $variationName = $product->variationProduct->variation->name ?? '';
+                        $variationTypeName = $product->variationProduct->variationType->name ?? '';
+                        $productCode = trim($variationName) . ' - ' . trim($variationTypeName) . ' ' . $mainShortCode . '.' . $variationIndex;
+                        $variationIndex++;
+
+                        // Garantir que o código seja único
+                        while (Product::where('code', $productCode)->exists()) {
+                            $productCode = trim($variationName) . ' - ' . trim($variationTypeName) . ' ' . $mainShortCode . '.' . $variationIndex;
+                            $variationIndex++;
+                        }
+                    }
+
+                    if ($productCode === null) {
+                        // Produto sem variação (tipo único): manter código sequencial PRD
                         $currentCodeNumber++;
                         $productCode = 'PRD' . str_pad($currentCodeNumber, 6, '0', STR_PAD_LEFT);
+                        while (Product::where('code', $productCode)->exists()) {
+                            $currentCodeNumber++;
+                            $productCode = 'PRD' . str_pad($currentCodeNumber, 6, '0', STR_PAD_LEFT);
+                        }
                     }
 
                     $productData = [
