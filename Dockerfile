@@ -48,7 +48,9 @@ RUN touch storage/logs/.gitkeep \
 # Dependências PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Build frontend
+# Build frontend (MIX_API_URL = build arg, configure no Railway como variável)
+ARG MIX_API_URL
+ENV MIX_API_URL=${MIX_API_URL}
 RUN npm install && npm run production
 
 # Config Nginx (template com LISTEN_PORT para substituir no startup)
