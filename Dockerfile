@@ -26,6 +26,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd exif pdo pdo_mysql zip bcmath
 
+# Aumentar pm.max_children do PHP-FPM (evita "server reached pm.max_children")
+RUN echo 'pm.max_children = 25' >> /usr/local/etc/php-fpm.d/zz-docker.conf
+
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

@@ -3,6 +3,10 @@ set -e
 
 PORT="${PORT:-8080}"
 
+# Garantir permissões de storage/logs em runtime (para logs do Laravel)
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+chmod -R 775 storage bootstrap/cache 2>/dev/null || true
+
 # Substituir PORT no template do Nginx
 sed "s/LISTEN_PORT/$PORT/g" /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 
