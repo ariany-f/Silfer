@@ -2,7 +2,7 @@ import axios from 'axios';
 import axiosInterceptor from './axiosInterceptor';
 import {environment} from './environment';
 
-const wampServer = environment.URL + '/api/';
+const wampServer = environment.API_URL;
 const axiosApi = axios.create({
     baseURL: wampServer,
     withCredentials: true, // Importante para CSRF token e cookies

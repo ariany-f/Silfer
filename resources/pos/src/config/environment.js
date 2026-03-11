@@ -1,5 +1,15 @@
-// Para funcionar com CSRF, frontend e backend devem usar a mesma porta
-// Se o backend está na porta 80, o frontend também deve usar porta 80
+// URL da API: usa MIX_API_URL se definido (build time), senão usa mesma origem + /api/
+const getApiBaseUrl = () => {
+    if (typeof process !== 'undefined' && process.env?.MIX_API_URL) {
+        const url = process.env.MIX_API_URL.trim();
+        return url.endsWith('/') ? url : url + '/';
+    }
+    const base = getOrigin();
+    return base + (base.endsWith('/') ? 'api/' : '/api/');
+};
+
+// Para funcionar com CSRF, frontend e backend devem usar a mesma origem
+// Se usar MIX_API_URL, a API está em outro servidor (CORS deve estar habilitado lá)
 const getOrigin = () => {
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
@@ -28,4 +38,5 @@ const getOrigin = () => {
 
 export const environment = {
     URL: getOrigin(),
+    API_URL: getApiBaseUrl(),
 };
