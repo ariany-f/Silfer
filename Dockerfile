@@ -1,10 +1,10 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm
 
 WORKDIR /app
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Dependências do sistema
+# Dependências do sistema + Nginx
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -14,14 +14,15 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libzip-dev \
     zip \
+    nginx \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 20 (Laravel Mix precisa de Node 14+)
+# Node.js 20 (Laravel Mix)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Extensões PHP (bcmath e mbstring para Laravel)
+# Extensões PHP
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd exif pdo pdo_mysql zip bcmath
 
@@ -31,19 +32,23 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copiar projeto
 COPY . .
 
-# Permissões para Laravel
+# Permissões Laravel
 RUN chmod -R 775 storage bootstrap/cache
 
-# Instalar dependências PHP
+# Dependências PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Instalar dependências JS e build frontend
+# Build frontend
 RUN npm install && npm run production
 
-# Otimizações Laravel para produção
-# (config/route/view cache rodam no startup quando env vars estão disponíveis)
+# Config Nginx (template com LISTEN_PORT para substituir no startup)
+COPY docker/nginx-default.conf.template /etc/nginx/conf.d/default.conf.template
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+# Script de startup (injetar PORT e iniciar FPM + Nginx)
+COPY docker/start-container.sh /start-container.sh
+RUN chmod +x /start-container.sh
 
 EXPOSE 8080
 
-# Railway injeta PORT; usa 8080 como fallback
-CMD ["sh", "-c", "php artisan config:cache 2>/dev/null || true && php artisan route:cache 2>/dev/null || true && php artisan view:cache 2>/dev/null || true && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
+CMD ["/start-container.sh"]
