@@ -37,6 +37,11 @@ RUN mkdir -p storage/framework/{sessions,views,cache} storage/logs \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+# Garantir permissão de escrita em storage/logs (logs do Laravel)
+RUN touch storage/logs/.gitkeep \
+    && chown -R www-data:www-data storage/logs \
+    && chmod -R 775 storage/logs
+
 # Dependências PHP
 RUN composer install --no-dev --optimize-autoloader
 
