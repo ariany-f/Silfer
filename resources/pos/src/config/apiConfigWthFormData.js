@@ -2,7 +2,8 @@ import axios from 'axios';
 import axiosInterceptor from './axiosInterceptor';
 import {environment} from './environment';
 
-const wampServer = environment.URL + '/api/';
+// API_URL já inclui /api/ no final (usa MIX_API_URL quando definido)
+const wampServer = environment.API_URL;
 const axiosApi = axios.create({
     baseURL: wampServer,
 });
