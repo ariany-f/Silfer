@@ -1,14 +1,9 @@
 [phases.setup]
-nixPkgs = ["php82", "nodejs"]
+nixPkgs = [
+  "php82",
+  "php82Extensions.gd",
+  "php82Extensions.exif",
+  "nodejs"
+]
 
 [phases.install]
-cmds = [
-  "install-php-extensions gd exif",
-  "composer install --no-dev --optimize-autoloader --no-interaction"
-]
-
-[phases.build]
-cmds = [
-  "npm ci",
-  "npm run build"
-]
