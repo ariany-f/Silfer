@@ -2,11 +2,10 @@ FROM php:8.2-cli
 
 WORKDIR /app
 
-# Variáveis para evitar erro do React CRA
 ENV SKIP_PREFLIGHT_CHECK=true
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Instalar dependências do sistema
+# Dependências do sistema
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -19,7 +18,7 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm
 
-# Instalar extensões PHP necessárias
+# Extensões PHP
 RUN docker-php-ext-install \
     gd \
     exif \
@@ -27,26 +26,26 @@ RUN docker-php-ext-install \
     pdo_mysql \
     zip
 
-# Instalar composer
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copiar projeto
 COPY . .
 
-# Instalar dependências PHP
+# Instalar dependências Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Instalar dependências do frontend
+# Build do React (dentro da pasta correta)
+WORKDIR /app/resources/pos
 RUN npm ci
-
-# Build React
 RUN npm run build
 
-# Gerar key caso não exista
+# Voltar para raiz do Laravel
+WORKDIR /app
+
+# Gerar key se necessário
 RUN php artisan key:generate || true
 
-# Porta usada pelo Railway
 EXPOSE 8080
 
-# Rodar Laravel
 CMD php artisan serve --host=0.0.0.0 --port=$PORT
