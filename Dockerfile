@@ -36,7 +36,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Build do React (dentro da pasta correta)
-WORKDIR /app/resources/pos
+WORKDIR /app/resources
 RUN npm ci
 RUN npm run build
 
