@@ -419,7 +419,7 @@ class MainProductAPIController extends AppBaseController
                     ->get();
 
                 // SKU do produto principal (ex: PRD000006 -> 06) para o padrão das variações
-                $mainShortCode = str_pad(preg_replace('/\D/', '', $newCode), 2, '0', STR_PAD_LEFT);
+                $mainShortCode = str_pad((int) preg_replace('/\D/', '', $newCode), 2, '0', STR_PAD_LEFT);
                 $variationIndex = 1;
 
                 foreach ($products as $product) {
