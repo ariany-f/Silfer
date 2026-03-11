@@ -32,8 +32,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copiar projeto
 COPY . .
 
-# Permissões Laravel
-RUN chmod -R 775 storage bootstrap/cache
+# Diretórios de storage do Laravel (podem não existir por .dockerignore)
+RUN mkdir -p storage/framework/{sessions,views,cache} storage/logs \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 # Dependências PHP
 RUN composer install --no-dev --optimize-autoloader
