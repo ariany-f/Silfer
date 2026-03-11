@@ -186,10 +186,11 @@ export const deleteCustomerPayment = (id) => async (dispatch) => {
                 })
             );
         })
-        .catch(({ response }) => {
+        .catch((error) => {
+            const msg = error?.response?.data?.message || error?.message || "Algo deu errado";
             dispatch(
                 addToast({
-                    text: response?.data?.message,
+                    text: msg,
                     type: toastType.ERROR,
                 })
             );
