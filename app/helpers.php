@@ -31,7 +31,11 @@ function getAppName(): string
     static $appName;
 
     if (empty($appName)) {
-        $appName = getSadminSettingValue('app_name');
+        try {
+            $appName = getSadminSettingValue('app_name');
+        } catch (\Throwable $e) {
+            $appName = config('app.name', 'POS');
+        }
     }
 
     return $appName ?? 'POS';
@@ -42,10 +46,14 @@ function getAppLogoUrl(): string
     static $appLogo;
 
     if (empty($appLogo)) {
-        $appLogo = SadminSetting::where('key', 'app_logo')->first();
+        try {
+            $appLogo = SadminSetting::where('key', 'app_logo')->first();
+        } catch (\Throwable $e) {
+            $appLogo = null;
+        }
     }
 
-    return $appLogo->value ?? asset('images/logo.png');
+    return ($appLogo && isset($appLogo->value)) ? $appLogo->value : asset('images/logo.png');
 }
 
 function getAppFaviconUrl(): string
@@ -53,10 +61,14 @@ function getAppFaviconUrl(): string
     static $appFavicon;
 
     if (empty($appFavicon)) {
-        $appFavicon = SadminSetting::where('key', 'app_favicon')->first();
+        try {
+            $appFavicon = SadminSetting::where('key', 'app_favicon')->first();
+        } catch (\Throwable $e) {
+            $appFavicon = null;
+        }
     }
 
-    return $appFavicon->value ?? asset('images/infyom.png');
+    return ($appFavicon && isset($appFavicon->value)) ? $appFavicon->value : asset('images/infyom.png');
 }
 
 function getStoreLogo(): string
@@ -244,9 +256,13 @@ if (! function_exists('getSadminSettingValue')) {
             return $sadminSettingValues[$key];
         }
 
-        /** @var SadminSetting $sadminSetting */
-        $sadminSetting = SadminSetting::where('key', '=', $keyName)->first();
-        $sadminSettingValues[$key] = $sadminSetting->value ?? null;
+        try {
+            /** @var SadminSetting $sadminSetting */
+            $sadminSetting = SadminSetting::where('key', '=', $keyName)->first();
+            $sadminSettingValues[$key] = $sadminSetting->value ?? null;
+        } catch (\Throwable $e) {
+            $sadminSettingValues[$key] = null;
+        }
 
         return $sadminSettingValues[$key];
     }
