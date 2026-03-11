@@ -42,7 +42,7 @@ const SalesByBrandChart = (props) => {
         if (getPermission(allConfigData?.permissions, Permissions.MANAGE_SALE)) {
             fetchSalesByBrand();
         }
-    }, []);
+    }, [allConfigData?.permissions]);
 
     const currency = frontSetting?.value?.currency_symbol || "$";
 
