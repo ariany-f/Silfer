@@ -73,6 +73,12 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'stack_file_stderr' => [
+            'driver' => 'stack',
+            'channels' => ['single', 'stderr'],
+            'ignore_exceptions' => false,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
