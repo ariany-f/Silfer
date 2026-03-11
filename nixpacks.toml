@@ -1,5 +1,10 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Extensions.gd", "php82Extensions.exif", "nodejs"]
+nixPkgs = [
+  "php82",
+  "php82Extensions.gd",
+  "php82Extensions.exif",
+  "nodejs"
+]
 
 [phases.install]
 cmds = [
