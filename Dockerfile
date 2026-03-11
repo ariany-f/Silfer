@@ -36,9 +36,9 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Build do React (dentro da pasta correta)
-WORKDIR /app/resources
+WORKDIR /
 RUN npm ci
-RUN npm run build
+RUN npm run production
 
 # Voltar para raiz do Laravel
 WORKDIR /app
