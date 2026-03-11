@@ -100,6 +100,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::get('yearly-top-selling', [DashboardAPIController::class, 'getYearlyTopSelling']);
             Route::get('top-customers', [DashboardAPIController::class, 'getTopCustomer']);
             Route::get('stock-alerts', [DashboardAPIController::class, 'stockAlerts']);
+            Route::get('sales-by-brand', [DashboardAPIController::class, 'getSalesByBrand']);
         });
         // get all permission
         Route::get('/permissions', [PermissionController::class, 'getPermissions'])->name('get-permissions');

@@ -8,6 +8,7 @@ import TopSellingProduct from './TopSellingProduct';
 import { getPermission, placeholderText } from '../../shared/sharedMethod';
 import ThisWeekSalePurchaseChart from "./ThisWeekSalePurchaseChart";
 import StockAlert from "./StockAlert";
+import SalesByBrandChart from "./SalesByBrandChart";
 import TopProgressBar from "../../shared/components/loaders/TopProgressBar";
 import { Permissions } from '../../constants';
 
@@ -20,6 +21,9 @@ const Dashboard = () => {
             <TabTitle title={placeholderText( 'dashboard.title' )} />
             <TodaySalePurchaseCount frontSetting={frontSetting} />
             <ThisWeekSalePurchaseChart frontSetting={frontSetting} />
+            <div className="row g-4">
+                <SalesByBrandChart frontSetting={frontSetting} />
+            </div>
             <TopSellingProduct frontSetting={frontSetting} />
             {getPermission(allConfigData?.permissions, Permissions.MANAGE_SALE) && <RecentSale frontSetting={frontSetting} />}
             <StockAlert frontSetting={frontSetting} />

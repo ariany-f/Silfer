@@ -6,6 +6,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Resources\SaleCollection;
 use App\Http\Resources\SaleResource;
 use App\Models\BaseUnit;
+use App\Models\Brand;
 use App\Models\Customer;
 use App\Models\Expense;
 use App\Models\ManageStock;
@@ -163,6 +164,33 @@ class DashboardAPIController extends AppBaseController
         }
 
         return $this->sendResponse($data, 'Yearly TopSelling Products Retrieved Successfully');
+    }
+
+    public function getSalesByBrand(): JsonResponse
+    {
+        $month = Carbon::now()->month;
+        $year = Carbon::now()->year;
+
+        $salesByBrand = Brand::leftJoin('products', 'brands.id', '=', 'products.brand_id')
+            ->leftJoin('sale_items', 'products.id', '=', 'sale_items.product_id')
+            ->whereMonth('sale_items.created_at', $month)
+            ->whereYear('sale_items.created_at', $year)
+            ->selectRaw('brands.id, brands.name, COALESCE(SUM(sale_items.sub_total), 0) as grand_total')
+            ->selectRaw('COALESCE(SUM(sale_items.quantity), 0) as total_quantity')
+            ->groupBy('brands.id', 'brands.name')
+            ->orderByDesc('grand_total')
+            ->get();
+
+        $data = $salesByBrand->map(function ($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->name,
+                'grand_total' => (float) $row->grand_total,
+                'total_quantity' => (float) $row->total_quantity,
+            ];
+        })->values()->all();
+
+        return $this->sendResponse($data, 'Sales by brand retrieved successfully');
     }
 
     public function getTopCustomer(): JsonResponse

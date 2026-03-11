@@ -11,6 +11,7 @@
     "dashboard.purchaseReturn.title": "Purchases Return",
     "dashboard.ThisWeekSales&Purchases.title": "This Week Sales & Purchases",
     "dashboard.TopSellingProducts.title": "Top Selling Products",
+    "dashboard.SalesByBrand.title": "Sales by Brand",
     "dashboard.stockAlert.title": "Stock Alert",
     "dashboard.recentSales.title": "Recent Sales",
     "dashboard.stockAlert.alertQuantity.label": "Alert Quantity",

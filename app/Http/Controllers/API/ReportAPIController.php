@@ -637,16 +637,20 @@ class ReportAPIController extends AppBaseController
             $totalPaymentsAmount = $customer->customerPayments->sum('amount');
             $customers[$key]['total_payments_amount'] = $totalPaymentsAmount;
             
-            // Calcular total de pagamentos avulsos concluídos
+// Calcular total de pagamentos avulsos concluídos
             $totalPaymentsConcludedAmount = $customer->customerPayments
                 ->where('status', CustomerPayment::STATUS_COMPLETED)
                 ->sum('amount');
             $customers[$key]['total_payments_concluded_amount'] = $totalPaymentsConcludedAmount;
-            
-            // Subtrair apenas pagamentos avulsos concluídos do valor devido
-            // Se houver pagamentos concluídos, reduz o valor devido (pode ficar negativo)
-            $totalDueAmountAfterPayments = $totalDueAmount - $totalPaymentsConcludedAmount;
-            // Garantir que o valor seja negativo se os pagamentos concluídos forem maiores que o devido
+
+            // Calcular total de pagamentos avulsos pendentes (cliente ainda deve)
+            $totalPaymentsPendingAmount = $customer->customerPayments
+                ->where('status', CustomerPayment::STATUS_PENDING)
+                ->sum('amount');
+            $customers[$key]['total_payments_pending_amount'] = $totalPaymentsPendingAmount;
+
+            // A pagar final = devido das vendas + pendentes avulsos - concluídos avulsos
+            $totalDueAmountAfterPayments = $totalDueAmount + $totalPaymentsPendingAmount - $totalPaymentsConcludedAmount;
             $customers[$key]['total_due_amount_after_payments'] = $totalDueAmountAfterPayments;
         }
 
@@ -701,7 +705,13 @@ class ReportAPIController extends AppBaseController
         $salesData['totalPaymentsConcludedAmount'] = $customer->customerPayments
             ->where('status', CustomerPayment::STATUS_COMPLETED)
             ->sum('amount');
-        $salesData['totalDueAmountAfterPayments'] = $salesData['totalSalesDue'] - $salesData['totalPaymentsConcludedAmount'];
+        $salesData['totalPaymentsPendingAmount'] = $customer->customerPayments
+            ->where('status', CustomerPayment::STATUS_PENDING)
+            ->sum('amount');
+        // A pagar final = devido das vendas + pendentes avulsos - concluídos avulsos
+        $salesData['totalDueAmountAfterPayments'] = $salesData['totalSalesDue']
+            + $salesData['totalPaymentsPendingAmount']
+            - $salesData['totalPaymentsConcludedAmount'];
     
         return $this->sendResponse($salesData, 'Customer info retrieved successfully');
     }

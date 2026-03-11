@@ -46,6 +46,7 @@ export const apiBaseURL = {
     TOP_SELLING_PRODUCTS: "top-selling-products",
     WEEK_SALE_PURCHASES_API: "week-selling-purchases",
     YEAR_TOP_PRODUCT: "yearly-top-selling",
+    SALES_BY_BRAND: "sales-by-brand",
     TOP_CUSTOMERS: "top-customers",
     PURCHASE_DETAILS: "purchase-info",
     SALE_DETAILS: "sale-info",
@@ -601,6 +602,10 @@ export const weekSalePurchasesActionType = {
 
 export const yearTopProductActionType = {
     YEAR_TOP_PRODUCT: "YEAR_TOP_PRODUCT",
+};
+
+export const salesByBrandActionType = {
+    SALES_BY_BRAND: "SALES_BY_BRAND",
 };
 
 export const Filters = {
