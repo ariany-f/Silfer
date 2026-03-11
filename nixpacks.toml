@@ -1,0 +1,9 @@
+[phases.setup]
+nixPkgs = ["php82", "php82Extensions.gd", "php82Extensions.exif", "nodejs"]
+
+[phases.install]
+cmds = [
+  "composer install --no-dev --optimize-autoloader",
+  "npm ci",
+  "npm run build"
+]
