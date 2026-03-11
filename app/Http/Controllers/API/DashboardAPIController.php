@@ -171,7 +171,9 @@ class DashboardAPIController extends AppBaseController
         $month = Carbon::now()->month;
         $year = Carbon::now()->year;
 
-        $salesByBrand = Brand::leftJoin('products', 'brands.id', '=', 'products.brand_id')
+        $salesByBrand = Brand::withoutGlobalScope('tenant')
+            ->where('brands.tenant_id', Auth::user()->tenant_id)
+            ->leftJoin('products', 'brands.id', '=', 'products.brand_id')
             ->leftJoin('sale_items', 'products.id', '=', 'sale_items.product_id')
             ->whereMonth('sale_items.created_at', $month)
             ->whereYear('sale_items.created_at', $year)
