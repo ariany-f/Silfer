@@ -47,7 +47,8 @@ RUN rm -f /etc/nginx/conf.d/default.conf
 
 # Script de startup (injetar PORT e iniciar FPM + Nginx)
 COPY docker/start-container.sh /start-container.sh
-RUN chmod +x /start-container.sh
+# Corrigir CRLF (Windows) e garantir permissão
+RUN sed -i 's/\r$//' /start-container.sh && chmod +x /start-container.sh
 
 EXPOSE 8080
 
