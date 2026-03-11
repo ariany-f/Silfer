@@ -31,6 +31,9 @@ class SalesItemsReportExport implements FromView
 
         $saleItems = $query->orderBy('sale_id')->orderBy('id')->get();
 
-        return view('excel.sales-items-report-excel', ['saleItems' => $saleItems]);
+        // Agrupar por sale_id para subtotal e separação
+        $groupedBySale = $saleItems->groupBy('sale_id');
+
+        return view('excel.sales-items-report-excel', ['groupedBySale' => $groupedBySale]);
     }
 }

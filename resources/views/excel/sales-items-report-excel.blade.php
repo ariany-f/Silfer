@@ -15,6 +15,7 @@
         <th style="width: 150px;">{{ __('messages.pdf.customer') ?? 'Cliente' }}</th>
         <th style="width: 100px;">{{ __('messages.pdf.warehouse') ?? 'Armazém' }}</th>
         <th style="width: 150px;">{{ __('messages.pdf.product') ?? 'Produto' }}</th>
+        <th style="width: 50px;">{{ __('messages.pdf.unit') ?? 'Unidade' }}</th>
         <th style="width: 80px;">{{ __('messages.pdf.variation') ?? 'Variação' }}</th>
         <th style="width: 100px;">{{ __('messages.pdf.brand') ?? 'Marca' }}</th>
         <th style="width: 100px;">{{ __('messages.pdf.category') ?? 'Categoria' }}</th>
@@ -27,34 +28,51 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($saleItems as $item)
+    @foreach($groupedBySale as $saleId => $items)
+        @foreach($items as $item)
+            @php
+                $sale = $item->sale;
+                $product = $item->product;
+                $variationName = '-';
+                if ($product && $product->variationProduct) {
+                    $vp = $product->variationProduct;
+                    $varName = $vp->variation?->name ?? '';
+                    $varType = $vp->variationType?->name ?? '';
+                    $variationName = trim($varName . ($varType ? ' - ' . $varType : '')) ?: '-';
+                }
+                $unitName = '-';
+                $unitData = $item->sale_unit;
+                if (is_array($unitData) && !empty($unitData)) {
+                    $unitName = $unitData['short_name'] ?? $unitData['name'] ?? '-';
+                }
+            @endphp
+            <tr>
+                <td>{{ $sale ? $sale->date?->format('d/m/Y') : '-' }}</td>
+                <td>{{ $sale ? $sale->reference_code : '-' }}</td>
+                <td>{{ $sale && $sale->customer ? $sale->customer->name : '-' }}</td>
+                <td>{{ $sale && $sale->warehouse ? $sale->warehouse->name : '-' }}</td>
+                <td>{{ $product ? $product->name : '-' }}</td>
+                <td>{{ $unitName }}</td>
+                <td>{{ $variationName }}</td>
+                <td>{{ $product && $product->brand ? $product->brand->name : '-' }}</td>
+                <td>{{ $product && $product->productCategory ? $product->productCategory->name : '-' }}</td>
+                <td>{{ $product ? $product->code : '-' }}</td>
+                <td style="text-align: right;">{{ number_format((float) $item->quantity, 2, ',', '.') }}</td>
+                <td style="text-align: right;">{{ number_format((float) $item->net_unit_price, 2, ',', '.') }}</td>
+                <td style="text-align: right;">{{ number_format((float) ($item->discount_amount ?? 0), 2, ',', '.') }}</td>
+                <td style="text-align: right;">{{ number_format((float) ($item->tax_amount ?? 0), 2, ',', '.') }}</td>
+                <td style="text-align: right;">{{ number_format((float) $item->sub_total, 2, ',', '.') }}</td>
+            </tr>
+        @endforeach
         @php
-            $sale = $item->sale;
-            $product = $item->product;
-            $variationName = '-';
-            if ($product && $product->variationProduct) {
-                $vp = $product->variationProduct;
-                $varName = $vp->variation?->name ?? '';
-                $varType = $vp->variationType?->name ?? '';
-                $variationName = trim($varName . ($varType ? ' - ' . $varType : '')) ?: '-';
-            }
+            $sale = $items->first()->sale;
+            $saleTotal = $items->sum('sub_total');
         @endphp
-        <tr>
-            <td>{{ $sale ? $sale->date?->format('d/m/Y') : '-' }}</td>
-            <td>{{ $sale ? $sale->reference_code : '-' }}</td>
-            <td>{{ $sale && $sale->customer ? $sale->customer->name : '-' }}</td>
-            <td>{{ $sale && $sale->warehouse ? $sale->warehouse->name : '-' }}</td>
-            <td>{{ $product ? $product->name : '-' }}</td>
-            <td>{{ $variationName }}</td>
-            <td>{{ $product && $product->brand ? $product->brand->name : '-' }}</td>
-            <td>{{ $product && $product->productCategory ? $product->productCategory->name : '-' }}</td>
-            <td>{{ $product ? $product->code : '-' }}</td>
-            <td style="text-align: right;">{{ number_format((float) $item->quantity, 2, ',', '.') }}</td>
-            <td style="text-align: right;">{{ number_format((float) $item->net_unit_price, 2, ',', '.') }}</td>
-            <td style="text-align: right;">{{ number_format((float) ($item->discount_amount ?? 0), 2, ',', '.') }}</td>
-            <td style="text-align: right;">{{ number_format((float) ($item->tax_amount ?? 0), 2, ',', '.') }}</td>
-            <td style="text-align: right;">{{ number_format((float) $item->sub_total, 2, ',', '.') }}</td>
+        <tr style="background-color: #f0f0f0; font-weight: bold;">
+            <td colspan="14" style="text-align: right; padding-right: 10px;">{{ __('messages.pdf.sale_total') ?? 'Total do Pedido' }} ({{ $sale ? $sale->reference_code : '' }}):</td>
+            <td style="text-align: right;">{{ number_format((float) $saleTotal, 2, ',', '.') }}</td>
         </tr>
+        <tr><td colspan="15" style="height: 12px; border: none; background: #fff;"></td></tr>
     @endforeach
     </tbody>
 </table>
