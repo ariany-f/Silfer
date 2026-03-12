@@ -12,6 +12,7 @@ use App\Exports\PurchaseReturnWarehouseReportExport;
 use App\Exports\PurchasesWarehouseReportExport;
 use App\Exports\SaleReportExport;
 use App\Exports\SalesItemsReportExport;
+use App\Exports\SalesByBrandReportExport;
 use App\Exports\SaleReturnWarehouseReportExport;
 use App\Exports\SalesWarehouseReportExport;
 use App\Exports\StockReportExport;
@@ -257,6 +258,72 @@ class ReportAPIController extends AppBaseController
         })->values()->all();
 
         return $this->sendResponse($data, 'Sales by brand report retrieved successfully');
+    }
+
+    public function getSalesByBrandReportExcel(Request $request): JsonResponse
+    {
+        $disk = 'public';
+        $filePath = 'excel/sales-by-brand-report-excel.xlsx';
+
+        if (! Storage::disk($disk)->exists('excel')) {
+            Storage::disk($disk)->makeDirectory('excel');
+        }
+        if (Storage::disk($disk)->exists($filePath)) {
+            Storage::disk($disk)->delete($filePath);
+        }
+
+        Excel::store(new SalesByBrandReportExport, $filePath, $disk);
+
+        if (! Storage::disk($disk)->exists($filePath)) {
+            return $this->sendError('Failed to generate Excel file', 500);
+        }
+
+        $data['sales_by_brand_excel_url'] = Storage::disk($disk)->url($filePath);
+
+        return $this->sendResponse($data, 'Sales by brand report Excel retrieved successfully');
+    }
+
+    public function getSalesByBrandReportPdf(Request $request): JsonResponse
+    {
+        $query = Brand::withoutGlobalScope('tenant')
+            ->where('brands.tenant_id', Auth::user()->tenant_id)
+            ->leftJoin('products', 'brands.id', '=', 'products.brand_id')
+            ->leftJoin('sale_items', 'products.id', '=', 'sale_items.product_id');
+
+        if ($request->get('start_date') && $request->get('start_date') !== 'null') {
+            $startDate = Carbon::parse($request->get('start_date'))->startOfDay()->toDateTimeString();
+            $endDate = Carbon::parse($request->get('end_date'))->endOfDay()->toDateTimeString();
+            $query->whereBetween('sale_items.created_at', [$startDate, $endDate]);
+        }
+
+        $salesByBrand = $query
+            ->selectRaw('brands.id, brands.name, COALESCE(SUM(sale_items.sub_total), 0) as grand_total')
+            ->selectRaw('COALESCE(SUM(sale_items.quantity), 0) as total_quantity')
+            ->groupBy('brands.id', 'brands.name')
+            ->orderByDesc('grand_total')
+            ->get();
+
+        $data = $salesByBrand->map(function ($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->name,
+                'grand_total' => (float) $row->grand_total,
+                'total_quantity' => (float) $row->total_quantity,
+            ];
+        })->values()->all();
+
+        $filePath = 'pdf/sales-by-brand-report.pdf';
+        if (Storage::disk(config('app.media_disc'))->exists($filePath)) {
+            Storage::disk(config('app.media_disc'))->delete($filePath);
+        }
+
+        $pdfViewPath = getLoginUserLanguage() == 'ar' ? 'pdf.ar.sales-by-brand-report-pdf' : 'pdf.sales-by-brand-report-pdf';
+        $pdfContent = generatePDF($pdfViewPath, ['salesByBrand' => $data]);
+        Storage::disk(config('app.media_disc'))->put($filePath, $pdfContent);
+
+        $dataResponse['sales_by_brand_pdf_url'] = Storage::disk(config('app.media_disc'))->url($filePath);
+
+        return $this->sendResponse($dataResponse, 'Sales by brand report PDF retrieved successfully');
     }
 
     public function stockReportExcel(Request $request): JsonResponse

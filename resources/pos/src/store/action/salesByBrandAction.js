@@ -41,3 +41,53 @@ export const fetchSalesByBrandReport = (filter = {}, isLoading = true) => async 
             }
         });
 };
+
+export const salesByBrandReportExcel = (dates, setIsLoadingExcel, isLoading = true) => async (dispatch) => {
+    if (isLoading) {
+        dispatch(setLoading(true));
+    }
+    const params = new URLSearchParams();
+    if (dates?.start_date) params.append('start_date', dates.start_date);
+    if (dates?.end_date) params.append('end_date', dates.end_date);
+    await apiConfig
+        .get(`sales-by-brand-report-excel?${params.toString()}`)
+        .then((response) => {
+            window.open(response.data.data.sales_by_brand_excel_url, '_blank');
+            setIsLoadingExcel?.(false);
+            if (isLoading) {
+                dispatch(setLoading(false));
+            }
+        })
+        .catch(({ response }) => {
+            dispatch(addToast({ text: response?.data?.message, type: toastType.ERROR }));
+            setIsLoadingExcel?.(false);
+            if (isLoading) {
+                dispatch(setLoading(false));
+            }
+        });
+};
+
+export const salesByBrandReportPdf = (dates, setIsLoadingPdf, isLoading = true) => async (dispatch) => {
+    if (isLoading) {
+        dispatch(setLoading(true));
+    }
+    const params = new URLSearchParams();
+    if (dates?.start_date) params.append('start_date', dates.start_date);
+    if (dates?.end_date) params.append('end_date', dates.end_date);
+    await apiConfig
+        .get(`sales-by-brand-report-pdf?${params.toString()}`)
+        .then((response) => {
+            window.open(response.data.data.sales_by_brand_pdf_url, '_blank');
+            setIsLoadingPdf?.(false);
+            if (isLoading) {
+                dispatch(setLoading(false));
+            }
+        })
+        .catch(({ response }) => {
+            dispatch(addToast({ text: response?.data?.message, type: toastType.ERROR }));
+            setIsLoadingPdf?.(false);
+            if (isLoading) {
+                dispatch(setLoading(false));
+            }
+        });
+};

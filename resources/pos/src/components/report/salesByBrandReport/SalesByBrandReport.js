@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import {
     currencySymbolHandling,
     getFormattedMessage,
     placeholderText,
 } from "../../../shared/sharedMethod";
-import { fetchSalesByBrandReport } from "../../../store/action/salesByBrandAction";
+import { fetchSalesByBrandReport, salesByBrandReportExcel, salesByBrandReportPdf } from "../../../store/action/salesByBrandAction";
 import ReactDataTable from "../../../shared/table/ReactDataTable";
 import TabTitle from "../../../shared/tab-title/TabTitle";
 import MasterLayout from "../../MasterLayout";
@@ -19,7 +19,11 @@ const SalesByBrandReport = (props) => {
         salesByBrand,
         dates,
         allConfigData,
+        salesByBrandReportExcel,
+        salesByBrandReportPdf,
     } = props;
+    const [isExcelValue, setIsExcelValue] = useState(false);
+    const [isPdfValue, setIsPdfValue] = useState(false);
     const currencySymbol =
         frontSetting &&
         frontSetting.value &&
@@ -28,6 +32,18 @@ const SalesByBrandReport = (props) => {
     useEffect(() => {
         fetchSalesByBrandReport(dates || {}, true);
     }, []);
+
+    useEffect(() => {
+        if (isExcelValue === true) {
+            salesByBrandReportExcel(dates, setIsExcelValue);
+        }
+    }, [isExcelValue]);
+
+    useEffect(() => {
+        if (isPdfValue === true) {
+            salesByBrandReportPdf(dates, setIsPdfValue);
+        }
+    }, [isPdfValue]);
 
     const itemsValue =
         currencySymbol &&
@@ -92,6 +108,10 @@ const SalesByBrandReport = (props) => {
                 onChange={onChange}
                 isLoading={isLoading}
                 totalRows={itemsValue?.length || 0}
+                isEXCEL={itemsValue && itemsValue.length >= 0}
+                onExcelClick={() => setIsExcelValue(true)}
+                isReportPdf={true}
+                onReportPdfClick={() => setIsPdfValue(true)}
             />
         </MasterLayout>
     );
@@ -116,4 +136,6 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
     fetchSalesByBrandReport,
+    salesByBrandReportExcel,
+    salesByBrandReportPdf,
 })(SalesByBrandReport);
