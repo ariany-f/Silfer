@@ -373,6 +373,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'top-selling-product-report',
             [ReportAPIController::class, 'getSellingProductReport']
         );
+        Route::get(
+            'sales-by-brand-report',
+            [ReportAPIController::class, 'getSalesByBrandReport']
+        );
 
         Route::get('supplier-report', [ReportAPIController::class, 'getSupplierReport']);
         Route::get('supplier-pdf-download/{supplier}', [SupplierAPIController::class, 'pdfDownload']);

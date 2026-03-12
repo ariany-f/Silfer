@@ -346,6 +346,7 @@ export const userMenu = [
         fontIcon: <FontAwesomeIcon icon={faChartColumn} />,
         to: "/app/user/report/report-warehouse",
         path: "/app/user/report/report-sale",
+        salesByBrandReportPath: "/app/user/report/report-sales-by-brand",
         stockPath: "/app/user/report/report-stock",
         purchasePath: "/app/user/report/report-purchase",
         topSellingPath: "/app/user/report/report-top-selling-products",
@@ -364,6 +365,7 @@ export const userMenu = [
         subTitles: [
             { title: "warehouse.reports.title" },
             { title: "sale.reports.title" },
+            { title: "sales-by-brand.reports.title" },
             { title: "stock.reports.title" },
             { title: "purchase.reports.title" },
             { title: "top-selling-product.reports.title" },
@@ -384,6 +386,10 @@ export const userMenu = [
             {
                 title: getFormattedMessage("sale.reports.title"),
                 to: "/app/user/report/report-sale",
+            },
+            {
+                title: getFormattedMessage("sales-by-brand.reports.title"),
+                to: "/app/user/report/report-sales-by-brand",
             },
             {
                 title: getFormattedMessage("stock.reports.title"),

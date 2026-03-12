@@ -47,6 +47,7 @@ export const apiBaseURL = {
     WEEK_SALE_PURCHASES_API: "week-selling-purchases",
     YEAR_TOP_PRODUCT: "yearly-top-selling",
     SALES_BY_BRAND: "sales-by-brand",
+    SALES_BY_BRAND_REPORT: "sales-by-brand-report",
     TOP_CUSTOMERS: "top-customers",
     PURCHASE_DETAILS: "purchase-info",
     SALE_DETAILS: "sale-info",
