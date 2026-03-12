@@ -595,7 +595,7 @@ const AsideTopSubMenuItem = (props) => {
                                                         </div>
                                                     ) : null;
                                                 }
-                                            )}
+                                            )
                                                 )
                                                 )
                                         }
