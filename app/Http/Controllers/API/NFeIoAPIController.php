@@ -109,6 +109,26 @@ class NFeIoAPIController extends AppBaseController
     }
 
     /**
+     * Debug: retorna o payload JSON que seria enviado à NFe.io (para testar no Postman).
+     */
+    public function previewPayload(Sale $sale): JsonResponse
+    {
+        $sale->load(['customer', 'saleItems.product', 'warehouse']);
+        $payload = $this->nfeService->getPayloadForSale($sale);
+        $config = $this->nfeService->getConfig();
+        $url = sprintf(
+            'POST https://api.nfse.io/v2/companies/%s/statetaxes/%s/productinvoices',
+            $config['nfe_io_company_id'],
+            $config['nfe_io_state_tax_id']
+        );
+        return $this->sendResponse([
+            'url' => $url,
+            'payload' => $payload,
+            'payload_json' => json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+        ], 'Preview do payload (use no Postman para testar a NFe.io).');
+    }
+
+    /**
      * Sincroniza o status de uma nota com a NFe.io.
      */
     public function syncStatus(SaleInvoice $saleInvoice): JsonResponse

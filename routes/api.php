@@ -230,6 +230,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::resource('sales', SaleAPIController::class);
             Route::get('sale-pdf-download/{sale}', [SaleAPIController::class, 'pdfDownload'])->name('sale-pdf-download');
             Route::get('sale-info/{sale}', [SaleAPIController::class, 'saleInfo'])->name('sale-info');
+            Route::get('sales/{sale}/nfe-payload-preview', [NFeIoAPIController::class, 'previewPayload']);
             Route::post('sales/{sale}/generate-invoice', [NFeIoAPIController::class, 'generateForSale']);
 
             Route::post('sales/{sale}/capture-payment', [SalesPaymentAPIController::class, 'createSalePayment']);

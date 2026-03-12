@@ -69,10 +69,33 @@ class NFeIoService
                 $config['nfe_io_state_tax_id']
             );
 
+            // Envia como JSON puro para garantir que a API receba o buyer corretamente
+            $jsonBody = json_encode($payload);
+
             $response = Http::withHeaders([
-                'Authorization' => $config['nfe_io_api_key'],
+                'Authorization' => trim($config['nfe_io_api_key']),
                 'Content-Type' => 'application/json',
-            ])->post($url, $payload);
+                'Accept' => 'application/json',
+            ])->withBody($jsonBody, 'application/json')->post($url);
+
+            // Se retornar 400 com "buyer cannot be null", tentar body com buyer na raiz (alguns endpoints)
+            if (!$response->successful() && $response->status() === 400) {
+                $body = $response->body();
+                if (str_contains($body, 'buyer cannot be null')) {
+                    $flatPayload = [
+                        'buyer' => $payload['productInvoice']['buyer'],
+                        'issueDate' => $payload['productInvoice']['issueDate'],
+                        'items' => $payload['productInvoice']['items'],
+                        'reference' => $payload['productInvoice']['reference'],
+                    ];
+                    $jsonBody = json_encode($flatPayload);
+                    $response = Http::withHeaders([
+                        'Authorization' => trim($config['nfe_io_api_key']),
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                    ])->withBody($jsonBody, 'application/json')->post($url);
+                }
+            }
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -100,6 +123,15 @@ class NFeIoService
     }
 
     /**
+     * Retorna o payload que seria enviado para a NFe.io (para debug/teste no Postman).
+     */
+    public function getPayloadForSale(Sale $sale): array
+    {
+        $sale->load(['customer', 'saleItems.product', 'warehouse']);
+        return $this->buildInvoicePayload($sale);
+    }
+
+    /**
      * Monta o payload no formato esperado pela NFe.io.
      * Documentação: https://nfe.io/docs/desenvolvedores/rest-api/nota-fiscal-de-produto-v2/
      */
@@ -121,22 +153,23 @@ class NFeIoService
         if ((int) $taxId === 0) {
             $taxId = '11111111111'; // CPF genérico para consumidor final quando não informado
         }
+        // NFe.io pode esperar como número (integer) ou string; enviar como número
         $federalTaxNumber = (int) $taxId;
 
         $cityName = $customer->city ?? 'Não informado';
-        $cityCode = strlen($cityName) > 0 ? '3550308' : '3550308'; // código IBGE São Paulo como fallback
+        $cityCode = '3550308'; // São Paulo IBGE
 
         $buyer = [
-            'name' => trim($customer->name ?? '') ?: 'Consumidor',
+            'name' => trim((string) ($customer->name ?? '')) ?: 'Consumidor',
             'federalTaxNumber' => $federalTaxNumber,
-            'email' => trim($customer->email ?? '') ?: 'nfe@email.com',
+            'email' => trim((string) ($customer->email ?? '')) ?: 'nfe@email.com',
             'address' => [
-                'postalCode' => preg_replace('/\D/', '', $sale->warehouse->zip_code ?? '00000000') ?: '01310100',
-                'street' => trim($customer->address ?? '') ?: 'Não informado',
+                'postalCode' => preg_replace('/\D/', '', (string) ($sale->warehouse->zip_code ?? '00000000')) ?: '01310100',
+                'street' => trim((string) ($customer->address ?? '')) ?: 'Não informado',
                 'number' => 'S/N',
-                'district' => trim($customer->city ?? '') ?: 'Centro',
+                'district' => trim((string) ($customer->city ?? '')) ?: 'Centro',
                 'city' => [
-                    'name' => trim($cityName) ?: 'São Paulo',
+                    'name' => trim((string) $cityName) ?: 'São Paulo',
                     'code' => $cityCode,
                 ],
                 'state' => $this->getStateCode($customer->country),
@@ -157,7 +190,7 @@ class NFeIoService
             ];
         }
 
-        // API NFe.io espera wrapper productInvoice
+// API NFe.io documentada usa wrapper productInvoice
         return [
             'productInvoice' => [
                 'buyer' => $buyer,
