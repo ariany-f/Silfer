@@ -237,6 +237,7 @@ class Sale extends BaseModel implements HasMedia, JsonResourceful
             'payments' => $this->payments ?? [],
             'created_at' => $this->created_at,
             'barcode_url' => Storage::url('sales/barcode-' . $this->reference_code . '.png'),
+            'nfe_invoice' => $this->getNfeInvoiceInfo(),
         ];
 
         return $fields;
@@ -281,6 +282,11 @@ class Sale extends BaseModel implements HasMedia, JsonResourceful
         return $this->hasMany(SalesPayment::class, 'sale_id', 'id');
     }
 
+    public function saleInvoices(): HasMany
+    {
+        return $this->hasMany(SaleInvoice::class, 'sale_id', 'id');
+    }
+
     /**
      * @return int|mixed
      */
@@ -296,5 +302,20 @@ class Sale extends BaseModel implements HasMedia, JsonResourceful
         }
 
         return $dueAmount;
+    }
+
+    /**
+     * Informações da nota fiscal NFe.io para o frontend.
+     */
+    public function getNfeInvoiceInfo(): array
+    {
+        $last = $this->saleInvoices()->orderByDesc('id')->first();
+        $canGenerate = $this->payment_status === self::PAID && ! $last?->isAuthorized();
+        return [
+            'has_authorized_invoice' => $last && $last->isAuthorized(),
+            'last_status' => $last?->status,
+            'last_invoice_number' => $last?->invoice_number,
+            'can_generate_invoice' => $canGenerate,
+        ];
     }
 }

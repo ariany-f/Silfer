@@ -46,7 +46,7 @@ class SaleAPIController extends AppBaseController
         $warehouse = (Warehouse::where('name', 'LIKE', "%$search%")->get()->count() != 0);
         $products = (Product::where('name', 'LIKE', "%$search%")->orWhere('code', 'LIKE', "%$search%")->get()->count() != 0);
 
-        $sales = $this->saleRepository;
+        $sales = $this->saleRepository->with('saleInvoices');
         if ($customer) {
             $sales->whereHas('customer', function (Builder $q) use ($search, $customer) {
                 if ($customer) {

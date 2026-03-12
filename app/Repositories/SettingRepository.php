@@ -131,6 +131,34 @@ class SettingRepository extends BaseRepository
         }
     }
 
+    /**
+     * Atualiza apenas as configurações da integração NFe.io.
+     */
+    public function updateNfeIoConfig(array $input): void
+    {
+        $keys = ['nfe_io_enabled', 'nfe_io_api_key', 'nfe_io_company_id', 'nfe_io_state_tax_id'];
+        foreach ($keys as $key) {
+            if (! array_key_exists($key, $input)) {
+                continue;
+            }
+            $value = $input[$key];
+            if ($key === 'nfe_io_enabled') {
+                $value = $value ? '1' : '0';
+            }
+            $tenantId = getActiveStore()?->tenant_id ?? Auth::user()?->tenant_id;
+            $setting = Setting::where('key', $key)->where('tenant_id', $tenantId)->first();
+            if ($setting) {
+                $setting->update(['value' => $value]);
+            } else {
+                Setting::create([
+                    'key' => $key,
+                    'value' => $value,
+                    'tenant_id' => $tenantId,
+                ]);
+            }
+        }
+    }
+
     public function updateReceiptSetting($input)
     {
         try {

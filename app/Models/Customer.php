@@ -63,6 +63,7 @@ class Customer extends BaseModel
         'country',
         'city',
         'address',
+        'tax_id',
         'dob',
     ];
 

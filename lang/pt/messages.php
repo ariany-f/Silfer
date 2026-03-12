@@ -212,7 +212,8 @@ return [
         'tax_status_changed' => 'Status do imposto alterado com sucesso.',
         'pos_settings_updated' => 'Configurações do PDV atualizadas com sucesso.',
         'dual_screen_settings_updated' => 'Configurações de Tela Dupla atualizadas com sucesso.',
-        'payment_method_status_updated' => 'Status do método de pagamento atualizado com sucesso.'
+        'payment_method_status_updated' => 'Status do método de pagamento atualizado com sucesso.',
+        'nfe_config_updated' => 'Configuração NFe.io atualizada com sucesso.'
     ],
 
     'heading_discount' => 'Desconto',

@@ -209,7 +209,8 @@ return [
         'tax_status_changed' => 'Tax status changed successfully.',
         'pos_settings_updated' => 'POS Settings updated successfully.',
         'dual_screen_settings_updated' => 'Dual Screen Settings updated successfully.',
-        'payment_method_status_updated' => 'Payment method status updated successfully.'
+        'payment_method_status_updated' => 'Payment method status updated successfully.',
+        'nfe_config_updated' => 'NFe.io configuration updated successfully.'
     ],
 
     'heading_discount' => 'Discount',

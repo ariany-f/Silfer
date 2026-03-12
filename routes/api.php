@@ -46,6 +46,7 @@ use App\Http\Controllers\API\SubscriptionAPIController;
 use App\Http\Controllers\API\PurchaseReturnAPIController;
 use App\Http\Controllers\API\ExpenseCategoryAPIController;
 use App\Http\Controllers\API\ProductCategoryAPIController;
+use App\Http\Controllers\API\NFeIoAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -229,6 +230,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::resource('sales', SaleAPIController::class);
             Route::get('sale-pdf-download/{sale}', [SaleAPIController::class, 'pdfDownload'])->name('sale-pdf-download');
             Route::get('sale-info/{sale}', [SaleAPIController::class, 'saleInfo'])->name('sale-info');
+            Route::post('sales/{sale}/generate-invoice', [NFeIoAPIController::class, 'generateForSale']);
 
             Route::post('sales/{sale}/capture-payment', [SalesPaymentAPIController::class, 'createSalePayment']);
             Route::get('sales/{sale}/payments', [SalesPaymentAPIController::class, 'getAllPayments']);
@@ -289,6 +291,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
             Route::get('dual-screen-settings', [SettingAPIController::class, 'getDualScreenSettings']);
             Route::post('dual-screen-settings/update', [SettingAPIController::class, 'updateDualScreenSettings']);
+
+            Route::get('nfe-io/config', [NFeIoAPIController::class, 'getConfig']);
+            Route::post('nfe-io/config', [NFeIoAPIController::class, 'updateConfig']);
+            Route::get('nfe-io/invoices', [NFeIoAPIController::class, 'index']);
+            Route::post('nfe-io/invoices/{saleInvoice}/sync', [NFeIoAPIController::class, 'syncStatus']);
         });
 
         Route::resource('payment-methods', PaymentMethodAPIController::class);
