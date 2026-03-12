@@ -96,6 +96,7 @@ class Customer extends BaseModel
             'country' => $this->country,
             'city' => $this->city,
             'address' => $this->address,
+            'tax_id' => $this->tax_id,
             'dob' => $this->dob,
             'created_at' => $this->created_at,
         ];
