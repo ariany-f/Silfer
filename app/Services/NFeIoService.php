@@ -180,12 +180,22 @@ class NFeIoService
         $items = [];
         foreach ($sale->saleItems as $item) {
             $product = $item->product;
+            $quantity = (float) $item->quantity;
+            $subTotal = (float) $item->sub_total;
+            $unitPrice = (float) ($item->net_unit_price ?? $item->product_price);
+            if ($unitPrice <= 0 && $quantity > 0 && $subTotal > 0) {
+                $unitPrice = round($subTotal / $quantity, 4);
+            }
+            if ($unitPrice <= 0) {
+                $unitPrice = 0.01;
+            }
             $items[] = [
                 'code' => $product->code ?? ('ITEM-' . $item->id),
                 'description' => $product->name ?? 'Produto',
-                'quantity' => (float) $item->quantity,
-                'unitPrice' => (float) ($item->net_unit_price ?? $item->product_price),
-                'total' => (float) $item->sub_total,
+                'quantity' => $quantity,
+                'unitPrice' => $unitPrice,
+                'unitAmount' => $unitPrice,
+                'total' => $subTotal,
                 'ncm' => $product->ncm ?? '00000000',
                 'cfop' => $product->cfop ?? '5102',
                 'tax' => $this->buildItemTax($item),

@@ -98,6 +98,9 @@ const NFeIoConfig = (props) => {
                                 value={form.nfe_io_state_tax_id}
                                 onChange={handleChange}
                             />
+                            <Form.Text className="text-muted">
+                                {getFormattedMessage('nfe-io.config.state_tax_id_help') || 'ID do imposto estadual (State Tax) configurado na sua empresa no painel NFe.io. Em app.nfe.io: Empresa → Impostos Estaduais. O ID aparece na URL ou na lista (ex.: 123). Se aparecer "company does not have the specified state tax configured", use um State Tax que esteja ativo para essa empresa.'}
+                            </Form.Text>
                         </Form.Group>
                         <ModelFooter onEditRecord={nfeConfig} onSubmit={onSubmit} editDisabled={disabled} cancelNotShow />
                     </Form>
