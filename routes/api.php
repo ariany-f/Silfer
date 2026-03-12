@@ -62,6 +62,10 @@ use App\Http\Controllers\API\ProductCategoryAPIController;
 //    return $request->user();
 //});
 
+Route::get('health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()->toIso8601String()]);
+});
+
 Route::get('languages', [LanguageAPIController::class, 'index']);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
