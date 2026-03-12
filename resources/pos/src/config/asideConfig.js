@@ -359,80 +359,25 @@ export const userMenu = [
         customerReportPath: "/app/user/report/customers",
         customerReportDetailsPath: "/app/user/report/customers/details",
         registerReportPath: "/app/user/report/register",
+        subPath: { reportPath: "/app/user/report" },
         class: "d-flex",
         isSamePrefix: "true",
         permission: Permissions.MANAGE_REPORTS,
-        subTitles: [
-            { title: "warehouse.reports.title" },
-            { title: "sale.reports.title" },
-            { title: "sales-by-brand.reports.title" },
-            { title: "stock.reports.title" },
-            { title: "purchase.reports.title" },
-            { title: "top-selling-product.reports.title" },
-            { title: "product.quantity.alert.reports.title" },
-            { title: "supplier.report.title" },
-            { title: "best-customer.report.title" },
-            { title: "customer.report.title" },
-            { title: "customer.report.title" },
-            { title: "profit-loss.reports.title" },
-            { title: "best-customer.report.title" },
-            { title: "register.report.title" },
+        subMenu: [
+            { title: "warehouse.reports.title", to: "/app/user/report/report-warehouse", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "sale.reports.title", to: "/app/user/report/report-sale", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "sales-by-brand.reports.title", to: "/app/user/report/report-sales-by-brand", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "stock.reports.title", to: "/app/user/report/report-stock", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "purchase.reports.title", to: "/app/user/report/report-purchase", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "top-selling-product.reports.title", to: "/app/user/report/report-top-selling-products", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "product.quantity.alert.reports.title", to: "/app/user/report/report-product-quantity", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "supplier.report.title", to: "/app/user/report/suppliers", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "profit-loss.reports.title", to: "/app/user/report/profit-loss", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "best-customer.report.title", to: "/app/user/report/best-customers", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "customer.report.title", to: "/app/user/report/customers", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
+            { title: "register.report.title", to: "/app/user/report/register", fontIcon: <FontAwesomeIcon icon={faChartColumn} />, class: "d-flex", permission: Permissions.MANAGE_REPORTS },
         ],
-        items: [
-            {
-                title: getFormattedMessage("warehouse.reports.title"),
-                to: "/app/user/report/report-warehouse",
-            },
-            {
-                title: getFormattedMessage("sale.reports.title"),
-                to: "/app/user/report/report-sale",
-            },
-            {
-                title: getFormattedMessage("sales-by-brand.reports.title"),
-                to: "/app/user/report/report-sales-by-brand",
-            },
-            {
-                title: getFormattedMessage("stock.reports.title"),
-                to: "/app/user/report/report-stock",
-                detail: "/app/user/report/report-detail-stock",
-            },
-            {
-                title: getFormattedMessage("purchase.reports.title"),
-                to: "/app/user/report/report-purchase",
-            },
-            {
-                title: getFormattedMessage("top-selling-product.reports.title"),
-                to: "/app/user/report/report-top-selling-products",
-            },
-            {
-                title: getFormattedMessage(
-                    "product.quantity.alert.reports.title"
-                ),
-                to: "/app/user/report/report-product-quantity",
-            },
-            {
-                title: getFormattedMessage("supplier.report.title"),
-                to: "/app/user/report/suppliers",
-                detail: "/app/user/report/suppliers/details",
-            },
-            {
-                title: getFormattedMessage("profit-loss.reports.title"),
-                to: "/app/user/report/profit-loss",
-            },
-            {
-                title: getFormattedMessage("best-customer.report.title"),
-                to: "/app/user/report/best-customers",
-            },
-            {
-                title: getFormattedMessage("customer.report.title"),
-                to: "/app/user/report/customers",
-                detail: "/app/user/report/customers/details",
-            },
-            {
-                title: getFormattedMessage("register.report.title"),
-                to: "/app/user/report/register",
-            },
-        ],
+        items: [],
     },
     {
         title: "template.title",

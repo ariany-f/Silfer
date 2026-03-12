@@ -35,6 +35,7 @@ const AsideTopSubMenuItem = (props) => {
         location.pathname.includes(section.stockPath) ||
         location.pathname.includes(section.purchasePath) ||
         location.pathname.includes(section.topSellingPath) ||
+        location.pathname.includes(section.salesByBrandReportPath) ||
         location.pathname.includes(section.stockDetailPath) ||
         location.pathname.includes(section.productQuantityAlertPath) ||
         location.pathname.includes(section.supplierReportPath) ||
@@ -81,6 +82,7 @@ const AsideTopSubMenuItem = (props) => {
                                     location.pathname.includes(section.stockPath) ||
                                     location.pathname.includes(section.purchasePath) ||
                                     location.pathname.includes(section.topSellingPath) ||
+                                    location.pathname.includes(section.salesByBrandReportPath) ||
                                     location.pathname.includes(section.stockDetailPath) ||
                                     location.pathname.includes(section.productQuantityAlertPath) ||
                                     location.pathname.includes(section.supplierReportPath) ||
@@ -474,12 +476,16 @@ const AsideTopSubMenuItem = (props) => {
                                             mainItems.supplierReportDetailsPath +
                                             "/" +
                                             id.id
-                                            ? "d-flex align-items-center"
+                                            ? (mainItems.newRoute && (!mainItems.items || mainItems.items.length === 0)
+                                                ? "d-none"
+                                                : "d-flex align-items-center")
                                             : "d-none"
                                             }`}
                                     >
-                                        {mainItems.items
-                                            ? mainItems.items.map((item, index) => {
+                                        {((mainItems.newRoute && (!mainItems.items || mainItems.items.length === 0))
+                                            ? null
+                                            : (mainItems.items && mainItems.items.length > 0
+                                                ? mainItems.items.map((item, index) => {
                                                 if (index <= (window.location.pathname.includes("report") ? lessThanLimit : mainItems.items.length)) {
                                                     return (
                                                         <div
@@ -539,6 +545,7 @@ const AsideTopSubMenuItem = (props) => {
                                                     );
                                                 }
                                             })
+                                                )
                                             : mainItems?.subMenu?.map(
                                                 (item, index) => {
                                                     return location.pathname ===
@@ -590,6 +597,8 @@ const AsideTopSubMenuItem = (props) => {
                                                     ) : null;
                                                 }
                                             )}
+                                                )
+                                        }
                                         {/* Report Dropdown  */}
                                         {(location.pathname.includes("report") || location.pathname.includes("front-cms")) && (mainItems.items && mainItems.items.length > limit) && (
                                             <Dropdown className="d-flex align-items-stretch">
