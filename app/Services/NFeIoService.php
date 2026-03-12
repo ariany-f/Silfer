@@ -181,12 +181,14 @@ class NFeIoService
         foreach ($sale->saleItems as $item) {
             $product = $item->product;
             $items[] = [
+                'code' => $product->code ?? ('ITEM-' . $item->id),
                 'description' => $product->name ?? 'Produto',
                 'quantity' => (float) $item->quantity,
                 'unitPrice' => (float) ($item->net_unit_price ?? $item->product_price),
                 'total' => (float) $item->sub_total,
                 'ncm' => $product->ncm ?? '00000000',
                 'cfop' => $product->cfop ?? '5102',
+                'tax' => $this->buildItemTax($item),
             ];
         }
 
@@ -213,6 +215,36 @@ class NFeIoService
             'Ceará' => 'CE', 'Pará' => 'PA', 'Amazonas' => 'AM', 'Mato Grosso' => 'MT', 'Mato Grosso do Sul' => 'MS',
         ];
         return $states[$stateName] ?? 'SP';
+    }
+
+    /**
+     * Estrutura mínima de impostos por item (ICMS, PIS, COFINS) para a API NFe.io.
+     */
+    private function buildItemTax($saleItem): array
+    {
+        $subTotal = (float) ($saleItem->sub_total ?? 0);
+        $taxAmount = (float) ($saleItem->tax_amount ?? 0);
+        return [
+            'icms' => [
+                'origin' => 0,
+                'cst' => '00',
+                'baseCalculationModality' => '0',
+                'aliquot' => 0,
+                'value' => 0,
+            ],
+            'pis' => [
+                'cst' => '01',
+                'baseCalculationModality' => '0',
+                'aliquot' => 0,
+                'value' => 0,
+            ],
+            'cofins' => [
+                'cst' => '01',
+                'baseCalculationModality' => '0',
+                'aliquot' => 0,
+                'value' => 0,
+            ],
+        ];
     }
 
     /**
