@@ -545,7 +545,6 @@ const AsideTopSubMenuItem = (props) => {
                                                     );
                                                 }
                                             })
-                                                )
                                             : mainItems?.subMenu?.map(
                                                 (item, index) => {
                                                     return location.pathname ===
@@ -597,6 +596,7 @@ const AsideTopSubMenuItem = (props) => {
                                                     ) : null;
                                                 }
                                             )}
+                                                )
                                                 )
                                         }
                                         {/* Report Dropdown  */}
