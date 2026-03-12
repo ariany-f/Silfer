@@ -1030,5 +1030,19 @@
     "globally.no.notes.available": "Nenhuma nota disponível",
     "customer.report.standalone.payments.label": "Pagamentos Avulsos",
     "customer.report.concluded.payments.label": "Pagamentos Avulsos Concluídos",
-    "customer.report.final.due.label": "A Pagar Final"
+    "customer.report.final.due.label": "A Pagar Final",
+    "nfe-io.menu.title": "Integração NFe.io",
+    "nfe-io.invoices.menu.title": "Notas Fiscais",
+    "nfe-io.config.title": "Configuração NFe.io",
+    "nfe-io.config.description": "Configure a integração com NFe.io para emissão de Notas Fiscais Eletrônicas (NF-e) a partir das vendas pagas.",
+    "nfe-io.config.enabled": "Habilitar integração NFe.io",
+    "nfe-io.config.api_key": "Chave API (Nota Fiscal)",
+    "nfe-io.config.api_key_help": "Deixe em branco para não alterar. Obtenha em app.nfe.io",
+    "nfe-io.config.company_id": "ID da Empresa",
+    "nfe-io.config.state_tax_id": "ID da Inscrição Estadual",
+    "nfe-io.invoices.title": "Notas Fiscais",
+    "nfe-io.invoices.status": "Status",
+    "nfe-io.invoices.number": "Número",
+    "nfe-io.invoices.sync": "Atualizar",
+    "nfe-io.generate-invoice.label": "Gerar Nota Fiscal"
 }

@@ -29,6 +29,7 @@ import { useReactToPrint } from "react-to-print";
 import { Permissions } from "../../constants";
 import { fetchPaymentMethods } from "../../store/action/paymentMethodAction";
 import { useNavigate } from "react-router";
+import { generateSaleInvoice } from "../../store/action/nfeIoAction";
 
 const Sales = (props) => {
     const {
@@ -51,6 +52,7 @@ const Sales = (props) => {
         paymentMethods
     } = props;
     const [deleteModel, setDeleteModel] = useState(false);
+    const [generatingInvoiceId, setGeneratingInvoiceId] = useState(null);
     const [isShowPaymentModel, setIsShowPaymentModel] = useState(false);
     const [isCreatePaymentOpen, setIsCreatePaymentOpen] = useState(false);
     const [isDelete, setIsDelete] = useState(null);
@@ -143,6 +145,14 @@ const Sales = (props) => {
         );
     };
 
+    const onGenerateInvoiceClick = (item) => {
+        if (!item.id || generatingInvoiceId) return;
+        setGeneratingInvoiceId(item.id);
+        dispatch(generateSaleInvoice(item.id))
+            .then(() => onChange({}))
+            .finally(() => setGeneratingInvoiceId(null));
+    };
+
     const printPaymentReceiptPdf = () => {
         setIsShowPdf(true);
         setTimeout(() => {
@@ -199,7 +209,8 @@ const Sales = (props) => {
             id: sale.id,
             currency: currencySymbol,
             is_return: sale.attributes.is_return,
-            due_amount: sale.attributes.due_amount
+            due_amount: sale.attributes.due_amount,
+            nfe_invoice: sale.attributes.nfe_invoice
         }));
 
     useEffect(() => {
@@ -504,6 +515,9 @@ const Sales = (props) => {
                         onCreatePaymentClick={onCreatePaymentClick}
                         onCreateSaleReturnClick={onCreateSaleReturnClick}
                         isDeleteMode={getPermission(allConfigData?.permissions, Permissions.DELETE_SALES)}
+                        onGenerateInvoiceClick={onGenerateInvoiceClick}
+                        isGenerateInvoice={row.payment_status === 1 && row.nfe_invoice?.can_generate_invoice}
+                        isGeneratingInvoice={generatingInvoiceId === row.id}
                     />
                 ),
         },

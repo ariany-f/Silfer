@@ -443,6 +443,7 @@ export const userMenu = [
             { title: "receipt-settings.title" },
             { title: "taxes.title" },
             { title: "pos.settings.title" },
+            { title: "nfe-io.menu.title" },
         ],
         items: [
             {
@@ -464,6 +465,14 @@ export const userMenu = [
             {
                 title: getFormattedMessage("pos.settings.title"),
                 to: "/app/user/pos-settings",
+            },
+            {
+                title: getFormattedMessage("nfe-io.menu.title"),
+                to: "/app/user/nfe-io-config",
+            },
+            {
+                title: getFormattedMessage("nfe-io.invoices.menu.title"),
+                to: "/app/user/sale-invoices",
             },
         ],
     },

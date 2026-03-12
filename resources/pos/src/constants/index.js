@@ -13,6 +13,8 @@ export const apiBaseURL = {
     BASE_UNITS: "/base-units",
     SUPPLIERS: "/suppliers",
     SMS_SETTING: "/sms-settings",
+    NFE_IO_CONFIG: "/nfe-io/config",
+    NFE_IO_INVOICES: "/nfe-io/invoices",
     SUPPLIERS_REPORT: "/supplier-report",
     CUSTOMERS_REPORT: "/customer-report",
     CUSTOMERS: "/customers",
@@ -269,6 +271,12 @@ export const supplierActionType = {
 export const smsApiActionType = {
     FETCH_SMS_SETTINGS: "FETCH_SMS_SETTINGS",
     EDIT_SMS_SETTING: "EDIT_SMS_SETTING",
+};
+
+export const nfeIoActionType = {
+    FETCH_NFE_CONFIG: "FETCH_NFE_CONFIG",
+    UPDATE_NFE_CONFIG: "UPDATE_NFE_CONFIG",
+    FETCH_NFE_INVOICES: "FETCH_NFE_INVOICES",
 };
 
 export const unitsActionType = {

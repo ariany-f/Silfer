@@ -129,6 +129,8 @@ import PosSetting from "./components/settings/PosSetting";
 import PaymentMethod from "./components/paymentMethod/PaymentMethod";
 import CustomerDisplay from "./components/customerDisplay/customerDisplay";
 import DualScreenSetting from "./components/dualScreenSetting/DualScreenSetting";
+import NFeIoConfig from "./components/nfe-io/NFeIoConfig";
+import SaleInvoices from "./components/nfe-io/SaleInvoices";
 
 export const route = [
     {
@@ -325,6 +327,16 @@ export const route = [
     {
         path: "dual-screen-settings",
         ele: <DualScreenSetting />,
+        permission: Permissions.MANAGE_SETTING,
+    },
+    {
+        path: "nfe-io-config",
+        ele: <NFeIoConfig />,
+        permission: Permissions.MANAGE_SETTING,
+    },
+    {
+        path: "sale-invoices",
+        ele: <SaleInvoices />,
         permission: Permissions.MANAGE_SETTING,
     },
     {

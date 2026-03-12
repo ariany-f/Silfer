@@ -4,7 +4,8 @@ import { getFormattedMessage } from '../sharedMethod';
 import {
     faEye, faFilePdf, faDollarSign, faTrash, faCartShopping, faPenToSquare, faEllipsisVertical,
     faReceipt,
-    faDownload
+    faDownload,
+    faFileInvoice
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Permissions } from '../../constants';
@@ -14,7 +15,8 @@ const ActionDropDownButton = (props) => {
     const {
         goToEditProduct, item, onClickDeleteModel = true, goToDetailScreen, isViewIcon = false, isPdfIcon = false, isCreateSaleReturn, onCreateSaleReturnClick,
         isCreatePayment = false, onPdfClick, title, isPaymentShow = false, onShowPaymentClick, onCreatePaymentClick, onCreateSaleClick, isCreatesSales,
-        isCreatePurchaseReturn, onCreatePurchaseReturnClick, isReceiptIcon, onReceiptClick, isDeleteMode
+        isCreatePurchaseReturn, onCreatePurchaseReturnClick, isReceiptIcon, onReceiptClick, isDeleteMode,
+        onGenerateInvoiceClick, isGenerateInvoice, isGeneratingInvoice
     } = props;
 
     const { config } = useSelector(state => state);
@@ -57,6 +59,15 @@ const ActionDropDownButton = (props) => {
                             className='me-2' /> {getFormattedMessage('globally.receipt.download.label')}
                     </Dropdown.Item> : null
                 }
+                {isGenerateInvoice && onGenerateInvoiceClick &&
+                    <Dropdown.Item onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isGeneratingInvoice) onGenerateInvoiceClick(item);
+                        closeDropdown();
+                    }} disabled={isGeneratingInvoice} className='py-3 px-4 d-flex align-items-center fs-6'>
+                        <FontAwesomeIcon icon={faFileInvoice} className='me-2' />
+                        {isGeneratingInvoice ? getFormattedMessage('globally.loading.label') : getFormattedMessage('nfe-io.generate-invoice.label')}
+                    </Dropdown.Item>}
                 {item.payment_status !== 2 && isPaymentShow &&
                     <Dropdown.Item onClick={(e) => {
                         e.stopPropagation();

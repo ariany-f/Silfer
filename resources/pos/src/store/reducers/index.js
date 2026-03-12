@@ -119,6 +119,7 @@ import frontCmsReducer from "./frontCmsReducer";
 import { cartReducer } from "./cartReducer";
 import dualScreenReducer from "./dualScreenReducer";
 import paymentMethodReducer from "./paymentMethodReducer";
+import nfeIoReducer from "./nfeIoReducer";
 import totalProductRecordReducer from "./totalProductRecordReducer";
 
 export default combineReducers({
@@ -243,5 +244,6 @@ export default combineReducers({
     cart: cartReducer,
     dualScreenSetting: dualScreenReducer,
     paymentMethods: paymentMethodReducer,
-    totalProductRecord: totalProductRecordReducer
+    totalProductRecord: totalProductRecordReducer,
+    nfeIo: nfeIoReducer
 });

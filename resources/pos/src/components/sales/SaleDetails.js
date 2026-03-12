@@ -18,8 +18,11 @@ import {
     faLocationDot,
     faMobileAlt,
     faUser,
+    faFileInvoice,
 } from "@fortawesome/free-solid-svg-icons";
 import TopProgressBar from "../../shared/components/loaders/TopProgressBar";
+import { generateSaleInvoice } from "../../store/action/nfeIoAction";
+import { useDispatch } from "react-redux";
 
 const SaleDetails = (props) => {
     const {
@@ -29,6 +32,8 @@ const SaleDetails = (props) => {
         allConfigData,
     } = props;
     const { id } = useParams();
+    const dispatch = useDispatch();
+    const [generatingInvoice, setGeneratingInvoice] = React.useState(false);
 
     useEffect(() => {
         saleDetailsAction(id);
@@ -41,6 +46,24 @@ const SaleDetails = (props) => {
                 title={getFormattedMessage("sale.details.title")}
                 to="/app/user/sales"
             />
+            {saleDetails?.payment_status === 1 && saleDetails?.nfe_invoice?.can_generate_invoice && (
+                <div className="mb-3">
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={generatingInvoice}
+                        onClick={() => {
+                            setGeneratingInvoice(true);
+                            dispatch(generateSaleInvoice(saleDetails.id))
+                                .then(() => saleDetailsAction(id))
+                                .finally(() => setGeneratingInvoice(false));
+                        }}
+                    >
+                        <FontAwesomeIcon icon={faFileInvoice} className="me-2" />
+                        {generatingInvoice ? getFormattedMessage("globally.loading.label") : getFormattedMessage("nfe-io.generate-invoice.label")}
+                    </button>
+                </div>
+            )}
             <TabTitle title={placeholderText("sale.details.title")} />
             <div className="card">
                 <div className="card-body">
