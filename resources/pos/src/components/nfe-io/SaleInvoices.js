@@ -83,6 +83,11 @@ const SaleInvoices = (props) => {
                                         </td>
                                         <td>{inv.invoice_number || '-'}</td>
                                         <td>
+                                            {inv.pdf_url && (
+                                                <a href={inv.pdf_url} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-success me-1">
+                                                    PDF
+                                                </a>
+                                            )}
                                             {inv.status !== 'authorized' && inv.nfe_io_id && (
                                                 <Button
                                                     size="sm"

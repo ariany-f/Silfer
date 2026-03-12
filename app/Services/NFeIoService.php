@@ -118,22 +118,25 @@ class NFeIoService
         if (strlen($taxId) > 14) {
             $taxId = substr($taxId, 0, 14);
         }
+        if ((int) $taxId === 0) {
+            $taxId = '11111111111'; // CPF genérico para consumidor final quando não informado
+        }
         $federalTaxNumber = (int) $taxId;
 
         $cityName = $customer->city ?? 'Não informado';
         $cityCode = strlen($cityName) > 0 ? '3550308' : '3550308'; // código IBGE São Paulo como fallback
 
         $buyer = [
-            'name' => $customer->name ?? 'Consumidor',
+            'name' => trim($customer->name ?? '') ?: 'Consumidor',
             'federalTaxNumber' => $federalTaxNumber,
-            'email' => $customer->email ?? 'nfe@email.com',
+            'email' => trim($customer->email ?? '') ?: 'nfe@email.com',
             'address' => [
-                'postalCode' => preg_replace('/\D/', '', $sale->warehouse->zip_code ?? '00000000'),
-                'street' => $customer->address ?? 'Não informado',
+                'postalCode' => preg_replace('/\D/', '', $sale->warehouse->zip_code ?? '00000000') ?: '01310100',
+                'street' => trim($customer->address ?? '') ?: 'Não informado',
                 'number' => 'S/N',
-                'district' => $customer->city ?? 'Centro',
+                'district' => trim($customer->city ?? '') ?: 'Centro',
                 'city' => [
-                    'name' => $cityName,
+                    'name' => trim($cityName) ?: 'São Paulo',
                     'code' => $cityCode,
                 ],
                 'state' => $this->getStateCode($customer->country),
