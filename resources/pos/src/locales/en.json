@@ -1003,5 +1003,6 @@
     "nfe-io.invoices.status": "Status",
     "nfe-io.invoices.number": "Number",
     "nfe-io.invoices.sync": "Refresh",
-    "nfe-io.generate-invoice.label": "Generate Invoice"
+    "nfe-io.generate-invoice.label": "Generate Invoice",
+    "nfe-io.view-invoice.label": "View Invoice"
 }

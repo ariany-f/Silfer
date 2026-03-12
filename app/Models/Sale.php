@@ -316,6 +316,8 @@ class Sale extends BaseModel implements HasMedia, JsonResourceful
             'last_status' => $last?->status,
             'last_invoice_number' => $last?->invoice_number,
             'can_generate_invoice' => $canGenerate,
+            'sale_invoice_id' => $last?->id,
+            'pdf_url' => $last?->pdf_url,
         ];
     }
 }

@@ -16,7 +16,8 @@ const ActionDropDownButton = (props) => {
         goToEditProduct, item, onClickDeleteModel = true, goToDetailScreen, isViewIcon = false, isPdfIcon = false, isCreateSaleReturn, onCreateSaleReturnClick,
         isCreatePayment = false, onPdfClick, title, isPaymentShow = false, onShowPaymentClick, onCreatePaymentClick, onCreateSaleClick, isCreatesSales,
         isCreatePurchaseReturn, onCreatePurchaseReturnClick, isReceiptIcon, onReceiptClick, isDeleteMode,
-        onGenerateInvoiceClick, isGenerateInvoice, isGeneratingInvoice
+        onGenerateInvoiceClick, isGenerateInvoice, isGeneratingInvoice,
+        onViewInvoiceClick, isViewInvoice
     } = props;
 
     const { config } = useSelector(state => state);
@@ -67,6 +68,15 @@ const ActionDropDownButton = (props) => {
                     }} disabled={isGeneratingInvoice} className='py-3 px-4 d-flex align-items-center fs-6'>
                         <FontAwesomeIcon icon={faFileInvoice} className='me-2' />
                         {isGeneratingInvoice ? getFormattedMessage('globally.loading.label') : getFormattedMessage('nfe-io.generate-invoice.label')}
+                    </Dropdown.Item>}
+                {isViewInvoice && onViewInvoiceClick &&
+                    <Dropdown.Item onClick={(e) => {
+                        e.stopPropagation();
+                        onViewInvoiceClick(item);
+                        closeDropdown();
+                    }} className='py-3 px-4 d-flex align-items-center fs-6'>
+                        <FontAwesomeIcon icon={faFileInvoice} className='me-2' />
+                        {getFormattedMessage('nfe-io.view-invoice.label')}
                     </Dropdown.Item>}
                 {item.payment_status !== 2 && isPaymentShow &&
                     <Dropdown.Item onClick={(e) => {

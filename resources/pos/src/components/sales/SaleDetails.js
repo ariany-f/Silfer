@@ -64,6 +64,24 @@ const SaleDetails = (props) => {
                     </button>
                 </div>
             )}
+            {saleDetails?.nfe_invoice?.sale_invoice_id && !saleDetails?.nfe_invoice?.can_generate_invoice && (
+                <div className="mb-3">
+                    <button
+                        type="button"
+                        className="btn btn-outline-primary"
+                        onClick={() => {
+                            if (saleDetails.nfe_invoice?.pdf_url) {
+                                window.open(saleDetails.nfe_invoice.pdf_url, '_blank');
+                            } else {
+                                window.open('/app/user/sale-invoices', '_blank');
+                            }
+                        }}
+                    >
+                        <FontAwesomeIcon icon={faFileInvoice} className="me-2" />
+                        {getFormattedMessage("nfe-io.view-invoice.label")}
+                    </button>
+                </div>
+            )}
             <TabTitle title={placeholderText("sale.details.title")} />
             <div className="card">
                 <div className="card-body">

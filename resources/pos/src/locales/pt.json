@@ -1044,5 +1044,6 @@
     "nfe-io.invoices.status": "Status",
     "nfe-io.invoices.number": "Número",
     "nfe-io.invoices.sync": "Atualizar",
-    "nfe-io.generate-invoice.label": "Gerar Nota Fiscal"
+    "nfe-io.generate-invoice.label": "Gerar Nota Fiscal",
+    "nfe-io.view-invoice.label": "Ver Nota Fiscal"
 }

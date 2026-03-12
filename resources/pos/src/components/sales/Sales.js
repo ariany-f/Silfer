@@ -153,6 +153,14 @@ const Sales = (props) => {
             .finally(() => setGeneratingInvoiceId(null));
     };
 
+    const onViewInvoiceClick = (item) => {
+        if (item.nfe_invoice?.pdf_url) {
+            window.open(item.nfe_invoice.pdf_url, '_blank');
+        } else {
+            navigate('/app/user/sale-invoices');
+        }
+    };
+
     const printPaymentReceiptPdf = () => {
         setIsShowPdf(true);
         setTimeout(() => {
@@ -518,6 +526,8 @@ const Sales = (props) => {
                         onGenerateInvoiceClick={onGenerateInvoiceClick}
                         isGenerateInvoice={row.payment_status === 1 && row.nfe_invoice?.can_generate_invoice}
                         isGeneratingInvoice={generatingInvoiceId === row.id}
+                        onViewInvoiceClick={onViewInvoiceClick}
+                        isViewInvoice={row.nfe_invoice?.sale_invoice_id && !row.nfe_invoice?.can_generate_invoice}
                     />
                 ),
         },

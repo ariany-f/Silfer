@@ -107,26 +107,34 @@ class NFeIoService
     {
         /** @var Customer $customer */
         $customer = $sale->customer;
-        $taxId = preg_replace('/\D/', '', $customer->tax_id ?? $customer->phone ?? '00000000000');
-        if (strlen($taxId) === 11) {
-            $federalTaxNumber = (int) $taxId;
-        } else {
-            $taxId = str_pad(substr($taxId, 0, 14), 14, '0');
-            $federalTaxNumber = (int) $taxId;
+        if (!$customer) {
+            throw new \InvalidArgumentException('Venda sem cliente vinculado.');
         }
 
+        $taxId = preg_replace('/\D/', '', $customer->tax_id ?? $customer->phone ?? '');
+        if (strlen($taxId) < 11) {
+            $taxId = str_pad($taxId, 11, '0', STR_PAD_LEFT);
+        }
+        if (strlen($taxId) > 14) {
+            $taxId = substr($taxId, 0, 14);
+        }
+        $federalTaxNumber = (int) $taxId;
+
+        $cityName = $customer->city ?? 'Não informado';
+        $cityCode = strlen($cityName) > 0 ? '3550308' : '3550308'; // código IBGE São Paulo como fallback
+
         $buyer = [
-            'name' => $customer->name,
+            'name' => $customer->name ?? 'Consumidor',
             'federalTaxNumber' => $federalTaxNumber,
-            'email' => $customer->email ?? '',
+            'email' => $customer->email ?? 'nfe@email.com',
             'address' => [
                 'postalCode' => preg_replace('/\D/', '', $sale->warehouse->zip_code ?? '00000000'),
                 'street' => $customer->address ?? 'Não informado',
                 'number' => 'S/N',
                 'district' => $customer->city ?? 'Centro',
                 'city' => [
-                    'name' => $customer->city ?? 'Não informado',
-                    'code' => '3550308',
+                    'name' => $cityName,
+                    'code' => $cityCode,
                 ],
                 'state' => $this->getStateCode($customer->country),
                 'country' => 'BRA',
@@ -146,7 +154,8 @@ class NFeIoService
             ];
         }
 
-        $payload = [
+        // API NFe.io espera wrapper productInvoice
+        return [
             'productInvoice' => [
                 'buyer' => $buyer,
                 'issueDate' => $sale->date->format('Y-m-d'),
@@ -154,8 +163,6 @@ class NFeIoService
                 'reference' => $sale->reference_code,
             ],
         ];
-
-        return $payload;
     }
 
     private function getStateCode(?string $stateName): string
