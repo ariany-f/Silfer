@@ -446,9 +446,9 @@ const AsideMenu = (props) => {
                                                                 subMainItems.to ||
                                                             location.pathname ===
                                                                 subMainItems.path ||
-                                                            location.pathname.includes(
-                                                                subMainItems.to
-                                                            ) ||
+                                                            (subMainItems.to &&
+                                                                (location.pathname === subMainItems.to ||
+                                                                    location.pathname.startsWith(subMainItems.to + "/"))) ||
                                                             location.pathname ===
                                                                 subMainItems.stockPath ||
                                                             location.pathname ===
