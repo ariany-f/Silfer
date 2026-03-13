@@ -111,6 +111,7 @@
     "globally.show.payment.label": "Zahlungen anzeigen",
     "globally.detail.shipping": "Versand",
     "globally.detail.grand.total": "Gesamtsumme",
+    "globally.detail.paid.total": "Bezahlt Gesamt",
     "globally.detail.paid": "Bezahlt",
     "globally.detail.due": "Fällig",
     "customers.title": "Kunden",

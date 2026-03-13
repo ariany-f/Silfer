@@ -111,7 +111,7 @@ const SalesByBrandChart = (props) => {
     };
 
     const labels = salesByBrand?.map((item) => item.name) || [];
-    const salesData = salesByBrand?.map((item) => item.grand_total) || [];
+    const salesData = salesByBrand?.map((item) => item.paid_total ?? item.grand_total) || [];
 
     const data = {
         labels,

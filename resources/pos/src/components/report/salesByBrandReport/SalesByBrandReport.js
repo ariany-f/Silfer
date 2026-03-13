@@ -54,6 +54,7 @@ const SalesByBrandReport = (props) => {
             name: row.name,
             total_quantity: row.total_quantity,
             grand_total: row.grand_total,
+            paid_total: row.paid_total ?? 0,
             currency: currencySymbol,
         }));
 
@@ -84,6 +85,17 @@ const SalesByBrandReport = (props) => {
                     row.grand_total
                 ),
             sortField: "grand_total",
+            sortable: true,
+        },
+        {
+            name: getFormattedMessage("globally.detail.paid.total"),
+            selector: (row) =>
+                currencySymbolHandling(
+                    allConfigData,
+                    row.currency,
+                    row.paid_total
+                ),
+            sortField: "paid_total",
             sortable: true,
         },
     ];

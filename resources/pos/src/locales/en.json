@@ -110,6 +110,7 @@
     "globally.detail.order.tax": "Order Tax",
     "globally.detail.shipping": "Shipping",
     "globally.detail.grand.total": "Grand Total",
+    "globally.detail.paid.total": "Paid Total",
     "globally.detail.paid": "Paid",
     "globally.search.field.label": "Search Product by Code Name",
     "globally.detail.due": "Due",

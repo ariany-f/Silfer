@@ -108,6 +108,7 @@
     "globally.detail.order.tax": "Sipariş Vergisi",
     "globally.detail.shipping": "Nakliye",
     "globally.detail.grand.total": "Genel Toplam",
+    "globally.detail.paid.total": "Ödenen Toplam",
     "globally.detail.paid": "Paralı",
     "globally.show.payment.label": "Ödemeleri Göster",
     "globally.search.field.label": "Ürün Kodu Adına Göre Ara",

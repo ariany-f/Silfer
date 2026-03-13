@@ -109,6 +109,7 @@
     "globally.detail.order.tax": "Thuế đặt hàng",
     "globally.detail.shipping": "Đang chuyển hàng",
     "globally.detail.grand.total": "Tổng cộng",
+    "globally.detail.paid.total": "Tổng đã thanh toán",
     "globally.detail.paid": "Trả",
     "globally.search.field.label": "Tìm kiếm sản phẩm theo tên mã",
     "globally.detail.due": "Quá hạn",

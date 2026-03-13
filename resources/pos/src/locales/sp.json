@@ -111,6 +111,7 @@
     "globally.show.payment.label": "Mostrar pagos",
     "globally.detail.shipping": "Envío",
     "globally.detail.grand.total": "Gran total",
+    "globally.detail.paid.total": "Total Pagado",
     "globally.detail.paid": "Pagada",
     "globally.detail.due": "Vencer",
     "globally.search.field.label": "Buscar producto por nombre de código",

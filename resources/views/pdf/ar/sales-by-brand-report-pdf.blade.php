@@ -35,6 +35,7 @@
                 <th>{{ __('messages.pdf.brand') }}</th>
                 <th class="text-center">{{ __('messages.pdf.quantity') }}</th>
                 <th class="text-center">{{ __('messages.pdf.total_amount') }}</th>
+                <th class="text-center">{{ __('messages.pdf.total_paid') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +45,7 @@
                         <td>{{ $row['name'] }}</td>
                         <td class="text-center">{{ number_format((float) $row['total_quantity'], 2) }}</td>
                         <td class="text-center icon-style number-align">{{ currencyAlignment(number_format((float) $row['grand_total'], 2)) }}</td>
+                        <td class="text-center icon-style number-align">{{ currencyAlignment(number_format((float) ($row['paid_total'] ?? 0), 2)) }}</td>
                     </tr>
                 @endforeach
             @endif

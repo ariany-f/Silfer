@@ -11,9 +11,10 @@
 <table width="100%" cellspacing="0" cellpadding="10" style="margin-top: 40px;">
     <thead>
     <tr style="background-color: dodgerblue;">
-        <th style="width: 40%">{{ __('messages.pdf.brand') }}</th>
-        <th style="width: 30%">{{ __('messages.pdf.quantity') }}</th>
-        <th style="width: 30%">{{ __('messages.pdf.total_amount') }}</th>
+        <th style="width: 30%">{{ __('messages.pdf.brand') }}</th>
+        <th style="width: 20%">{{ __('messages.pdf.quantity') }}</th>
+        <th style="width: 25%">{{ __('messages.pdf.total_amount') }}</th>
+        <th style="width: 25%">{{ __('messages.pdf.total_paid') }}</th>
     </tr>
     </thead>
     <tbody>
@@ -22,6 +23,7 @@
             <td>{{ $row['name'] }}</td>
             <td>{{ number_format((float) $row['total_quantity'], 2) }}</td>
             <td>{{ number_format((float) $row['grand_total'], 2) }}</td>
+            <td>{{ number_format((float) ($row['paid_total'] ?? 0), 2) }}</td>
         </tr>
     @endforeach
     </tbody>
