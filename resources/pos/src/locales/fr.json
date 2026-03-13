@@ -111,6 +111,7 @@
     "globally.detail.order.tax": "Taxe de commande",
     "globally.detail.shipping": "Expédition",
     "globally.detail.grand.total": "Total",
+    "globally.detail.paid.quantity": "Qté Payée",
     "globally.detail.paid.total": "Total Payé",
     "globally.detail.paid": "Payé",
     "globally.detail.due": "Exigible",

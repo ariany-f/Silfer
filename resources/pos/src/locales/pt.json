@@ -111,6 +111,7 @@
     "globally.detail.order.tax": "Imposto do Pedido",
     "globally.detail.shipping": "Frete",
     "globally.detail.grand.total": "Total Geral",
+    "globally.detail.paid.quantity": "Qtd Paga",
     "globally.detail.paid.total": "Total Pago",
     "globally.detail.paid": "Pago",
     "globally.search.field.label": "Pesquisar Produto por C\u00f3digo ou Nome",

@@ -54,6 +54,7 @@ const SalesByBrandReport = (props) => {
             name: row.name,
             total_quantity: row.total_quantity,
             grand_total: row.grand_total,
+            paid_quantity: row.paid_quantity ?? 0,
             paid_total: row.paid_total ?? 0,
             currency: currencySymbol,
         }));
@@ -86,6 +87,17 @@ const SalesByBrandReport = (props) => {
                 ),
             sortField: "grand_total",
             sortable: true,
+        },
+        {
+            name: getFormattedMessage("globally.detail.paid.quantity"),
+            selector: (row) => row.paid_quantity,
+            sortField: "paid_quantity",
+            sortable: true,
+            cell: (row) => (
+                <span className="badge bg-light-success">
+                    {Number(row.paid_quantity).toFixed(2)}
+                </span>
+            ),
         },
         {
             name: getFormattedMessage("globally.detail.paid.total"),

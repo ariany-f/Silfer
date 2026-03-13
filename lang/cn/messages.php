@@ -38,6 +38,7 @@ return [
         'total_purchases' => '總購買量',
         'total_amount' => '总金额',
         'total_paid' => '总支付金额',
+        'paid_quantity' => '已付数量',
         'total_sale_due' => '销售未付款总额',
         'reference' => '参考',
         'due_amount' => '应付金额',

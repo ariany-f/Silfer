@@ -38,6 +38,7 @@ return [
         'total_purchases' => 'Total Purchases',
         'total_amount' => 'Total Amount',
         'total_paid' => 'Total Paid',
+        'paid_quantity' => 'Paid Qty',
         'total_sale_due' => 'Total Sale Due',
         'reference' => 'Reference',
         'due_amount' => 'Due Amount',

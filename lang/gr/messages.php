@@ -38,6 +38,7 @@ return [
         'total_purchases' => 'Gesamtkäufe',
         'total_amount' => 'Gesamtbetrag',
         'total_paid' => 'Gesamtbetrag bezahlt',
+        'paid_quantity' => 'Bezahlte Menge',
         'total_sale_due' => 'Gesamtschulden',
         'reference' => 'Referenz',
         'due_amount' => 'Fälliger Betrag',

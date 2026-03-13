@@ -38,6 +38,7 @@ return [
         'total_purchases' => 'Compras totales',
         'total_amount' => 'Monto Total',
         'total_paid' => 'Total Pagado',
+        'paid_quantity' => 'Cant. Pagada',
         'total_sale_due' => 'Total de Venta Pendiente',
         'reference' => 'Referencia',
         'due_amount' => 'Monto Adeudado',

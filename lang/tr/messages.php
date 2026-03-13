@@ -38,6 +38,7 @@ return [
         'total_purchases' => 'Toplam Satın Almalar',
         'total_amount' => 'Toplam Tutar',
         'total_paid' => 'Toplam Ödenen',
+        'paid_quantity' => 'Ödenen Miktar',
         'total_sale_due' => 'Toplam Satış Borcu',
         'reference' => 'Referans',
         'due_amount' => 'Ödenecek Tutar',

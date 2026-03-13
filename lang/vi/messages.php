@@ -38,6 +38,7 @@ return [
         'total_purchases' => 'Tổng số lần mua',
         'total_amount' => 'Tổng số tiền',
         'total_paid' => 'Tổng tiền đã thanh toán',
+        'paid_quantity' => 'SL đã thanh toán',
         'total_sale_due' => 'Tổng số tiền còn nợ',
         'reference' => 'Tham chiếu',
         'due_amount' => 'Số tiền còn nợ',

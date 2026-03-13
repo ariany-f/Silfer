@@ -35,6 +35,7 @@
                     <th style="text-align: left">{{ __('messages.pdf.brand') }}</th>
                     <th style="width:15%" class="text-center">{{ __('messages.pdf.quantity') }}</th>
                     <th style="width:15%" class="text-center">{{ __('messages.pdf.total_amount') }}</th>
+                    <th style="width:12%" class="text-center">{{ __('messages.pdf.paid_quantity') }}</th>
                     <th style="width:15%" class="text-center">{{ __('messages.pdf.total_paid') }}</th>
                 </tr>
             </thead>
@@ -45,6 +46,7 @@
                             <td>{{ $row['name'] }}</td>
                             <td class="text-center">{{ number_format((float) $row['total_quantity'], 2) }}</td>
                             <td class="icon-style text-center number-align">{{ currencyAlignment(number_format((float) $row['grand_total'], 2)) }}</td>
+                            <td class="text-center">{{ number_format((float) ($row['paid_quantity'] ?? 0), 2) }}</td>
                             <td class="icon-style text-center number-align">{{ currencyAlignment(number_format((float) ($row['paid_total'] ?? 0), 2)) }}</td>
                         </tr>
                     @endforeach

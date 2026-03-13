@@ -112,6 +112,7 @@
     "globally.detail.order.tax": "ضريبة الطلب",
     "globally.detail.shipping": "شحن",
     "globally.detail.grand.total": "المبلغ الإجمالي",
+    "globally.detail.paid.quantity": "الكمية المدفوعة",
     "globally.detail.paid.total": "إجمالي المدفوع",
     "globally.detail.paid": "دفع",
     "globally.status.validate.label": "الرجاء تحديد الحالة",

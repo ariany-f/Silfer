@@ -245,6 +245,7 @@ class ReportAPIController extends AppBaseController
         $salesByBrand = $query
             ->selectRaw('brands.id, brands.name, COALESCE(SUM(sale_items.sub_total), 0) as grand_total')
             ->selectRaw('COALESCE(SUM(sale_items.quantity), 0) as total_quantity')
+            ->selectRaw('COALESCE(SUM(sale_items.quantity * sales.paid_amount / NULLIF(sales.grand_total, 0)), 0) as paid_quantity')
             ->selectRaw('COALESCE(SUM(sale_items.sub_total * sales.paid_amount / NULLIF(sales.grand_total, 0)), 0) as paid_total')
             ->groupBy('brands.id', 'brands.name')
             ->orderByDesc('grand_total')
@@ -256,6 +257,7 @@ class ReportAPIController extends AppBaseController
                 'name' => $row->name,
                 'grand_total' => (float) $row->grand_total,
                 'total_quantity' => (float) $row->total_quantity,
+                'paid_quantity' => (float) $row->paid_quantity,
                 'paid_total' => (float) $row->paid_total,
             ];
         })->values()->all();
@@ -303,6 +305,7 @@ class ReportAPIController extends AppBaseController
         $salesByBrand = $query
             ->selectRaw('brands.id, brands.name, COALESCE(SUM(sale_items.sub_total), 0) as grand_total')
             ->selectRaw('COALESCE(SUM(sale_items.quantity), 0) as total_quantity')
+            ->selectRaw('COALESCE(SUM(sale_items.quantity * sales.paid_amount / NULLIF(sales.grand_total, 0)), 0) as paid_quantity')
             ->selectRaw('COALESCE(SUM(sale_items.sub_total * sales.paid_amount / NULLIF(sales.grand_total, 0)), 0) as paid_total')
             ->groupBy('brands.id', 'brands.name')
             ->orderByDesc('grand_total')
@@ -314,6 +317,7 @@ class ReportAPIController extends AppBaseController
                 'name' => $row->name,
                 'grand_total' => (float) $row->grand_total,
                 'total_quantity' => (float) $row->total_quantity,
+                'paid_quantity' => (float) $row->paid_quantity,
                 'paid_total' => (float) $row->paid_total,
             ];
         })->values()->all();

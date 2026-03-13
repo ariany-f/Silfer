@@ -38,6 +38,7 @@ return [
         'total_purchases' => 'Total de Compras',
         'total_amount' => 'Valor Total',
         'total_paid' => 'Total Pago',
+        'paid_quantity' => 'Qtd Paga',
         'total_sale_due' => 'Total de Vendas a Pagar',
         'reference' => 'Referência',
         'due_amount' => 'Valor a Pagar',

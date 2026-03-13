@@ -38,6 +38,7 @@ return [
         'total_purchases' => 'إجمالي المشتريات',
         'total_amount' => 'إجمالي المبلغ',
         'total_paid' => 'إجمالي المدفوع',
+        'paid_quantity' => 'الكمية المدفوعة',
         'total_sale_due' => 'إجمالي المبيعات المستحقة',
         'reference' => 'المرجع',
         'due_amount' => 'المبلغ المستحق',

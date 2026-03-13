@@ -109,6 +109,7 @@
     "globally.detail.order.tax": "订单税",
     "globally.detail.shipping": "运费",
     "globally.detail.grand.total": "总计",
+    "globally.detail.paid.quantity": "已付数量",
     "globally.detail.paid.total": "已付总额",
     "globally.detail.paid": "付费",
     "globally.search.field.label": "按代号搜索产品",
