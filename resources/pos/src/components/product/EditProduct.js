@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom'
-import { useNavigate } from "react-router";
 import { Button, Table } from 'react-bootstrap-v5';
 import { fetchMainProduct } from '../../store/action/productAction';
 import ProductForm from './ProductForm';
@@ -24,7 +23,6 @@ import { Permissions } from "../../constants";
 const EditProduct = (props) => {
     const { fetchMainProduct, products, fetchAllBaseUnits, base, frontSetting, allConfigData } = props;
     const { id } = useParams();
-    const navigate = useNavigate();
     const [singleProduct, setSingleProduct] = useState({});
     const [showWarehouseModal, setShowWarehouseModal] = useState(false);
     const [showEditSubProductModal, setShowEditSubProductModal] = useState(false);
@@ -216,10 +214,12 @@ const EditProduct = (props) => {
                                     }
                                     {getPermission(allConfigData?.permissions, Permissions.MANAGE_VARIATIONS) &&
                                         product?.attributes?.product_type == 2 &&
+                                        commonDataForNewProduct.variationTypes &&
+                                        commonDataForNewProduct.variationTypes.length !== 0 &&
                                         <Button
                                             type="button"
                                             variant="outline-secondary"
-                                            onClick={() => navigate("/app/user/variations")}
+                                            onClick={openCreateSubProductModal}
                                             className="ms-2"
                                         >
                                             {getFormattedMessage("variation.create.title")}
