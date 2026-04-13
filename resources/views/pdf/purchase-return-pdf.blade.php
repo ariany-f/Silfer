@@ -169,17 +169,17 @@
                     <tr>
                         <td>{{ $item->product->name }} ({{ $item->product->code }})</td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $item->net_unit_cost, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($item->net_unit_cost, 2)) }}
                         </td>
                         <td class="text-center">{{ $item->quantity }}</td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $item->discount_amount, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($item->discount_amount, 2)) }}
                         </td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $item->tax_amount, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($item->tax_amount, 2)) }}
                         </td>
                         <td class="icon-style align-right">
-                            {{ currencyAlignment(number_format((float) $item->sub_total, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($item->sub_total, 2)) }}
                         </td>
                     </tr>
                 @endforeach
@@ -192,33 +192,33 @@
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.order_tax') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $purchaseReturn->tax_amount, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($purchaseReturn->tax_amount, 2)) }}
                     </td>
                 </tr>
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.discount') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $purchaseReturn->discount, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($purchaseReturn->discount, 2)) }}
                     </td>
                 </tr>
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.shipping') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $purchaseReturn->shipping, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($purchaseReturn->shipping, 2)) }}
                     </td>
                 </tr>
                 @if (!empty($purchaseReturn->received_amount))
                     <tr class="border">
                         <td class="border"><strong>{{ __('messages.pdf.paid_amount') }}:</strong></td>
                         <td class="number-align icon-style border">
-                            {{ currencyAlignment(number_format((float) $purchaseReturn->received_amount, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($purchaseReturn->received_amount, 2)) }}
                         </td>
                     </tr>
                 @endif
                 <tr>
                     <td><strong>{{ __('messages.pdf.total') }}:</strong></td>
                     <td class="number-align icon-style">
-                        <b>{{ currencyAlignment(number_format((float) $purchaseReturn->grand_total, 2)) }}</b>
+                        <b>{{ currencyAlignment(formatMoneyAmount($purchaseReturn->grand_total, 2)) }}</b>
                     </td>
                 </tr>
             </tbody>

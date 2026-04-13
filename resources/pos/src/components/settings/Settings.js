@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useIntl } from "react-intl";
 import { Form } from "react-bootstrap-v5";
 import { connect } from "react-redux";
 import { dateFormatOptions } from "../../constants";
@@ -26,6 +27,27 @@ import warning from "../../assets/images/warning.png"
 import EditHoldConfirmationModal from "../../frontend/components/cart-product/EditHoldConfirmationModal";
 
 const Settings = (props) => {
+    const intl = useIntl();
+    const decimalSepData = useMemo(
+        () => [
+            {
+                value: ".",
+                label: intl.formatMessage({
+                    id: "settings.decimal.separator.option.dot",
+                    defaultMessage: "Dot as decimal (1,234.56)",
+                }),
+            },
+            {
+                value: ",",
+                label: intl.formatMessage({
+                    id: "settings.decimal.separator.option.comma",
+                    defaultMessage: "Comma as decimal (1.234,56)",
+                }),
+            },
+        ],
+        [intl]
+    );
+
     const {
         fetchSetting,
         fetchCurrencies,
@@ -61,6 +83,7 @@ const Settings = (props) => {
         postCode: "",
         date_format: "",
         currency_icon_right_side: "",
+        decimal_separator: "",
     });
 
     const [defaultDate, setDefaultDate] = useState(null);
@@ -191,9 +214,19 @@ const Settings = (props) => {
                     settings.attributes.is_currency_right !== "true"
                         ? false
                         : true,
+                decimal_separator: (() => {
+                    const sep =
+                        settings.attributes?.decimal_separator === ","
+                            ? ","
+                            : ".";
+                    return (
+                        decimalSepData.find((d) => d.value === sep) ||
+                        decimalSepData[0]
+                    );
+                })(),
             });
         }
-    }, [settings, defaultDate]);
+    }, [settings, defaultDate, decimalSepData]);
 
     useEffect(() => {
         if (dateFormat) {
@@ -353,6 +386,12 @@ const Settings = (props) => {
         formData.append("state", data.state.label);
         formData.append("date_format", data.date_format.value);
         formData.append("is_currency_right", data.currency_icon_right_side);
+        formData.append(
+            "decimal_separator",
+            data.decimal_separator?.value != null
+                ? data.decimal_separator.value
+                : data.decimal_separator ?? "."
+        );
         return formData;
     };
     
@@ -426,6 +465,15 @@ const Settings = (props) => {
         setSettingValue((settingValue) => ({
             ...settingValue,
             date_format: obj,
+        }));
+        setErrors("");
+    };
+
+    const onDecimalSeparatorChange = (obj) => {
+        setDisable(false);
+        setSettingValue((settingValue) => ({
+            ...settingValue,
+            decimal_separator: obj,
         }));
         setErrors("");
     };
@@ -760,6 +808,25 @@ const Settings = (props) => {
                                                 errors={errors["date_format"]}
                                             />
                                         )}
+                                </div>
+                                <div className="col-lg-6 mb-3">
+                                    {settingValue.decimal_separator ? (
+                                        <ReactSelect
+                                            title={intl.formatMessage({
+                                                id: "settings.decimal.separator.label",
+                                                defaultMessage:
+                                                    "Decimal separator",
+                                            })}
+                                            placeholder={intl.formatMessage({
+                                                id: "settings.decimal.separator.placeholder",
+                                                defaultMessage:
+                                                    "Select decimal separator",
+                                            })}
+                                            data={decimalSepData}
+                                            value={settingValue.decimal_separator}
+                                            onChange={onDecimalSeparatorChange}
+                                        />
+                                    ) : null}
                                 </div>
                                 <div className="col-12 mb-3">
                                     <label className="form-label">

@@ -91,7 +91,7 @@
                         <td class="text-center">{{ $customer->name }}</td>
                         <td class="text-center">{{ $salesReturn->reference_code }}</td>
                         <td class="text-center icon-style">
-                            {{ currencyAlignment(number_format((float) $salesReturn->grand_total, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($salesReturn->grand_total, 2)) }}
                         </td>
                         <td class="text-center">
                             @if ($salesReturn->status == \App\Models\SaleReturn::RECEIVED)

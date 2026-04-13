@@ -7,6 +7,7 @@ import AsideTopSubMenuItem from "./sidebar/asideTopSubMenuItem";
 import { ROLES, Tokens } from "../constants";
 import { adminMenu, userMenu } from "../config/asideConfig";
 import { environment } from "../config/environment";
+import { syncDecimalSeparatorFromSettings } from "../shared/numberLocale";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
@@ -30,6 +31,10 @@ const MasterLayout = (props) => {
             window.location.href = environment.URL + "/app/login";
         }
     }, []);
+
+    useEffect(() => {
+        syncDecimalSeparatorFromSettings({ allConfigData, frontSetting });
+    }, [allConfigData, frontSetting]);
 
     const menuClick = () => {
         setIsResponsiveMenu(!isResponsiveMenu);

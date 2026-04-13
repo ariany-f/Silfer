@@ -230,6 +230,20 @@ if (! function_exists('currencyAlignment')) {
     }
 }
 
+if (! function_exists('formatMoneyAmount')) {
+    /**
+     * Formata valor monetário conforme definições da loja (vírgula/ponto).
+     * Use em PDFs, Excel e views onde quiser o mesmo separador do PDV.
+     */
+    function formatMoneyAmount(float|int|string|null $number, int $decimals = 2): string
+    {
+        $dec = getSettingValue('decimal_separator') === ',' ? ',' : '.';
+        $thousand = $dec === ',' ? '.' : ',';
+
+        return number_format((float) $number, $decimals, $dec, $thousand);
+    }
+}
+
 if (! function_exists('currentTenantId')) {
     function currentTenantId()
     {

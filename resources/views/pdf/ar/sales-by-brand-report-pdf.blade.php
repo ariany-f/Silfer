@@ -44,10 +44,10 @@
                 @foreach ($salesByBrand as $row)
                     <tr>
                         <td>{{ $row['name'] }}</td>
-                        <td class="text-center">{{ number_format((float) $row['total_quantity'], 2) }}</td>
-                        <td class="text-center icon-style number-align">{{ currencyAlignment(number_format((float) $row['grand_total'], 2)) }}</td>
-                        <td class="text-center">{{ number_format((float) ($row['paid_quantity'] ?? 0), 2) }}</td>
-                        <td class="text-center icon-style number-align">{{ currencyAlignment(number_format((float) ($row['paid_total'] ?? 0), 2)) }}</td>
+                        <td class="text-center">{{ formatMoneyAmount($row['total_quantity'], 2) }}</td>
+                        <td class="text-center icon-style number-align">{{ currencyAlignment(formatMoneyAmount($row['grand_total'], 2)) }}</td>
+                        <td class="text-center">{{ formatMoneyAmount(($row['paid_quantity'] ?? 0), 2) }}</td>
+                        <td class="text-center icon-style number-align">{{ currencyAlignment(formatMoneyAmount(($row['paid_total'] ?? 0), 2)) }}</td>
                     </tr>
                 @endforeach
             @endif

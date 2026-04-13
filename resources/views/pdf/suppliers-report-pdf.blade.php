@@ -141,7 +141,7 @@
                             <td class="text-center">{{ $purchase->date->format('d/m/Y') }}</td>
                             <td class="text-center">{{ $purchase->reference_code }}</td>
                             <td class="icon-style text-center">
-                                {{ currencyAlignment(number_format((float) $purchase->grand_total, 2)) }}</td>
+                                {{ currencyAlignment(formatMoneyAmount($purchase->grand_total, 2)) }}</td>
                             <td class="text-center">
                                 @if ($purchase->payment_status == \App\Models\Purchase::PAID)
                                     {{ __('messages.pdf.paid') }}
@@ -168,7 +168,7 @@
                 <tr>
                     <td><strong>{{ __('messages.pdf.total_amount') }}:</strong></td>
                     <td class="number-align icon-style">
-                        {{ currencyAlignment(number_format((float) $purchasesData['totalAmount'], 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($purchasesData['totalAmount'], 2)) }}</td>
                 </tr>
             </tbody>
         </table>

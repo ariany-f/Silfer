@@ -71,7 +71,8 @@ class SettingAPIController extends AppBaseController
             'default_customer',
             'default_warehouse',
             'date_format',
-            'store_name'
+            'store_name',
+            'decimal_separator',
         ];
 
         if (Auth::guard('sanctum')->user() && !Auth::guard('sanctum')->user()->hasRole('superadmin')) {

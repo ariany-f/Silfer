@@ -185,17 +185,17 @@
                     <tr>
                         <td>{{ $quotationItem->product->name }} ({{ $quotationItem->product->code }})</td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $quotationItem->net_unit_price, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($quotationItem->net_unit_price, 2)) }}
                         </td>
                         <td class="text-center">{{ $quotationItem->quantity }}</td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $quotationItem->discount_amount, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($quotationItem->discount_amount, 2)) }}
                         </td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $quotationItem->tax_amount, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($quotationItem->tax_amount, 2)) }}
                         </td>
                         <td class="icon-style align-right">
-                            {{ currencyAlignment(number_format((float) $quotationItem->sub_total, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($quotationItem->sub_total, 2)) }}
                         </td>
                     </tr>
                 @endforeach
@@ -208,25 +208,25 @@
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.order_tax') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $quotation->tax_amount, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($quotation->tax_amount, 2)) }}
                     </td>
                 </tr>
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.discount') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $quotation->discount, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($quotation->discount, 2)) }}
                     </td>
                 </tr>
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.shipping') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $quotation->shipping, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($quotation->shipping, 2)) }}
                     </td>
                 </tr>
                 <tr>
                     <td><strong>{{ __('messages.pdf.total') }}:</strong></td>
                     <td class="number-align icon-style">
-                        <b>{{ currencyAlignment(number_format((float) $quotation->grand_total, 2)) }}</b>
+                        <b>{{ currencyAlignment(formatMoneyAmount($quotation->grand_total, 2)) }}</b>
                     </td>
                 </tr>
             </tbody>

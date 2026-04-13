@@ -21,6 +21,10 @@ import {
     placeholderText,
 } from "../../shared/sharedMethod";
 import { applyVariationSkuSuggestions } from "../../shared/productVariationSku";
+import {
+    getActiveDecimalSeparator,
+    toApiNumericString,
+} from "../../shared/numberLocale";
 import taxes from "../../shared/option-lists/taxType.json";
 import barcodes from "../../shared/option-lists/barcode.json";
 import ModelFooter from "../../shared/components/modelFooter";
@@ -791,9 +795,10 @@ const ProductForm = (props) => {
     const onChangeInput = (e) => {
         e.preventDefault();
         const { value } = e.target;
-        if (value.match(/\./g) && e.target.name !== "name") {
-            const [, decimal] = value.split(".");
-            if (decimal?.length > 2) {
+        const dec = getActiveDecimalSeparator();
+        if (e.target.name !== "name" && dec && value.includes(dec)) {
+            const [, frac] = value.split(dec);
+            if (frac?.length > 2) {
                 return;
             }
         }
@@ -951,22 +956,22 @@ const ProductForm = (props) => {
                 formData.append("code", productValue.code);
                 formData.append(
                     "product_cost",
-                    singleProductTypeData.product_cost
+                    toApiNumericString(singleProductTypeData.product_cost)
                 );
                 formData.append(
                     "product_price",
-                    singleProductTypeData.product_price
+                    toApiNumericString(singleProductTypeData.product_price)
                 );
                 formData.append(
                     "stock_alert",
                     singleProductTypeData.stock_alert
-                        ? singleProductTypeData.stock_alert
+                        ? toApiNumericString(singleProductTypeData.stock_alert)
                         : ""
                 );
                 formData.append(
                     "order_tax",
                     singleProductTypeData.order_tax
-                        ? singleProductTypeData.order_tax
+                        ? toApiNumericString(singleProductTypeData.order_tax)
                         : ""
                 );
                 formData.append(
@@ -977,7 +982,7 @@ const ProductForm = (props) => {
                 );
                 formData.append(
                     "purchase_quantity",
-                    singleProductTypeData.add_stock
+                    toApiNumericString(singleProductTypeData.add_stock)
                 );
             } else {
                 formData.append(
@@ -986,8 +991,26 @@ const ProductForm = (props) => {
                         variationTypesData.map((variationType) => ({
                             ...variationType,
                             tax_type: variationType.tax_type.value,
-                            purchase_quantity: variationType.add_stock,
+                            purchase_quantity: toApiNumericString(
+                                variationType.add_stock
+                            ),
                             code: variationType.product_variation_code,
+                            product_cost: toApiNumericString(
+                                variationType.product_cost
+                            ),
+                            product_price: toApiNumericString(
+                                variationType.product_price
+                            ),
+                            order_tax: variationType.order_tax
+                                ? toApiNumericString(
+                                      variationType.order_tax
+                                  )
+                                : "",
+                            stock_alert: variationType.stock_alert
+                                ? toApiNumericString(
+                                      variationType.stock_alert
+                                  )
+                                : "",
                         }))
                     )
                 );

@@ -178,14 +178,14 @@
                 <tr>
                     <td style="text-align: right;">{{ $returnItem->product->name }}</td>
                     <td class="text-center icon-style">
-                        {{ currencyAlignment(number_format((float) $returnItem->net_unit_price, 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($returnItem->net_unit_price, 2)) }}</td>
                     <td class="text-center">{{ $returnItem->quantity }}</td>
                     <td class="text-center icon-style">
-                        {{ currencyAlignment(number_format((float) $returnItem->discount_amount, 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($returnItem->discount_amount, 2)) }}</td>
                     <td class="text-center icon-style">
-                        {{ currencyAlignment(number_format((float) $returnItem->tax_amount, 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($returnItem->tax_amount, 2)) }}</td>
                     <td class="number-align icon-style">
-                        {{ currencyAlignment(number_format((float) $returnItem->sub_total, 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($returnItem->sub_total, 2)) }}</td>
                 </tr>
             @endforeach
         </tbody>
@@ -197,22 +197,22 @@
             <tr>
                 <td><strong>{{ __('messages.pdf.order_tax') }}</strong> :</td>
                 <td class="number-align icon-style">
-                    {{ currencyAlignment(number_format((float) $saleReturn->tax_amount, 2)) }}</td>
+                    {{ currencyAlignment(formatMoneyAmount($saleReturn->tax_amount, 2)) }}</td>
             </tr>
             <tr>
                 <td><strong>{{ __('messages.pdf.discount') }}</strong> :</td>
                 <td class="number-align icon-style">
-                    {{ currencyAlignment(number_format((float) $saleReturn->discount, 2)) }}</td>
+                    {{ currencyAlignment(formatMoneyAmount($saleReturn->discount, 2)) }}</td>
             </tr>
             <tr>
                 <td><strong>{{ __('messages.pdf.shipping') }}</strong> :</td>
                 <td class="number-align icon-style">
-                    {{ currencyAlignment(number_format((float) $saleReturn->shipping, 2)) }}</td>
+                    {{ currencyAlignment(formatMoneyAmount($saleReturn->shipping, 2)) }}</td>
             </tr>
             <tr>
                 <td><strong>{{ __('messages.pdf.total') }}</strong> :</td>
                 <td class="number-align icon-style">
-                    <b>{{ currencyAlignment(number_format((float) $saleReturn->grand_total, 2)) }}</b>
+                    <b>{{ currencyAlignment(formatMoneyAmount($saleReturn->grand_total, 2)) }}</b>
                 </td>
             </tr>
         </tbody>

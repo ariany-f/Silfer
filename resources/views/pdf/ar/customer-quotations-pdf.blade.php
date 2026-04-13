@@ -91,7 +91,7 @@
                         <td class="text-center">{{ $customer->name }}</td>
                         <td class="text-center">{{ $quotation->reference_code }}</td>
                         <td class="text-center icon-style">
-                            {{ currencyAlignment(number_format((float) $quotation->grand_total, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($quotation->grand_total, 2)) }}
                         </td>
                         <td class="text-center">
                             @if ($quotation->status == \App\Models\Quotation::SENT)

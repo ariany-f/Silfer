@@ -173,7 +173,7 @@
                 <td style="text-align: right;">{{ $customerPayment->payment_date ? \Carbon\Carbon::parse($customerPayment->payment_date)->format('d/m/Y') : 'N/A' }}</td>
                 <td style="text-align: right;">{{ $customerPayment->due_date ? \Carbon\Carbon::parse($customerPayment->due_date)->format('d/m/Y') : 'N/A' }}</td>
                 <td class="text-center icon-style">
-                    <b>{{ currencyAlignment(number_format((float) $customerPayment->amount, 2)) }}</b>
+                    <b>{{ currencyAlignment(formatMoneyAmount($customerPayment->amount, 2)) }}</b>
                 </td>
                 <td class="text-center">
                     <span class="{{ $customerPayment->status == 'completed' ? 'text-success' : 'text-warning' }}">
@@ -203,7 +203,7 @@
             <tr>
                 <td><strong>{{ __('messages.pdf.total_amount') }}</strong> :</td>
                 <td class="number-align icon-style">
-                    <b>{{ currencyAlignment(number_format((float) $customerPayment->amount, 2)) }}</b>
+                    <b>{{ currencyAlignment(formatMoneyAmount($customerPayment->amount, 2)) }}</b>
                 </td>
             </tr>
         </tbody>

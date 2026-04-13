@@ -192,14 +192,14 @@
                 <tr>
                     <td style="text-align: right;">{{ $saleItem->product->name }}</td>
                     <td class="text-center icon-style">
-                        {{ currencyAlignment(number_format((float) $saleItem->net_unit_price, 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($saleItem->net_unit_price, 2)) }}</td>
                     <td class="text-center">{{ $saleItem->quantity }}</td>
                     <td class="text-center icon-style">
-                        {{ currencyAlignment(number_format((float) $saleItem->discount_amount, 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($saleItem->discount_amount, 2)) }}</td>
                     <td class="text-center icon-style">
-                        {{ currencyAlignment(number_format((float) $saleItem->tax_amount, 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($saleItem->tax_amount, 2)) }}</td>
                     <td class="number-align icon-style">
-                        {{ currencyAlignment(number_format((float) $saleItem->sub_total, 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($saleItem->sub_total, 2)) }}</td>
                 </tr>
             @endforeach
         </tbody>
@@ -211,29 +211,29 @@
             <tr>
                 <td><strong>{{ __('messages.pdf.order_tax') }}</strong> :</td>
                 <td class="number-align icon-style">
-                    {{ currencyAlignment(number_format((float) $sale->tax_amount, 2)) }}</td>
+                    {{ currencyAlignment(formatMoneyAmount($sale->tax_amount, 2)) }}</td>
             </tr>
             <tr>
                 <td><strong>{{ __('messages.pdf.discount') }}</strong> :</td>
-                <td class="number-align icon-style">{{ currencyAlignment(number_format((float) $sale->discount, 2)) }}
+                <td class="number-align icon-style">{{ currencyAlignment(formatMoneyAmount($sale->discount, 2)) }}
                 </td>
             </tr>
             <tr>
                 <td><strong>{{ __('messages.pdf.shipping') }}</strong> :</td>
-                <td class="number-align icon-style">{{ currencyAlignment(number_format((float) $sale->shipping, 2)) }}
+                <td class="number-align icon-style">{{ currencyAlignment(formatMoneyAmount($sale->shipping, 2)) }}
                 </td>
             </tr>
             @if ($sale->payment_status == \App\Models\Sale::PAID || $sale->payment_status == \App\Models\Sale::PARTIAL_PAID)
                 <tr>
                     <td><strong>{{ __('messages.pdf.paid_amount') }}</strong> :</td>
                     <td class="number-align icon-style">
-                        {{ currencyAlignment(number_format((float) $sale->payments->sum('amount'), 2)) }}</td>
+                        {{ currencyAlignment(formatMoneyAmount($sale->payments->sum('amount'), 2)) }}</td>
                 </tr>
             @endif
             <tr>
                 <td><strong>{{ __('messages.pdf.total') }}</strong> :</td>
                 <td class="number-align icon-style">
-                    <b>{{ currencyAlignment(number_format((float) $sale->grand_total, 2)) }}</b>
+                    <b>{{ currencyAlignment(formatMoneyAmount($sale->grand_total, 2)) }}</b>
                 </td>
             </tr>
         </tbody>

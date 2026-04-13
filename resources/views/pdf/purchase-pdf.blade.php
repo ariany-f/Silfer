@@ -204,17 +204,17 @@
                     <tr>
                         <td>{{ $purchaseItem->product->name }} ({{ $purchaseItem->product->code }})</td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $purchaseItem->net_unit_cost, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($purchaseItem->net_unit_cost, 2)) }}
                         </td>
                         <td class="text-center">{{ $purchaseItem->quantity }}</td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $purchaseItem->discount_amount, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($purchaseItem->discount_amount, 2)) }}
                         </td>
                         <td class="icon-style text-center">
-                            {{ currencyAlignment(number_format((float) $purchaseItem->tax_amount, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($purchaseItem->tax_amount, 2)) }}
                         </td>
                         <td class="icon-style align-right">
-                            {{ currencyAlignment(number_format((float) $purchaseItem->sub_total, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($purchaseItem->sub_total, 2)) }}
                         </td>
                     </tr>
                 @endforeach
@@ -227,19 +227,19 @@
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.order_tax') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $purchase->tax_amount, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($purchase->tax_amount, 2)) }}
                     </td>
                 </tr>
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.discount') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $purchase->discount, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($purchase->discount, 2)) }}
                     </td>
                 </tr>
                 <tr class="border">
                     <td class="border"><strong>{{ __('messages.pdf.shipping') }}:</strong></td>
                     <td class="number-align icon-style border">
-                        {{ currencyAlignment(number_format((float) $purchase->shipping, 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($purchase->shipping, 2)) }}
                     </td>
                 </tr>
                 @if (
@@ -249,9 +249,9 @@
                         <td class="border"><strong>{{ __('messages.pdf.paid_amount') }}:</strong></td>
                         <td class="number-align icon-style border">
                             @if ($purchase->payment_status == \App\Models\Purchase::PAID)
-                                {{ currencyAlignment(number_format((float) $purchase->grand_total, 2)) }}
+                                {{ currencyAlignment(formatMoneyAmount($purchase->grand_total, 2)) }}
                             @else
-                                {{ currencyAlignment(number_format((float) $purchase->partial_amount, 2)) }}
+                                {{ currencyAlignment(formatMoneyAmount($purchase->partial_amount, 2)) }}
                             @endif
                         </td>
                     </tr>
@@ -259,7 +259,7 @@
                 <tr>
                     <td><strong>{{ __('messages.pdf.total') }}:</strong></td>
                     <td class="number-align icon-style">
-                        <b>{{ currencyAlignment(number_format((float) $purchase->grand_total, 2)) }}</b>
+                        <b>{{ currencyAlignment(formatMoneyAmount($purchase->grand_total, 2)) }}</b>
                     </td>
                 </tr>
             </tbody>

@@ -40,6 +40,7 @@ import {
     getFormattedMessage,
     getFormattedOptions,
 } from "../../shared/sharedMethod";
+import { syncDecimalSeparatorFromSettings } from "../../shared/numberLocale";
 import { discountType, paymentMethodOptions, productActionType, toastType } from "../../constants";
 import TopProgressBar from "../../shared/components/loaders/TopProgressBar";
 import CustomerForm from "./customerModel/CustomerForm";
@@ -123,6 +124,10 @@ const PosMainPage = (props) => {
     const { closeRegisterDetails } = useSelector((state) => state);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        syncDecimalSeparatorFromSettings({ allConfigData, frontSetting });
+    }, [allConfigData, frontSetting]);
 
     //total Qty on cart item
     const localCart = updateProducts.map((updateQty) =>

@@ -92,7 +92,7 @@
                         <td class="text-center">{{ $customer->email }}</td>
                         <td class="text-center">{{ $customer->sales_count }}</td>
                         <td class="text-center icon-style">
-                            {{ currencyAlignment(number_format((float) $customer->grand_total, 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($customer->grand_total, 2)) }}
                         </td>
                     </tr>
                 @endforeach

@@ -4,6 +4,11 @@ import { Navigate } from "react-router-dom";
 import { discountType, frequencies, paymentMethods, Tokens } from "../constants";
 import moment from "moment";
 import { calculateSubTotal } from "./calculation/calculation";
+import {
+    formatDecimalDisplay,
+    getActiveDecimalSeparator,
+    parseLocalizedNumber,
+} from "./numberLocale";
 
 export const getAvatarName = (name) => {
     if (name) {
@@ -31,10 +36,11 @@ export const numWithSpaceValidate = (event) => {
 export const numFloatValidate = (event) => {
     const key = event.key;
     const value = event.target.value;
+    const sep = getActiveDecimalSeparator();
     if (/[0-9]/.test(key)) {
         return;
     }
-    if (key === '.' && !value.includes('.')) {
+    if (key === sep && !value.includes(sep)) {
         return;
     }
     event.preventDefault();
@@ -67,7 +73,12 @@ export const placeholderText = (label) => {
 };
 
 export const decimalValidate = (event) => {
-    if (!/^\d*\.?\d*$/.test(event.key)) {
+    const sep = getActiveDecimalSeparator();
+    const re =
+        sep === ","
+            ? /^\d*,?\d*$/
+            : /^\d*\.?\d*$/;
+    if (!re.test(event.key)) {
         event.preventDefault();
     }
 };
@@ -84,7 +95,9 @@ export const addRTLSupport = (rtlLang) => {
 };
 
 export const onFocusInput = (el) => {
-    if (el.target.value === "0.00") {
+    const sep = getActiveDecimalSeparator();
+    const zero = sep === "," ? "0,00" : "0.00";
+    if (el.target.value === zero || el.target.value === "0.00" || el.target.value === "0,00") {
         el.target.value = "";
     }
 };
@@ -99,15 +112,23 @@ export const ProtectedRoute = (props) => {
     }
 };
 
-export const formatAmount = (num) => {
+export const formatAmount = (num, decimalSeparator) => {
+    const sep = decimalSeparator === "," ? "," : ".";
+    const localizeFrac = (s) => s.replace(".", sep);
     if (num >= 1000000000) {
-        return (num / 1000000000).toFixed(1).replace(/\.0$/, "") + "B";
+        return (
+            localizeFrac(
+                (num / 1000000000).toFixed(1).replace(/\.0$/, "")
+            ) + "B"
+        );
     }
     if (num >= 1000000) {
-        return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+        return (
+            localizeFrac((num / 1000000).toFixed(1).replace(/\.0$/, "")) + "M"
+        );
     }
     if (num >= 1000) {
-        return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+        return localizeFrac((num / 1000).toFixed(1).replace(/\.0$/, "")) + "K";
     }
     return num;
 };
@@ -118,17 +139,25 @@ export const currencySymbolHandling = (
     value,
     is_forment
 ) => {
+    const rawDec =
+        isRightside?.decimal_separator ??
+        isRightside?.value?.decimal_separator;
+    const decSep = rawDec === "," ? "," : ".";
     if (isRightside?.is_currency_right === "true") {
         if (is_forment) {
-            return formatAmount(value) + " " + currency;
+            return formatAmount(value, decSep) + " " + currency;
         } else {
-            return parseFloat(value).toFixed(2) + " " + currency;
+            return (
+                formatDecimalDisplay(value, decSep, 2) + " " + currency
+            );
         }
     } else {
         if (is_forment) {
-            return currency + " " + formatAmount(value);
+            return currency + " " + formatAmount(value, decSep);
         } else {
-            return currency + " " + parseFloat(value).toFixed(2);
+            return (
+                currency + " " + formatDecimalDisplay(value, decSep, 2)
+            );
         }
     }
 };
@@ -185,7 +214,7 @@ export const generateBarCode = () => {
 
 export const calculateMainAmounts = (updateProducts, inputValues) => {
     const subTotal = calculateSubTotal(updateProducts);
-    const discountRaw = parseFloat(inputValues.discount_value) || 0;
+    const discountRaw = parseLocalizedNumber(inputValues.discount_value) || 0;
 
     const discountAmount =
         inputValues.discount_type === discountType.PERCENTAGE
@@ -194,7 +223,7 @@ export const calculateMainAmounts = (updateProducts, inputValues) => {
 
     const totalAmountAfterDiscount = subTotal - discountAmount;
 
-    const taxRate = parseFloat(inputValues.tax_rate) || 0;
+    const taxRate = parseLocalizedNumber(inputValues.tax_rate) || 0;
     const taxCal = ((totalAmountAfterDiscount * taxRate) / 100).toFixed(2);
 
     return {

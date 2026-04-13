@@ -95,9 +95,9 @@
                             <td class="text-center">{{ $customer->name }}</td>
                             <td class="text-center">{{ $sale->reference_code }}</td>
                             <td class="icon-style text-center" align="right">
-                                {{ currencyAlignment(number_format((float) $sale->payments->sum('amount'), 2)) }}</td>
+                                {{ currencyAlignment(formatMoneyAmount($sale->payments->sum('amount'), 2)) }}</td>
                             <td class="icon-style text-center" align="right">
-                                {{ currencyAlignment(number_format((float) $sale->grand_total - $sale->payments->sum('amount'), 2)) }}
+                                {{ currencyAlignment(formatMoneyAmount($sale->grand_total - $sale->payments->sum('amount'), 2)) }}
                             </td>
                             <td class="text-center">
                                 @if ($sale->payment_status == \App\Models\Sale::PAID)

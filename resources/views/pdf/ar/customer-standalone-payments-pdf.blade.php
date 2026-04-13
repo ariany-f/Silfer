@@ -143,7 +143,7 @@
                             <td class="text-center">{{ $payment->payment_date ? $payment->payment_date->format('d/m/Y') : 'N/A' }}</td>
                             <td class="text-center">{{ $payment->reference_code }}</td>
                             <td class="icon-style text-center">
-                                {{ currencyAlignment(number_format((float) $payment->amount, 2)) }}
+                                {{ currencyAlignment(formatMoneyAmount($payment->amount, 2)) }}
                             </td>
                             <td class="text-center">
                                 @if ($payment->status == \App\Models\CustomerPayment::STATUS_COMPLETED)
@@ -170,13 +170,13 @@
                     <tr>
                         <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.standalone_payments') }} :</strong></td>
                         <td class="number-align icon-style" style="padding: 10px 8px;">
-                            {{ currencyAlignment(number_format((float) $customer->customerPayments->sum('amount'), 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($customer->customerPayments->sum('amount'), 2)) }}
                         </td>
                     </tr>
                     <tr>
                         <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.concluded_payments') }} :</strong></td>
                         <td class="number-align icon-style" style="padding: 10px 8px;">
-                            {{ currencyAlignment(number_format((float) $customer->customerPayments->where('status', \App\Models\CustomerPayment::STATUS_COMPLETED)->sum('amount'), 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($customer->customerPayments->where('status', \App\Models\CustomerPayment::STATUS_COMPLETED)->sum('amount'), 2)) }}
                         </td>
                     </tr>
                 </tbody>

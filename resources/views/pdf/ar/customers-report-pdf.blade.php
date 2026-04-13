@@ -147,10 +147,10 @@
                         <td class="text-center">{{ $sale->date->format('d/m/Y') }}</td>
                         <td class="text-center">{{ $sale->reference_code }}</td>
                         <td class="text-center icon-style">
-                            {{ currencyAlignment(number_format((float) $sale->payments->sum('amount'), 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($sale->payments->sum('amount'), 2)) }}
                         </td>
                         <td class="text-center icon-style">
-                            {{ currencyAlignment(number_format((float) $sale->grand_total - $sale->payments->sum('amount'), 2)) }}
+                            {{ currencyAlignment(formatMoneyAmount($sale->grand_total - $sale->payments->sum('amount'), 2)) }}
                         </td>
                         <td class="text-center">
                             @if ($sale->payment_status == \App\Models\Sale::PAID)
@@ -179,32 +179,32 @@
             <tr>
                 <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_amount') }} :</strong></td>
                 <td class="number-align icon-style" style="padding: 10px 8px;">
-                    {{ currencyAlignment(number_format((float) $salesData['totalAmount'], 2)) }}
+                    {{ currencyAlignment(formatMoneyAmount($salesData['totalAmount'], 2)) }}
                 </td>
             </tr>
             <tr>
                 <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_paid') }} :</strong></td>
                 <td class="number-align icon-style" style="padding: 10px 8px;">
-                    {{ currencyAlignment(number_format((float) $salesData['totalPaid'], 2)) }}
+                    {{ currencyAlignment(formatMoneyAmount($salesData['totalPaid'], 2)) }}
                 </td>
             </tr>
             <tr>
                 <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.total_sale_due') }} :</strong></td>
                 <td class="number-align icon-style" style="padding: 10px 8px;">
-                    {{ currencyAlignment(number_format((float) $salesData['totalSalesDue'], 2)) }}
+                    {{ currencyAlignment(formatMoneyAmount($salesData['totalSalesDue'], 2)) }}
                 </td>
             </tr>
             @if (isset($salesData['totalPaymentsAmount']) && $salesData['totalPaymentsAmount'] > 0)
                 <tr>
                     <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.standalone_payments') }} :</strong></td>
                     <td class="number-align icon-style" style="padding: 10px 8px;">
-                        {{ currencyAlignment(number_format((float) ($salesData['totalPaymentsAmount'] ?? 0), 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount(($salesData['totalPaymentsAmount'] ?? 0), 2)) }}
                     </td>
                 </tr>
                 <tr>
                     <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.concluded_payments') }} :</strong></td>
                     <td class="number-align icon-style" style="padding: 10px 8px;">
-                        {{ currencyAlignment(number_format((float) ($salesData['totalPaymentsConcludedAmount'] ?? 0), 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount(($salesData['totalPaymentsConcludedAmount'] ?? 0), 2)) }}
                     </td>
                 </tr>
             @endif
@@ -212,7 +212,7 @@
                 <tr>
                     <td style="padding: 10px 8px;"><strong>{{ __('messages.pdf.final_due') }} :</strong></td>
                     <td class="number-align icon-style" style="padding: 10px 8px;">
-                        {{ currencyAlignment(number_format((float) $salesData['totalDueAmountAfterPayments'], 2)) }}
+                        {{ currencyAlignment(formatMoneyAmount($salesData['totalDueAmountAfterPayments'], 2)) }}
                     </td>
                 </tr>
             @endif

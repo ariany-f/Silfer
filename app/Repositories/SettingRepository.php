@@ -76,6 +76,7 @@ class SettingRepository extends BaseRepository
                 'state',
                 'city',
                 'is_currency_right',
+                'decimal_separator',
                 'default_customer',
                 'default_warehouse',
                 'date_format',

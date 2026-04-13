@@ -91,7 +91,7 @@
                         <td width="20%">{{ $payment->payment_date }}</td>
                         <td class="text-center" style="text-align: center">{{ $payment->sale->reference_code }}</td>
                         <td class="icon-style text-center" align="right">
-                            {{ currencyAlignment(number_format((float) $payment->amount, 2)) }}</td>
+                            {{ currencyAlignment(formatMoneyAmount($payment->amount, 2)) }}</td>
                         <td class="text-center">
                             {{ $payment->paymentMethod->name }}
                         </td>

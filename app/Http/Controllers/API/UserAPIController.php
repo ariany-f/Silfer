@@ -258,6 +258,8 @@ class UserAPIController extends AppBaseController
             ->whereNull('closed_at')
             ->exists();
 
+        $decimalSep = getSettingValue('decimal_separator');
+
         return $this->sendResponse([
             'store_name' => getActiveStoreName(),
             'permissions' => $userPermissions,
@@ -270,6 +272,7 @@ class UserAPIController extends AppBaseController
             'no_of_stores' => $currentSubscription->plan->no_of_stores ?? 0,
             'is_version' => getSadminSettingValue('show_version_on_footer'),
             'is_currency_right' => getSettingValue('is_currency_right'),
+            'decimal_separator' => ($decimalSep === ',') ? ',' : '.',
             'open_register' => $openRegister ? false : true,
         ], 'Config retrieved successfully.');
     }
