@@ -37,11 +37,30 @@ export function applyVariationSkuSuggestions(rows, productName) {
     const component = extractVariationMeasureComponent(productName);
     const out = rows.map((r) => ({ ...r }));
 
+    const prefixToIndices = new Map();
     if (!component) {
+        out.forEach((row, idx) => {
+            const label = (row.variation_type || "").trim();
+            if (!label) {
+                return;
+            }
+            const prefix = label.toUpperCase();
+            if (!prefixToIndices.has(prefix)) {
+                prefixToIndices.set(prefix, []);
+            }
+            prefixToIndices.get(prefix).push(idx);
+        });
+        prefixToIndices.forEach((indices) => {
+            indices.forEach((rowIdx, order) => {
+                const row = out[rowIdx];
+                const label = (row.variation_type || "").trim();
+                const n = order + 1;
+                out[rowIdx].product_variation_code = `${label.toUpperCase()} ${n}.0`;
+            });
+        });
         return out;
     }
 
-    const prefixToIndices = new Map();
     out.forEach((row, idx) => {
         const label = (row.variation_type || "").trim();
         if (!label) {

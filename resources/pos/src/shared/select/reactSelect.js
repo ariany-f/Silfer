@@ -9,17 +9,18 @@ const ReactSelect = ( props ) => {
     const dispatch = useDispatch();
     const isOptionDisabled = useSelector( ( state ) => state.isOptionDisabled );
 
-    const option = data && data?.length > 0 ? data?.map( ( da ) => {
-        return {
+    let option = [];
+    if ( data && data.length > 0 ) {
+        option = data.map( ( da ) => ( {
             value: da.value ? da.value : da.id,
             label: da.label ? da.label : da?.attributes?.symbol ? da?.attributes?.symbol : da?.attributes?.name
-        }
-    } ) : multiLanguageOption && multiLanguageOption?.length > 0 &&  multiLanguageOption?.map( ( option ) => {
-        return {
-            value: option.id,
-            label: option.name
-        }
-    } )
+        } ) );
+    } else if ( multiLanguageOption && multiLanguageOption.length > 0 ) {
+        option = multiLanguageOption.map( ( opt ) => ( {
+            value: opt.id,
+            label: opt.name
+        } ) );
+    }
 
     useEffect( () => {
         addSearchItems ? dispatch( { type: 'DISABLE_OPTION', payload: true } ) : dispatch( { type: 'DISABLE_OPTION', payload: false } )

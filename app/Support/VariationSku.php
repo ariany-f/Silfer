@@ -69,16 +69,30 @@ class VariationSku
     {
         $component = self::extractMeasureComponent($productName);
         $codes = [];
+        $query = self::baseProductQuery($brandId);
+        $nextByPrefix = [];
+
         if ($component === null) {
-            foreach ($variationTypeLabels as $_) {
-                $codes[] = '';
+            foreach ($variationTypeLabels as $rawLabel) {
+                $label = trim((string) $rawLabel);
+                if ($label === '') {
+                    $codes[] = '';
+
+                    continue;
+                }
+
+                $prefix = Str::upper($label);
+                if (! array_key_exists($prefix, $nextByPrefix)) {
+                    $nextByPrefix[$prefix] = self::maxIndexForPrefix($query, $prefix) + 1;
+                }
+
+                $n = $nextByPrefix[$prefix];
+                $codes[] = $prefix.' '.$n.'.0';
+                $nextByPrefix[$prefix]++;
             }
 
             return [$codes, null];
         }
-
-        $query = self::baseProductQuery($brandId);
-        $nextByPrefix = [];
 
         foreach ($variationTypeLabels as $rawLabel) {
             $label = trim((string) $rawLabel);
