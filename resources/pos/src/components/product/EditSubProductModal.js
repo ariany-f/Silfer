@@ -47,7 +47,6 @@ const EditSubProductModal = (props) => {
             label: option.name,
         };
     });
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
