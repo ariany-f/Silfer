@@ -22,6 +22,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class MainProductAPIController extends AppBaseController
@@ -418,26 +419,8 @@ class MainProductAPIController extends AppBaseController
                     ->where('main_product_id', $mainProductId)
                     ->get();
 
-                // SKU do produto principal (ex: PRD000006 -> 06) para o padrão das variações
-                $mainShortCode = str_pad((int) preg_replace('/\D/', '', $newCode), 2, '0', STR_PAD_LEFT);
-                $variationIndex = 1;
-
                 foreach ($products as $product) {
-                    $productCode = null;
-
-                    // Produto com variação: SKU no padrão VARIAÇÃO - MILIMETRAGEM SKUPRINCIPAL.INDICE (ex: VERMELHO - 16.0MM 06.1)
-                    if ($product->variationProduct) {
-                        $variationName = $product->variationProduct->variation->name ?? '';
-                        $variationTypeName = $product->variationProduct->variationType->name ?? '';
-                        $productCode = trim($variationName) . ' - ' . trim($variationTypeName) . ' ' . $mainShortCode . '.' . $variationIndex;
-                        $variationIndex++;
-
-                        // Garantir que o código seja único
-                        while (Product::where('code', $productCode)->exists()) {
-                            $productCode = trim($variationName) . ' - ' . trim($variationTypeName) . ' ' . $mainShortCode . '.' . $variationIndex;
-                            $variationIndex++;
-                        }
-                    }
+                    $productCode = $this->generateVariationDuplicateCode($product);
 
                     if ($productCode === null) {
                         // Produto sem variação (tipo único): manter código sequencial PRD
@@ -564,5 +547,67 @@ class MainProductAPIController extends AppBaseController
         }
 
         return $this->sendSuccess('Product deleted successfully');
+    }
+
+    private function generateVariationDuplicateCode(Product $product): ?string
+    {
+        try {
+            if (!$product->variationProduct || !$product->variationProduct->variationType) {
+                return null;
+            }
+
+            $variationValue = trim((string) $product->variationProduct->variationType->name);
+            $component = $this->extractVariationMeasureComponent($product->name);
+
+            if ($variationValue === '' || $component === null) {
+                return null;
+            }
+
+            $prefix = Str::upper($variationValue) . ' ' . $component;
+            $existingCodes = Product::where('code', 'like', $prefix . ' %.0')->pluck('code');
+            $maxIndex = 0;
+            $pattern = '/^' . preg_quote($prefix, '/') . '\s+(\d+)\.0$/u';
+
+            foreach ($existingCodes as $code) {
+                if (preg_match($pattern, (string) $code, $matches)) {
+                    $maxIndex = max($maxIndex, (int) $matches[1]);
+                }
+            }
+
+            $nextIndex = $maxIndex + 1;
+            $candidateCode = $prefix . ' ' . $nextIndex . '.0';
+
+            while (Product::where('code', $candidateCode)->exists()) {
+                $nextIndex++;
+                $candidateCode = $prefix . ' ' . $nextIndex . '.0';
+            }
+
+            return $candidateCode;
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to generate variation duplicate code for product ' . $product->id . ': ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    private function extractVariationMeasureComponent(?string $productName): ?string
+    {
+        if (empty($productName)) {
+            return null;
+        }
+
+        $normalizedName = Str::upper($productName);
+
+        if (!preg_match('/(\d+(?:[.,]\d+)?)\s*MM\b/u', $normalizedName, $measureMatch)) {
+            return null;
+        }
+
+        $measure = str_replace(',', '.', $measureMatch[1]) . 'MM';
+        $meter = null;
+
+        if (preg_match('/\(?\s*(\d+(?:[.,]\d+)?)\s*M\s*\)?(?!M)/u', $normalizedName, $meterMatch)) {
+            $meter = str_replace(',', '.', $meterMatch[1]) . 'M';
+        }
+
+        return $meter ? $meter . ' ' . $measure : $measure;
     }
 }
