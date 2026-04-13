@@ -658,6 +658,7 @@
     "product.type.label": "Product Type",
     "product.type.placeholder.label": "Choose Product Type",
     "product.type.input.validation.error": "Please select product type",
+    "product.type.description.help": "If your product has different colors (or other variations), select Variation type; otherwise, select Single type.",
     "products.warehouse.title": "Product Warehouse",
     "barcode-symbol-uppercase-validation-message": "Please enter only uppercase letters and numbers for Code 39 Barcode Symbology.",
     "sale.product-qty.limit.validate.message": "You can't buy more than limit quantity",

@@ -1318,39 +1318,25 @@ const ProductForm = (props) => {
                         {!singleProduct && (
                             <div className="row border-top pt-4">
                                 <div className="col-md-4 mb-3">
-                                    {!singleProduct ? (
-                                        <ReactSelect
-                                            title={getFormattedMessage(
-                                                "product.type.label"
-                                            )}
-                                            multiLanguageOption={
-                                                productTypesOptionsObj
-                                            }
-                                            onChange={onProductTypeChange}
-                                            value={productValue.product_type}
-                                            errors={errors["product_type"]}
-                                            placeholder={placeholderText(
-                                                "product.type.placeholder.label"
-                                            )}
-                                        />
-                                    ) : (
-                                        <>
-                                            <label className="form-label">
-                                                {getFormattedMessage(
-                                                    "product.type.label"
-                                                )}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={
-                                                    productValue.product_type
-                                                        .label
-                                                }
-                                                disabled
-                                            />
-                                        </>
-                                    )}
+                                    <ReactSelect
+                                        title={getFormattedMessage(
+                                            "product.type.label"
+                                        )}
+                                        multiLanguageOption={
+                                            productTypesOptionsObj
+                                        }
+                                        onChange={onProductTypeChange}
+                                        value={productValue.product_type}
+                                        errors={errors["product_type"]}
+                                        placeholder={placeholderText(
+                                            "product.type.placeholder.label"
+                                        )}
+                                    />
+                                    <p className="form-text text-muted small mb-0 mt-2">
+                                        {getFormattedMessage(
+                                            "product.type.description.help"
+                                        )}
+                                    </p>
                                 </div>
                                 {typeof productValue.product_type !==
                                     "string" &&
