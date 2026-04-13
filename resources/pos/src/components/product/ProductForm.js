@@ -9,6 +9,7 @@ import { addProductCategory, fetchAllProductCategories } from "../../store/actio
 import { addBrand, fetchAllBrands } from "../../store/action/brandsAction";
 import {
     editMainProduct,
+    fetchNextVariationSkuCodes,
     fetchProduct,
 } from "../../store/action/productAction";
 import { productUnitDropdown } from "../../store/action/productUnitAction";
@@ -19,6 +20,7 @@ import {
     getFormattedOptions,
     placeholderText,
 } from "../../shared/sharedMethod";
+import { applyVariationSkuSuggestions } from "../../shared/productVariationSku";
 import taxes from "../../shared/option-lists/taxType.json";
 import barcodes from "../../shared/option-lists/barcode.json";
 import ModelFooter from "../../shared/components/modelFooter";
@@ -403,26 +405,78 @@ const ProductForm = (props) => {
         setErrors({});
     };
 
+    const runVariationSkuCodesApi = (snapshotRows, nameOverride = null) => {
+        if (!snapshotRows?.length) {
+            return;
+        }
+        const name = nameOverride ?? productValue.name ?? "";
+        const brandId = productValue.brand_id?.value;
+        const idsKey = snapshotRows
+            .map((r) => String(r.variation_type_id))
+            .join(",");
+
+        fetchNextVariationSkuCodes(
+            name,
+            snapshotRows.map((r) => r.variation_type || ""),
+            brandId
+        )
+            .then((res) => {
+                const codes = res.data?.data?.codes;
+                if (!Array.isArray(codes) || codes.length !== snapshotRows.length) {
+                    return;
+                }
+                setVariationTypesData((current) => {
+                    if (
+                        current.map((r) => String(r.variation_type_id)).join(",") !==
+                        idsKey
+                    ) {
+                        return current;
+                    }
+                    return current.map((r, i) => ({
+                        ...r,
+                        product_variation_code:
+                            codes[i] ?? r.product_variation_code,
+                    }));
+                });
+            })
+            .catch(() => {
+                setVariationTypesData((current) => {
+                    if (
+                        current.map((r) => String(r.variation_type_id)).join(",") !==
+                        idsKey
+                    ) {
+                        return current;
+                    }
+                    return applyVariationSkuSuggestions(current, name);
+                });
+            });
+    };
+
     const onVariationTypesChange = (array) => {
         setProductValue((productValue) => ({
             ...productValue,
             variation_type: array,
         }));
         if (variationTypesData.length <= 0) {
+            const next = array?.map((variationType) => ({
+                variation_id: productValue.variation?.value,
+                variation_type_id: variationType?.value,
+                variation_type: variationType?.label,
+                product_cost: "",
+                product_price: "",
+                stock_alert: 0,
+                order_tax: 0,
+                tax_type: "",
+                add_stock: "",
+                product_variation_code: "",
+            }));
+            const built = next || [];
             setVariationTypesData(
-                array?.map((variationType) => ({
-                    variation_id: productValue.variation?.value,
-                    variation_type_id: variationType?.value,
-                    variation_type: variationType?.label,
-                    product_cost: "",
-                    product_price: "",
-                    stock_alert: 0,
-                    order_tax: 0,
-                    tax_type: "",
-                    add_stock: "",
-                    product_variation_code: "",
-                }))
+                applyVariationSkuSuggestions(built, productValue.name)
             );
+            if (built.length) {
+                runVariationSkuCodesApi(built, productValue.name);
+            }
         } else {
             const foundVariationTypeId = array.map((item) => item.value);
             const commonVariationTypes = variationTypesData.filter((item) =>
@@ -436,7 +490,7 @@ const ProductForm = (props) => {
                     !commonVariationTypesIds.includes(variationType.value)
             );
             if (newVariationType.length > 0) {
-                setVariationTypesData([
+                const next = [
                     ...commonVariationTypes,
                     {
                         variation_id: productValue.variation?.value,
@@ -450,9 +504,24 @@ const ProductForm = (props) => {
                         add_stock: "",
                         product_variation_code: "",
                     },
-                ]);
+                ];
+                setVariationTypesData(
+                    applyVariationSkuSuggestions(next, productValue.name)
+                );
+                runVariationSkuCodesApi(next, productValue.name);
             } else {
-                setVariationTypesData(commonVariationTypes);
+                setVariationTypesData(
+                    applyVariationSkuSuggestions(
+                        commonVariationTypes,
+                        productValue.name
+                    )
+                );
+                if (commonVariationTypes.length) {
+                    runVariationSkuCodesApi(
+                        commonVariationTypes,
+                        productValue.name
+                    );
+                }
             }
         }
 
@@ -764,20 +833,28 @@ const ProductForm = (props) => {
         );
     };
 
-    const generateVariationCode = (variation_type_id) => {
-        setVariationTypesData((prev) =>
-            prev.map((variationTypeData) => {
-                if (variationTypeData.variation_type_id === variation_type_id) {
-                    return {
-                        ...variationTypeData,
-                        product_variation_code: generateBarCode(),
-                    };
-                } else {
-                    return variationTypeData;
-                }
-            })
-        );
+    const generateVariationCode = () => {
+        if (variationTypesData.length) {
+            runVariationSkuCodesApi(
+                variationTypesData.map((r) => ({ ...r })),
+                productValue.name
+            );
+        }
         setErrors({});
+    };
+
+    const onProductNameBlurForVariationSku = (e) => {
+        const nameVal = e?.target?.value ?? productValue.name;
+        if (
+            !singleProduct &&
+            productValue.product_type?.value === 2 &&
+            variationTypesData.length > 0
+        ) {
+            runVariationSkuCodesApi(
+                variationTypesData.map((r) => ({ ...r })),
+                nameVal
+            );
+        }
     };
 
     const onSingleProductDataChange = (e) => {
@@ -974,6 +1051,7 @@ const ProductForm = (props) => {
                                             className="form-control"
                                             autoFocus={true}
                                             onChange={(e) => onChangeInput(e)}
+                                            onBlur={onProductNameBlurForVariationSku}
                                         />
                                         <span className="text-danger d-block fw-400 fs-small mt-2">
                                             {errors["name"]
@@ -1690,7 +1768,7 @@ const ProductForm = (props) => {
                                             <button
                                                 className="input-group-text border rounded-end px-4"
                                                 type="button"
-                                                onClick={() => generateVariationCode(variation.variation_type_id)}
+                                                onClick={() => generateVariationCode()}
                                             >
                                                 <FontAwesomeIcon icon={faWandMagicSparkles} />
                                             </button>

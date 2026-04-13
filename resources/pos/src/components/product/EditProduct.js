@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom'
 import { Button, Table } from 'react-bootstrap-v5';
-import { fetchMainProduct } from '../../store/action/productAction';
+import { fetchMainProduct, fetchVariationConversionStatus } from '../../store/action/productAction';
 import ProductForm from './ProductForm';
 import HeaderTitle from '../header/HeaderTitle';
 import MasterLayout from '../MasterLayout';
@@ -18,6 +18,8 @@ import EditSubProductModal from "./EditSubProductModal";
 import DeleteProduct from "./DeleteProduct";
 import CreateSubProductModal from "./CreateSubProductModal";
 import EditMultipleVariation from "./EditMultipleVariation";
+import ConvertSingleToVariationModal from "./ConvertSingleToVariationModal";
+import SyncProductLineItemsModal from "./SyncProductLineItemsModal";
 import { Permissions } from "../../constants";
 
 const EditProduct = (props) => {
@@ -33,6 +35,18 @@ const EditProduct = (props) => {
     const [isDelete, setIsDelete] = useState(null);
     const [isMultipleEditMode, setIsMultipleEditMode] = useState(false);
     const [selectedVariations, setSelectedVariations] = useState([]);
+    const [conversionStatus, setConversionStatus] = useState(null);
+    const [showConvertToVariationModal, setShowConvertToVariationModal] = useState(false);
+    const [showSyncLineItemsModal, setShowSyncLineItemsModal] = useState(false);
+
+    const refreshConversionStatus = () => {
+        if (!id) {
+            return;
+        }
+        fetchVariationConversionStatus(id)
+            .then((res) => setConversionStatus(res.data?.data ?? null))
+            .catch(() => setConversionStatus(null));
+    };
 
     useEffect(() => {
         fetchAllBaseUnits();
@@ -40,10 +54,26 @@ const EditProduct = (props) => {
     }, []);
 
     useEffect(() => {
+        refreshConversionStatus();
+    }, [id]);
+
+    useEffect(() => {
         if (products.length == 1) {
             setSingleProduct(products);
         }
     }, [products]);
+
+    const variationChildrenCount =
+        products.length === 1 && products[0]?.attributes?.products
+            ? products[0].attributes.products.length
+            : 0;
+
+    useEffect(() => {
+        if (!id || variationChildrenCount < 2) {
+            return;
+        }
+        refreshConversionStatus();
+    }, [id, variationChildrenCount]);
 
     const subProduct = singleProduct.length >= 1 && singleProduct[0]?.attributes?.products[0];
     const getSaleUnit = subProduct && subProduct.sale_unit_name ? { label: subProduct.sale_unit_name.name, value: subProduct.sale_unit_name.id } : ''
@@ -173,7 +203,68 @@ const EditProduct = (props) => {
             {mainProductItemsValue.length >= 1 && (
                 <>
                     <ProductForm singleProduct={mainProductItemsValue} productUnit={getProductUnit} baseUnits={base} id={id} />
-                    
+                    {conversionStatus &&
+                        getPermission(allConfigData?.permissions, Permissions.EDIT_PRODUCTS) && (
+                            <div className="card card-body py-3 mb-2">
+                                <div className="d-flex flex-wrap gap-2 align-items-center">
+                                    {product?.attributes?.product_type === 1 &&
+                                        conversionStatus.can_convert_to_variation && (
+                                            <Button
+                                                type="button"
+                                                variant="outline-primary"
+                                                onClick={() =>
+                                                    setShowConvertToVariationModal(true)
+                                                }
+                                            >
+                                                {getFormattedMessage(
+                                                    "product.convert.to.variation.btn"
+                                                )}
+                                            </Button>
+                                        )}
+                                    {conversionStatus.show_sync_line_items && (
+                                        <Button
+                                            type="button"
+                                            variant="outline-secondary"
+                                            onClick={() =>
+                                                setShowSyncLineItemsModal(true)
+                                            }
+                                        >
+                                            {getFormattedMessage(
+                                                "product.sync.line.items.btn"
+                                            )}
+                                        </Button>
+                                    )}
+                                </div>
+                                {conversionStatus.has_line_items &&
+                                    product?.attributes?.product_type === 1 &&
+                                    conversionStatus.can_convert_to_variation && (
+                                        <p className="text-muted small mb-0 mt-2">
+                                            {getFormattedMessage(
+                                                "product.convert.to.variation.sales.hint"
+                                            )}
+                                        </p>
+                                    )}
+                            </div>
+                        )}
+                    <ConvertSingleToVariationModal
+                        show={showConvertToVariationModal}
+                        onHide={() => setShowConvertToVariationModal(false)}
+                        mainProductId={id}
+                        onSuccess={() => {
+                            fetchMainProduct(id, false);
+                            refreshConversionStatus();
+                        }}
+                    />
+                    <SyncProductLineItemsModal
+                        show={showSyncLineItemsModal}
+                        onHide={() => setShowSyncLineItemsModal(false)}
+                        mainProductId={id}
+                        conversionStatus={conversionStatus}
+                        onSuccess={() => {
+                            fetchMainProduct(id, false);
+                            refreshConversionStatus();
+                        }}
+                    />
                     {/* Datatable de Variações */}
                     {allProducts && allProducts.length !== 0 && (
                         <div className="card card-body mt-2">

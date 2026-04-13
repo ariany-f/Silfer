@@ -144,6 +144,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         // products route
 
+        Route::post(
+            'products/next-variation-sku-codes',
+            [ProductAPIController::class, 'nextVariationSkuCodes']
+        )->name('products.next-variation-sku-codes');
         Route::resource('products', ProductAPIController::class);
         // Rotas específicas ANTES do resource para evitar conflitos
         Route::post(
@@ -158,6 +162,18 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'main-products/bulk-duplicate',
             [MainProductAPIController::class, 'bulkDuplicate']
         )->name('main-products.bulk-duplicate');
+        Route::get(
+            'main-products/{product}/variation-conversion-status',
+            [MainProductAPIController::class, 'variationConversionStatus']
+        )->name('main-products.variation-conversion-status');
+        Route::post(
+            'main-products/{product}/convert-to-variation',
+            [MainProductAPIController::class, 'convertSingleToVariation']
+        )->name('main-products.convert-to-variation');
+        Route::post(
+            'main-products/{product}/sync-line-items-product',
+            [MainProductAPIController::class, 'syncLineItemsProduct']
+        )->name('main-products.sync-line-items-product');
         Route::resource('main-products', MainProductAPIController::class);
         Route::post(
             'products/{product}',

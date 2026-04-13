@@ -16,6 +16,7 @@ use App\Models\PurchaseItem;
 use App\Models\SaleItem;
 use App\Models\VariationProduct;
 use App\Repositories\ProductRepository;
+use App\Support\VariationSku;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,6 +37,29 @@ class ProductAPIController extends AppBaseController
     public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
+    }
+
+    public function nextVariationSkuCodes(Request $request): JsonResponse
+    {
+        $request->validate([
+            'product_name' => 'nullable|string',
+            'variation_type_names' => 'required|array',
+            'variation_type_names.*' => 'nullable|string',
+            'brand_id' => 'nullable|integer|exists:brands,id',
+        ]);
+
+        $brandId = $request->filled('brand_id') ? (int) $request->brand_id : null;
+
+        [$codes, $component] = VariationSku::nextCodesForLabels(
+            (string) $request->input('product_name', ''),
+            $request->input('variation_type_names', []),
+            $brandId
+        );
+
+        return $this->sendResponse([
+            'codes' => $codes,
+            'component' => $component,
+        ], 'OK');
     }
 
     public function index(Request $request): ProductCollection

@@ -426,6 +426,100 @@ export const duplicateMultipleProducts = (productIds, onSuccess) => async (dispa
         });
 };
 
+export const fetchNextVariationSkuCodes = (
+    productName,
+    variationTypeNames,
+    brandId = null
+) =>
+    apiConfigJSON.post(`${apiBaseURL.PRODUCTS}/next-variation-sku-codes`, {
+        product_name: productName || "",
+        variation_type_names: variationTypeNames,
+        ...(brandId != null && brandId !== ""
+            ? { brand_id: Number(brandId) }
+            : {}),
+    });
+
+export const fetchVariationConversionStatus = (mainProductId) =>
+    apiConfigJSON.get(
+        `${apiBaseURL.MAIN_PRODUCTS}/${mainProductId}/variation-conversion-status`
+    );
+
+export const convertMainProductToVariation =
+    (mainProductId, payload, onSuccess) => async (dispatch) => {
+        dispatch(setSavingButton(true));
+        apiConfigJSON
+            .post(
+                `${apiBaseURL.MAIN_PRODUCTS}/${mainProductId}/convert-to-variation`,
+                payload
+            )
+            .then((response) => {
+                dispatch(
+                    addToast({
+                        text:
+                            response?.data?.message ||
+                            getFormattedMessage(
+                                "product.convert.variation.success.message"
+                            ),
+                    })
+                );
+                dispatch(setSavingButton(false));
+                if (onSuccess) {
+                    onSuccess(response);
+                }
+            })
+            .catch(({ response }) => {
+                dispatch(setSavingButton(false));
+                dispatch(
+                    addToast({
+                        text:
+                            response?.data?.message ||
+                            getFormattedMessage(
+                                "product.convert.variation.error.message"
+                            ),
+                        type: toastType.ERROR,
+                    })
+                );
+            });
+    };
+
+export const syncMainProductLineItemsProduct =
+    (mainProductId, payload, onSuccess) => async (dispatch) => {
+        dispatch(setSavingButton(true));
+        apiConfigJSON
+            .post(
+                `${apiBaseURL.MAIN_PRODUCTS}/${mainProductId}/sync-line-items-product`,
+                payload
+            )
+            .then((response) => {
+                dispatch(
+                    addToast({
+                        text:
+                            response?.data?.message ||
+                            getFormattedMessage(
+                                "product.sync.line.items.success.message"
+                            ),
+                    })
+                );
+                dispatch(setSavingButton(false));
+                if (onSuccess) {
+                    onSuccess(response);
+                }
+            })
+            .catch(({ response }) => {
+                dispatch(setSavingButton(false));
+                dispatch(
+                    addToast({
+                        text:
+                            response?.data?.message ||
+                            getFormattedMessage(
+                                "product.sync.line.items.error.message"
+                            ),
+                        type: toastType.ERROR,
+                    })
+                );
+            });
+    };
+
 export const updateMultipleVariations = (variationIds, updateData, onSuccess) => async (dispatch) => {
     dispatch(setSavingButton(true));
     apiConfigJSON

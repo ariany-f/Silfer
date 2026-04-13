@@ -9,12 +9,17 @@ use App\Http\Resources\MainProductCollection;
 use App\Http\Resources\MainProductResource;
 use App\Models\MainProduct;
 use App\Models\Product;
+use App\Models\HoldItem;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
+use App\Models\QuotationItem;
 use App\Models\SaleItem;
+use App\Models\SaleReturnItem;
 use App\Models\VariationProduct;
+use App\Models\VariationType;
 use App\Repositories\MainProductRepository;
 use App\Repositories\ProductRepository;
+use App\Support\VariationSku;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -549,6 +554,165 @@ class MainProductAPIController extends AppBaseController
         return $this->sendSuccess('Product deleted successfully');
     }
 
+    public function variationConversionStatus($id): JsonResponse
+    {
+        $mainProduct = MainProduct::with([
+            'products.variationProduct.variation',
+            'products.variationProduct.variationType',
+        ])->findOrFail($id);
+
+        $children = $mainProduct->products->sortBy('id')->values();
+        $productIds = $children->pluck('id')->all();
+        $defaultFromProductId = $children->isNotEmpty() ? (int) $children->first()->id : null;
+
+        $lineItemCounts = [
+            'sale_items' => $productIds ? SaleItem::whereIn('product_id', $productIds)->count() : 0,
+            'sale_return_items' => $productIds ? SaleReturnItem::whereIn('product_id', $productIds)->count() : 0,
+            'quotation_items' => $productIds ? QuotationItem::whereIn('product_id', $productIds)->count() : 0,
+            'hold_items' => $productIds ? HoldItem::whereIn('product_id', $productIds)->count() : 0,
+        ];
+
+        $totalLineItems = array_sum($lineItemCounts);
+
+        $childProducts = $children->map(function (Product $p) {
+            $vp = $p->variationProduct;
+            $label = $vp && $vp->variation && $vp->variationType
+                ? $vp->variation->name . ' (' . $vp->variationType->name . ')'
+                : $p->name;
+
+            return [
+                'id' => $p->id,
+                'name' => $p->name,
+                'code' => $p->code,
+                'variation_label' => $label,
+            ];
+        })->values()->all();
+
+        $payload = [
+            'is_single_type' => $mainProduct->product_type === MainProduct::SINGLE_PRODUCT,
+            'can_convert_to_variation' => $mainProduct->product_type === MainProduct::SINGLE_PRODUCT
+                && $children->count() === 1
+                && ! VariationProduct::where('product_id', $children->first()->id)->exists(),
+            'products_count' => $children->count(),
+            'default_from_product_id' => $defaultFromProductId,
+            'line_item_counts' => $lineItemCounts,
+            'total_line_items' => $totalLineItems,
+            'has_line_items' => $totalLineItems > 0,
+            'show_sync_line_items' => $mainProduct->product_type === MainProduct::VARIATION_PRODUCT
+                && $totalLineItems > 0
+                && $children->count() > 1,
+            'child_products' => $childProducts,
+        ];
+
+        return $this->sendResponse($payload, 'OK');
+    }
+
+    public function convertSingleToVariation(Request $request, $id): JsonResponse
+    {
+        $request->validate([
+            'variation_id' => 'required|integer|exists:variations,id',
+            'variation_type_id' => 'required|integer|exists:variation_types,id',
+        ]);
+
+        $mainProduct = MainProduct::with('products')->findOrFail($id);
+
+        if ($mainProduct->product_type !== MainProduct::SINGLE_PRODUCT) {
+            return $this->sendError('Apenas produtos do tipo único podem ser convertidos.');
+        }
+
+        $children = $mainProduct->products;
+        if ($children->count() !== 1) {
+            return $this->sendError('Este produto principal deve ter exatamente um SKU para conversão.');
+        }
+
+        $product = $children->first();
+
+        if (VariationProduct::where('product_id', $product->id)->exists()) {
+            return $this->sendError('Este produto já está vinculado a uma variação.');
+        }
+
+        $variationType = VariationType::where('id', $request->variation_type_id)
+            ->where('variation_id', $request->variation_id)
+            ->first();
+
+        if (! $variationType) {
+            return $this->sendError('O tipo de variação não pertence à variação selecionada.');
+        }
+
+        if (VariationProduct::where('main_product_id', $mainProduct->id)
+            ->where('variation_type_id', $variationType->id)
+            ->exists()) {
+            return $this->sendError('Esta combinação de variação já existe neste produto.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            VariationProduct::create([
+                'product_id' => $product->id,
+                'variation_id' => (int) $request->variation_id,
+                'variation_type_id' => $variationType->id,
+                'main_product_id' => $mainProduct->id,
+            ]);
+
+            $mainProduct->update([
+                'product_type' => MainProduct::VARIATION_PRODUCT,
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return $this->sendError($e->getMessage());
+        }
+
+        return $this->sendResponse(
+            new MainProductResource($mainProduct->fresh(['products.variationProduct.variation', 'products.variationProduct.variationType'])),
+            'Produto convertido para variação com sucesso.'
+        );
+    }
+
+    public function syncLineItemsProduct(Request $request, $id): JsonResponse
+    {
+        $request->validate([
+            'from_product_id' => 'required|integer|exists:products,id',
+            'to_product_id' => 'required|integer|exists:products,id',
+        ]);
+
+        if ((int) $request->from_product_id === (int) $request->to_product_id) {
+            return $this->sendError('Origem e destino devem ser diferentes.');
+        }
+
+        $mainProduct = MainProduct::findOrFail($id);
+        $allowedIds = Product::where('main_product_id', $mainProduct->id)->pluck('id')->all();
+
+        $fromId = (int) $request->from_product_id;
+        $toId = (int) $request->to_product_id;
+
+        if (! in_array($fromId, $allowedIds, true) || ! in_array($toId, $allowedIds, true)) {
+            return $this->sendError('Os produtos devem pertencer a este produto principal.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $updated = [
+                'sale_items' => SaleItem::where('product_id', $fromId)->update(['product_id' => $toId]),
+                'sale_return_items' => SaleReturnItem::where('product_id', $fromId)->update(['product_id' => $toId]),
+                'quotation_items' => QuotationItem::where('product_id', $fromId)->update(['product_id' => $toId]),
+                'hold_items' => HoldItem::where('product_id', $fromId)->update(['product_id' => $toId]),
+            ];
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return $this->sendError($e->getMessage());
+        }
+
+        return $this->sendResponse($updated, 'Referências atualizadas com sucesso.');
+    }
+
     private function generateVariationDuplicateCode(Product $product): ?string
     {
         try {
@@ -557,24 +721,19 @@ class MainProductAPIController extends AppBaseController
             }
 
             $variationValue = trim((string) $product->variationProduct->variationType->name);
-            $component = $this->extractVariationMeasureComponent($product->name);
+            $component = VariationSku::extractMeasureComponent($product->name);
 
             if ($variationValue === '' || $component === null) {
                 return null;
             }
 
             $prefix = Str::upper($variationValue) . ' ' . $component;
-            $existingCodes = Product::where('code', 'like', $prefix . ' %.0')->pluck('code');
-            $maxIndex = 0;
-            $pattern = '/^' . preg_quote($prefix, '/') . '\s+(\d+)\.0$/u';
-
-            foreach ($existingCodes as $code) {
-                if (preg_match($pattern, (string) $code, $matches)) {
-                    $maxIndex = max($maxIndex, (int) $matches[1]);
-                }
+            $q = Product::query();
+            if ($product->brand_id) {
+                $q->where('brand_id', $product->brand_id);
             }
 
-            $nextIndex = $maxIndex + 1;
+            $nextIndex = VariationSku::maxIndexForPrefix($q, $prefix) + 1;
             $candidateCode = $prefix . ' ' . $nextIndex . '.0';
 
             while (Product::where('code', $candidateCode)->exists()) {
@@ -587,27 +746,5 @@ class MainProductAPIController extends AppBaseController
             \Log::warning('Failed to generate variation duplicate code for product ' . $product->id . ': ' . $e->getMessage());
             return null;
         }
-    }
-
-    private function extractVariationMeasureComponent(?string $productName): ?string
-    {
-        if (empty($productName)) {
-            return null;
-        }
-
-        $normalizedName = Str::upper($productName);
-
-        if (!preg_match('/(\d+(?:[.,]\d+)?)\s*MM\b/u', $normalizedName, $measureMatch)) {
-            return null;
-        }
-
-        $measure = str_replace(',', '.', $measureMatch[1]) . 'MM';
-        $meter = null;
-
-        if (preg_match('/\(?\s*(\d+(?:[.,]\d+)?)\s*M\s*\)?(?!M)/u', $normalizedName, $meterMatch)) {
-            $meter = str_replace(',', '.', $meterMatch[1]) . 'M';
-        }
-
-        return $meter ? $meter . ' ' . $measure : $measure;
     }
 }
