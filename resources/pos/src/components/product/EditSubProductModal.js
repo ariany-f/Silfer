@@ -71,6 +71,34 @@ const EditSubProductModal = (props) => {
         return fallback;
     };
 
+    const normalizeCurrencyMask = (value, fallback = "0,00") => {
+        const normalized = normalizeInputValue(value, "");
+        if (normalized === "") {
+            return fallback;
+        }
+
+        const parsed = Number.parseFloat(String(normalized).replace(",", "."));
+        if (!Number.isFinite(parsed)) {
+            return fallback;
+        }
+
+        return parsed.toFixed(2).replace(".", ",");
+    };
+
+    const toApiDecimal = (value, fallback = "0") => {
+        const normalized = normalizeInputValue(value, "");
+        if (normalized === "") {
+            return fallback;
+        }
+
+        const parsed = Number.parseFloat(String(normalized).replace(",", "."));
+        if (!Number.isFinite(parsed)) {
+            return fallback;
+        }
+
+        return String(parsed);
+    };
+
     useEffect(() => {
         if (show) {
             dispatch(fetchAllWarehouses());
@@ -90,8 +118,8 @@ const EditSubProductModal = (props) => {
 
             setFormInput((prev) => ({
                 ...prev,
-                product_price: normalizeInputValue(productData.product_price, "0,00"),
-                product_cost: normalizeInputValue(productData.product_cost, "0,00"),
+                product_price: normalizeCurrencyMask(productData.product_price, "0,00"),
+                product_cost: normalizeCurrencyMask(productData.product_cost, "0,00"),
                 order_tax: normalizeInputValue(productData.order_tax, ""),
                 stock_alert: normalizeInputValue(productData.stock_alert, "10"),
                 tax_type: productData.tax_type,
@@ -316,10 +344,10 @@ const EditSubProductModal = (props) => {
         formData.append('notes', commonData.notes);
 
         formData.append('code', formInput.code);
-        formData.append('product_price', formInput.product_price);
-        formData.append('product_cost', formInput.product_cost);
-        formData.append('order_tax', formInput.order_tax);
-        formData.append('stock_alert', formInput.stock_alert);
+        formData.append('product_price', toApiDecimal(formInput.product_price));
+        formData.append('product_cost', toApiDecimal(formInput.product_cost));
+        formData.append('order_tax', toApiDecimal(formInput.order_tax, ""));
+        formData.append('stock_alert', toApiDecimal(formInput.stock_alert, "0"));
         if (formInput.tax_type[0]) {
             formData.append('tax_type', formInput.tax_type[0].value ? formInput.tax_type[0].value : 1);
         } else {

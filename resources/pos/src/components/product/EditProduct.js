@@ -200,29 +200,15 @@ const EditProduct = (props) => {
                                 </div>
                                 <div>
                                     {getPermission(allConfigData?.permissions, Permissions.CREATE_PRODUCTS) &&
-                                        product?.attributes?.product_type == 2 && 
-                                        commonDataForNewProduct.variationTypes && 
-                                        commonDataForNewProduct.variationTypes.length !== 0 &&
+                                        product?.attributes?.product_type == 2 &&
                                         <Button
                                             type="button"
                                             variant="primary"
                                             onClick={openCreateSubProductModal}
                                             className="btn-light-primary"
+                                            disabled={!commonDataForNewProduct.variationTypes || commonDataForNewProduct.variationTypes.length === 0}
                                         >
                                             {getFormattedMessage("product.create.title")}
-                                        </Button>
-                                    }
-                                    {getPermission(allConfigData?.permissions, Permissions.MANAGE_VARIATIONS) &&
-                                        product?.attributes?.product_type == 2 &&
-                                        commonDataForNewProduct.variationTypes &&
-                                        commonDataForNewProduct.variationTypes.length !== 0 &&
-                                        <Button
-                                            type="button"
-                                            variant="outline-secondary"
-                                            onClick={openCreateSubProductModal}
-                                            className="ms-2"
-                                        >
-                                            {getFormattedMessage("variation.create.title")}
                                         </Button>
                                     }
                                 </div>
