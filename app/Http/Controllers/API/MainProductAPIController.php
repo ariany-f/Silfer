@@ -713,6 +713,21 @@ class MainProductAPIController extends AppBaseController
         return $this->sendResponse($updated, 'Referências atualizadas com sucesso.');
     }
 
+    public function nextMainProductCode(): JsonResponse
+    {
+        $max = MainProduct::query()
+            ->whereNotNull('code')
+            ->whereRaw('TRIM(code) REGEXP ?', ['^[0-9]+$'])
+            ->selectRaw('MAX(CAST(TRIM(code) AS UNSIGNED)) AS max_num')
+            ->value('max_num');
+
+        $next = $max !== null ? ((int) $max + 1) : 1;
+        $width = max(2, strlen((string) $next));
+        $nextCode = str_pad((string) $next, $width, '0', STR_PAD_LEFT);
+
+        return $this->sendResponse(['next_code' => $nextCode], 'OK');
+    }
+
     private function generateVariationDuplicateCode(Product $product): ?string
     {
         try {

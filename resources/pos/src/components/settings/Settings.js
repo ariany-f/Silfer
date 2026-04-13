@@ -25,6 +25,7 @@ import HeaderTitle from "../header/HeaderTitle";
 import MasterLayout from "../MasterLayout";
 import warning from "../../assets/images/warning.png"
 import EditHoldConfirmationModal from "../../frontend/components/cart-product/EditHoldConfirmationModal";
+import barcodeOptions from "../../shared/option-lists/barcode.json";
 
 const Settings = (props) => {
     const intl = useIntl();
@@ -84,6 +85,7 @@ const Settings = (props) => {
         date_format: "",
         currency_icon_right_side: "",
         decimal_separator: "",
+        default_barcode_symbol: "",
     });
 
     const [defaultDate, setDefaultDate] = useState(null);
@@ -223,6 +225,20 @@ const Settings = (props) => {
                         decimalSepData.find((d) => d.value === sep) ||
                         decimalSepData[0]
                     );
+                })(),
+                default_barcode_symbol: (() => {
+                    const v = settings.attributes?.default_barcode_symbol;
+                    const pick =
+                        v != null && v !== "" ? String(v) : String(barcodeOptions[0].value);
+                    const row = barcodeOptions.find(
+                        (b) => String(b.value) === pick
+                    );
+                    return row
+                        ? { value: row.value, label: row.label }
+                        : {
+                              value: barcodeOptions[0].value,
+                              label: barcodeOptions[0].label,
+                          };
                 })(),
             });
         }
@@ -392,6 +408,13 @@ const Settings = (props) => {
                 ? data.decimal_separator.value
                 : data.decimal_separator ?? "."
         );
+        formData.append(
+            "default_barcode_symbol",
+            data.default_barcode_symbol?.value != null
+                ? data.default_barcode_symbol.value
+                : data.default_barcode_symbol ??
+                      String(barcodeOptions[0].value)
+        );
         return formData;
     };
     
@@ -474,6 +497,15 @@ const Settings = (props) => {
         setSettingValue((settingValue) => ({
             ...settingValue,
             decimal_separator: obj,
+        }));
+        setErrors("");
+    };
+
+    const onDefaultBarcodeSymbolChange = (obj) => {
+        setDisable(false);
+        setSettingValue((settingValue) => ({
+            ...settingValue,
+            default_barcode_symbol: obj,
         }));
         setErrors("");
     };
@@ -826,6 +858,38 @@ const Settings = (props) => {
                                             value={settingValue.decimal_separator}
                                             onChange={onDecimalSeparatorChange}
                                         />
+                                    ) : null}
+                                </div>
+                                <div className="col-lg-6 mb-3">
+                                    {settingValue.default_barcode_symbol ? (
+                                        <>
+                                            <ReactSelect
+                                                title={intl.formatMessage({
+                                                    id: "settings.default.barcode.symbology.label",
+                                                    defaultMessage:
+                                                        "Default barcode symbology (new products)",
+                                                })}
+                                                placeholder={intl.formatMessage({
+                                                    id: "settings.default.barcode.symbology.placeholder",
+                                                    defaultMessage:
+                                                        "Select default symbology",
+                                                })}
+                                                data={barcodeOptions}
+                                                value={
+                                                    settingValue.default_barcode_symbol
+                                                }
+                                                onChange={
+                                                    onDefaultBarcodeSymbolChange
+                                                }
+                                            />
+                                            <p className="text-muted small mb-0 mt-1">
+                                                {intl.formatMessage({
+                                                    id: "settings.default.barcode.symbology.hint",
+                                                    defaultMessage:
+                                                        "Pre-selected when creating a product.",
+                                                })}
+                                            </p>
+                                        </>
                                     ) : null}
                                 </div>
                                 <div className="col-12 mb-3">

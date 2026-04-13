@@ -174,6 +174,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'main-products/{product}/sync-line-items-product',
             [MainProductAPIController::class, 'syncLineItemsProduct']
         )->name('main-products.sync-line-items-product');
+        Route::get(
+            'main-products/next-code',
+            [MainProductAPIController::class, 'nextMainProductCode']
+        )->name('main-products.next-code');
         Route::resource('main-products', MainProductAPIController::class);
         Route::post(
             'products/{product}',

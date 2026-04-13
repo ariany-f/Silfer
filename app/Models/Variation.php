@@ -47,7 +47,7 @@ class Variation extends BaseModel
 
     public function prepareAttributes(): array
     {
-
+        $variation_types = [];
         foreach ($this->variation_types as $type) {
             $variation_types[] = [
                 'id' => $type->id,
@@ -55,13 +55,11 @@ class Variation extends BaseModel
             ];
         }
 
-        $fields = [
+        return [
             'id' => $this->id,
             'name' => $this->name,
-            'variation_types' => $variation_types ?? [],
+            'variation_types' => $variation_types,
         ];
-
-        return $fields;
     }
 
     /**

@@ -99,7 +99,12 @@ trait HasJsonResourcefulData
      */
     private function inIncludeQuery($relationName): bool
     {
-        $includedRelations = explode(',', request()->get('include'));
+        $include = request()->get('include');
+        if ($include === null || $include === '') {
+            return false;
+        }
+
+        $includedRelations = explode(',', $include);
 
         foreach ($includedRelations as $relation) {
             $subRelationName = explode('.', $relation);

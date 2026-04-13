@@ -9,6 +9,7 @@ import { addProductCategory, fetchAllProductCategories } from "../../store/actio
 import { addBrand, fetchAllBrands } from "../../store/action/brandsAction";
 import {
     editMainProduct,
+    fetchNextMainProductCode,
     fetchNextVariationSkuCodes,
     fetchProduct,
 } from "../../store/action/productAction";
@@ -69,6 +70,7 @@ const ProductForm = (props) => {
         baseUnits,
         productUnit,
         config,
+        allConfigData,
         addBrand,
         addProductCategory
     } = props;
@@ -144,6 +146,71 @@ const ProductForm = (props) => {
             setVariationTypesData([]);
         }
     }, [productValue.variation]);
+
+    useEffect(() => {
+        if (singleProduct) {
+            return;
+        }
+        const configLoaded =
+            (allConfigData && Object.keys(allConfigData).length > 0) ||
+            (frontSetting?.value &&
+                Object.keys(frontSetting.value).length > 0);
+        if (!configLoaded) {
+            return;
+        }
+        const raw =
+            frontSetting?.value?.default_barcode_symbol ??
+            allConfigData?.default_barcode_symbol;
+        const def =
+            raw != null && raw !== ""
+                ? String(raw)
+                : String(barcodes[0].value);
+        setProductValue((prev) => {
+            const cur = prev.barcode_symbol;
+            const has =
+                cur &&
+                ((typeof cur === "object" &&
+                    !Array.isArray(cur) &&
+                    cur.value != null &&
+                    cur.value !== "") ||
+                    (Array.isArray(cur) && cur[0]?.value != null));
+            if (has) {
+                return prev;
+            }
+            const found = barcodes.find((b) => String(b.value) === def);
+            if (!found) {
+                return prev;
+            }
+            return {
+                ...prev,
+                barcode_symbol: { value: found.value, label: found.label },
+            };
+        });
+    }, [singleProduct, frontSetting, allConfigData]);
+
+    useEffect(() => {
+        if (singleProduct) {
+            return;
+        }
+        let cancelled = false;
+        fetchNextMainProductCode()
+            .then((res) => {
+                const next = res?.data?.data?.next_code;
+                if (cancelled || next == null || next === "") {
+                    return;
+                }
+                setProductValue((prev) => {
+                    if (prev.code != null && String(prev.code).trim() !== "") {
+                        return prev;
+                    }
+                    return { ...prev, code: String(next) };
+                });
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, [singleProduct]);
 
     const variationsOptions =
         variations?.length > 0
@@ -2034,7 +2101,8 @@ const mapStateToProps = (state) => {
         warehouses,
         productUnits,
         frontSetting,
-        config
+        config,
+        allConfigData,
     } = state;
     return {
         brands,
@@ -2045,7 +2113,8 @@ const mapStateToProps = (state) => {
         warehouses,
         productUnits,
         frontSetting,
-        config
+        config,
+        allConfigData,
     };
 };
 

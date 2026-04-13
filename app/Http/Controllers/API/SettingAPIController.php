@@ -73,6 +73,7 @@ class SettingAPIController extends AppBaseController
             'date_format',
             'store_name',
             'decimal_separator',
+            'default_barcode_symbol',
         ];
 
         if (Auth::guard('sanctum')->user() && !Auth::guard('sanctum')->user()->hasRole('superadmin')) {

@@ -77,6 +77,7 @@ class SettingRepository extends BaseRepository
                 'city',
                 'is_currency_right',
                 'decimal_separator',
+                'default_barcode_symbol',
                 'default_customer',
                 'default_warehouse',
                 'date_format',

@@ -426,6 +426,9 @@ export const duplicateMultipleProducts = (productIds, onSuccess) => async (dispa
         });
 };
 
+export const fetchNextMainProductCode = () =>
+    apiConfigJSON.get(`${apiBaseURL.MAIN_PRODUCTS}/next-code`);
+
 export const fetchNextVariationSkuCodes = (
     productName,
     variationTypeNames,

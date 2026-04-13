@@ -86,10 +86,12 @@ class VariationRepository extends BaseRepository
 
             foreach ($input['variation_types'] as $type) {
                 if (isset($type['id'])) {
-                    VariationType::where('id', $type['id'])->update([
-                        'name' => $type['name'],
-                    ]);
-                } else {
+                    VariationType::where('id', $type['id'])
+                        ->where('variation_id', $variation->id)
+                        ->update([
+                            'name' => $type['name'],
+                        ]);
+                } elseif (! empty($type['name'])) {
                     VariationType::create([
                         'name' => $type['name'],
                         'variation_id' => $variation->id,

@@ -273,6 +273,7 @@ class UserAPIController extends AppBaseController
             'is_version' => getSadminSettingValue('show_version_on_footer'),
             'is_currency_right' => getSettingValue('is_currency_right'),
             'decimal_separator' => ($decimalSep === ',') ? ',' : '.',
+            'default_barcode_symbol' => getSettingValue('default_barcode_symbol'),
             'open_register' => $openRegister ? false : true,
         ], 'Config retrieved successfully.');
     }

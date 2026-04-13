@@ -22,8 +22,11 @@ class UpdateVariationRequest extends FormRequest
      */
     public function rules(): array
     {
+        $variation = $this->route('variation');
+        $variationId = is_object($variation) ? $variation->getKey() : $variation;
+
         return [
-            'name' => 'required|unique:variations,name,' . $this->id . ',id,tenant_id,' . Auth::user()->tenant_id,
+            'name' => 'required|unique:variations,name,' . $variationId . ',id,tenant_id,' . Auth::user()->tenant_id,
         ];
     }
 }
