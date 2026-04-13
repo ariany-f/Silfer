@@ -51,6 +51,27 @@ const EditSubProductModal = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const normalizeInputValue = (value, fallback = "") => {
+        if (value === null || value === undefined || value === "") {
+            return fallback;
+        }
+
+        if (typeof value === "number") {
+            return String(value);
+        }
+
+        if (typeof value === "object") {
+            const nestedValue = value?.value ?? value?.amount ?? value?.raw ?? value?.number ?? value?.price ?? value?.cost;
+            return normalizeInputValue(nestedValue, fallback);
+        }
+
+        if (typeof value === "string") {
+            return value;
+        }
+
+        return fallback;
+    };
+
     useEffect(() => {
         if (show) {
             dispatch(fetchAllWarehouses());
@@ -70,10 +91,10 @@ const EditSubProductModal = (props) => {
 
             setFormInput((prev) => ({
                 ...prev,
-                product_price: productData.product_price,
-                product_cost: productData.product_cost,
-                order_tax: productData.order_tax ? productData.order_tax : "",
-                stock_alert: productData.stock_alert,
+                product_price: normalizeInputValue(productData.product_price, "0,00"),
+                product_cost: normalizeInputValue(productData.product_cost, "0,00"),
+                order_tax: normalizeInputValue(productData.order_tax, ""),
+                stock_alert: normalizeInputValue(productData.stock_alert, "10"),
                 tax_type: productData.tax_type,
                 code: productData.code,
                 add_stock: "",

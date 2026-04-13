@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap-v5";
 import { connect } from "react-redux";
 import { getFormattedMessage } from "../../shared/sharedMethod";
@@ -10,6 +10,7 @@ const EditMultipleVariation = (props) => {
         show,
         handleClose,
         selectedVariationIds,
+        selectedVariationProducts,
         updateMultipleVariations,
         fetchMainProduct,
         setSavingButton,
@@ -24,6 +25,93 @@ const EditMultipleVariation = (props) => {
     });
 
     const [errors, setErrors] = useState({});
+
+    const toStringValue = (value) => (value === null || value === undefined ? "" : String(value));
+
+    const extractNumericValue = (value) => {
+        if (value === null || value === undefined || value === "") {
+            return null;
+        }
+
+        if (typeof value === "number") {
+            return Number.isFinite(value) ? value : null;
+        }
+
+        if (typeof value === "object") {
+            const objectCandidate = value?.value ?? value?.amount ?? value?.raw ?? value?.number ?? value?.price ?? value?.cost;
+            return extractNumericValue(objectCandidate);
+        }
+
+        if (typeof value === "string") {
+            const normalized = value.trim().replace(",", ".");
+            const parsed = Number.parseFloat(normalized);
+            return Number.isFinite(parsed) ? parsed : null;
+        }
+
+        return null;
+    };
+
+    const formatCurrencyDefault = (value) => {
+        if (value === null || value === undefined) {
+            return "0,00";
+        }
+
+        return Number(value).toFixed(2).replace(".", ",");
+    };
+
+    const formatStockDefault = (value) => {
+        if (value === null || value === undefined) {
+            return "10";
+        }
+
+        const parsed = Number.parseFloat(String(value));
+        if (!Number.isFinite(parsed)) {
+            return "10";
+        }
+
+        return Number.isInteger(parsed) ? String(parsed) : String(parsed).replace(".", ",");
+    };
+
+    const parseCurrencyInput = (value) => {
+        const parsed = extractNumericValue(value);
+        return parsed === null ? null : parsed;
+    };
+
+    useEffect(() => {
+        if (!show) {
+            return;
+        }
+
+        const selectedItems = Array.isArray(selectedVariationProducts) ? selectedVariationProducts : [];
+
+        if (!selectedItems.length) {
+            setFormData({
+                product_cost: "0,00",
+                product_price: "0,00",
+                stock_alert: "10",
+            });
+            return;
+        }
+
+        const costs = selectedItems.map((item) => extractNumericValue(item?.product_cost));
+        const prices = selectedItems.map((item) => extractNumericValue(item?.product_price));
+        const alerts = selectedItems.map((item) => extractNumericValue(item?.stock_alert));
+
+        const firstCost = costs[0];
+        const firstPrice = prices[0];
+        const firstAlert = alerts[0];
+
+        const sameCost = costs.every((value) => value === firstCost && value !== null);
+        const samePrice = prices.every((value) => value === firstPrice && value !== null);
+        const sameAlert = alerts.every((value) => value === firstAlert && value !== null);
+
+        setFormData({
+            product_cost: sameCost ? formatCurrencyDefault(firstCost) : "0,00",
+            product_price: samePrice ? formatCurrencyDefault(firstPrice) : "0,00",
+            stock_alert: sameAlert ? formatStockDefault(firstAlert) : "10",
+        });
+        setErrors({});
+    }, [show, selectedVariationProducts]);
 
     const handleCostChange = (e) => {
         const value = e.target.value;
@@ -45,15 +133,19 @@ const EditMultipleVariation = (props) => {
 
     const handleSubmit = () => {
         const updateData = {};
-        
-        if (formData.product_cost !== '') {
-            updateData.product_cost = parseFloat(formData.product_cost);
+
+        const parsedCost = parseCurrencyInput(formData.product_cost);
+        const parsedPrice = parseCurrencyInput(formData.product_price);
+        const parsedStockAlert = parseCurrencyInput(formData.stock_alert);
+
+        if (toStringValue(formData.product_cost).trim() !== '' && parsedCost !== null) {
+            updateData.product_cost = parsedCost;
         }
-        if (formData.product_price !== '') {
-            updateData.product_price = parseFloat(formData.product_price);
+        if (toStringValue(formData.product_price).trim() !== '' && parsedPrice !== null) {
+            updateData.product_price = parsedPrice;
         }
-        if (formData.stock_alert !== '') {
-            updateData.stock_alert = parseFloat(formData.stock_alert);
+        if (toStringValue(formData.stock_alert).trim() !== '' && parsedStockAlert !== null) {
+            updateData.stock_alert = parsedStockAlert;
         }
 
         if (Object.keys(updateData).length === 0) {
@@ -71,9 +163,9 @@ const EditMultipleVariation = (props) => {
 
     const handleModalClose = () => {
         setFormData({
-            product_cost: '',
-            product_price: '',
-            stock_alert: '',
+            product_cost: '0,00',
+            product_price: '0,00',
+            stock_alert: '10',
         });
         setErrors({});
         handleClose();
@@ -100,8 +192,7 @@ const EditMultipleVariation = (props) => {
                                     {getFormattedMessage("product.product-details.cost.label")}
                                 </Form.Label>
                                 <Form.Control
-                                    type="number"
-                                    step="0.01"
+                                    type="text"
                                     placeholder={getFormattedMessage("product.input.product-cost.placeholder.label")}
                                     value={formData.product_cost}
                                     onChange={handleCostChange}
@@ -120,8 +211,7 @@ const EditMultipleVariation = (props) => {
                                     {getFormattedMessage("price.title")}
                                 </Form.Label>
                                 <Form.Control
-                                    type="number"
-                                    step="0.01"
+                                    type="text"
                                     placeholder={getFormattedMessage("product.input.product-price.placeholder.label")}
                                     value={formData.product_price}
                                     onChange={handlePriceChange}
@@ -140,8 +230,7 @@ const EditMultipleVariation = (props) => {
                                     {getFormattedMessage("dashboard.stockAlert.title")}
                                 </Form.Label>
                                 <Form.Control
-                                    type="number"
-                                    step="0.01"
+                                    type="text"
                                     placeholder={getFormattedMessage("product.input.stock-alert.placeholder.label")}
                                     value={formData.stock_alert}
                                     onChange={handleStockAlertChange}
