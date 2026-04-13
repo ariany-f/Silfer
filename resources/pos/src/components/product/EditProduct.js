@@ -82,7 +82,18 @@ const EditProduct = (props) => {
     // Preparar dados para o datatable de variações
     const product = singleProduct.length >= 1 ? singleProduct[0] : null;
     const allProducts = product && product.attributes && product.attributes.products && product.attributes.products.map((item) => item);
-    
+
+    const masterVariationTypes = product?.attributes?.variation?.variation_types || [];
+    const usedVariationTypeIds = new Set(
+        (allProducts || [])
+            .map((item) => item?.variation_product?.variation_type_id)
+            .filter((id) => id !== undefined && id !== null)
+            .map((id) => Number(id))
+    );
+    const availableVariationTypes = masterVariationTypes.filter(
+        (vt) => !usedVariationTypeIds.has(Number(vt.id))
+    );
+
     const commonDataForNewProduct = {
         name: allProducts && allProducts[0]?.name,
         product_code: allProducts && allProducts[0]?.product_code,
@@ -97,7 +108,7 @@ const EditProduct = (props) => {
         notes: allProducts && allProducts[0]?.notes,
         main_product_id: product && product.id,
         variation: product && product?.attributes?.variation,
-        variationTypes: product && product?.attributes?.variation?.variation_types.filter(variationType => !product?.attributes?.variation_types.some(productVariationType => variationType.id === productVariationType.id && variationType.name === productVariationType.name)),
+        variationTypes: availableVariationTypes,
     };
 
     const openWareHouseDetailModal = (data) => {
@@ -206,9 +217,9 @@ const EditProduct = (props) => {
                                             variant="primary"
                                             onClick={openCreateSubProductModal}
                                             className="btn-light-primary"
-                                            disabled={!commonDataForNewProduct.variationTypes || commonDataForNewProduct.variationTypes.length === 0}
+                                            disabled={!availableVariationTypes.length}
                                         >
-                                            {getFormattedMessage("product.create.title")}
+                                            {getFormattedMessage("variation.create.title")}
                                         </Button>
                                     }
                                 </div>

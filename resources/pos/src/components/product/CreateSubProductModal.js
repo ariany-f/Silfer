@@ -52,7 +52,7 @@ const CreateSubProductModal = (props) => {
             dispatch(fetchAllSuppliers());
             setProduct({
                 ...commonData,
-                variationTypes: commonData.variationTypes.map((variationType) => {
+                variationTypes: (commonData.variationTypes || []).map((variationType) => {
                     return {
                         value: variationType.id,
                         label: variationType.name,
